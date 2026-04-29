@@ -41,14 +41,23 @@ try {
     $app->handleRequest(Request::capture());
 
 } catch (\Throwable $e) {
-    // Detailed error output if bootstrap fails
+    // Reveal the ORIGINAL error that caused the crash
+    $error = $e;
+    // Walk down the chain to find the root cause
+    while ($error->getPrevious()) {
+        $error = $error->getPrevious();
+    }
+
     header('Content-Type: text/html', true, 500);
-    echo "<h1>Critical Bootstrap Error</h1>";
-    echo "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<p><b>File:</b> " . $e->getFile() . " on line " . $e->getLine() . "</p>";
+    echo "<div style='font-family:sans-serif; padding:20px; border:5px solid red;'>";
+    echo "<h1>🚨 Error Akar (Root Cause) Terdeteksi</h1>";
+    echo "<p style='font-size:1.2em;'><b>Pesan:</b> " . htmlspecialchars($error->getMessage()) . "</p>";
+    echo "<p><b>Lokasi:</b> " . $error->getFile() . " baris " . $error->getLine() . "</p>";
     echo "<h3>Stack Trace:</h3>";
-    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "<pre style='background:#eee; padding:10px; overflow:auto; max-height:400px;'>" . htmlspecialchars($error->getTraceAsString()) . "</pre>";
+    echo "</div>";
 }
+
 
 
 
