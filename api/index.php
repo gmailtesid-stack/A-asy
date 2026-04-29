@@ -15,6 +15,9 @@ try {
     /** @var \Illuminate\Foundation\Application $app */
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
+    // REGISTER VIEW MANUALLY
+    $app->register(\Illuminate\View\ViewServiceProvider::class);
+
     // 3. Force Storage Path
     $app->useStoragePath($storagePath);
     
