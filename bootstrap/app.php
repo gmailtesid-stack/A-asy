@@ -23,4 +23,5 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->create()
-    ->useStoragePath('/tmp/storage'); // PAKSA STORAGE KE /tmp
+    ->useStoragePath('/tmp/storage')
+    ->registerConfiguredProviders(); // PAKSA MUAT SEMUA PROVIDER
