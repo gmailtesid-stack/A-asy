@@ -1,25 +1,26 @@
 {
     "version": 2,
-    "outputDirectory": "public",
-    "installCommand": "echo 'Skipping npm install'",
-    "buildCommand": "echo 'Skipping build'",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.2"
         }
     },
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(css|js|images|fonts|build)/(.*)",
-            "destination": "/public/$1/$2"
+            "src": "/(css|js|images|fonts|build)/(.*)",
+            "dest": "/public/$1/$2"
         },
         {
-            "source": "/(robots.txt|favicon.ico)",
-            "destination": "/public/$1"
+            "src": "/favicon.ico",
+            "dest": "/public/favicon.ico"
         },
         {
-            "source": "/(.*)",
-            "destination": "/api/index.php"
+            "src": "/robots.txt",
+            "dest": "/public/robots.txt"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
         }
     ]
 }

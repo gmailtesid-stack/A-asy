@@ -1,0 +1,9 @@
+public/index.php
+.git
+.github
+node_modules
+vendor
+tests
+phpunit.xml
+.editorconfig
+.gitattributes

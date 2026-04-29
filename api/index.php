@@ -1,24 +1,12 @@
 <?php
+
 // Vercel Entry Point (Laravel Bridge)
+require __DIR__ . '/../vendor/autoload.php';
 
-define('LARAVEL_START', microtime(true));
-
-$uri = $_SERVER['REQUEST_URI'] ?? '';
-
-// Debug endpoint to inspect URI routing
-if (strpos($uri, 'vercel-debug') !== false) {
-    header('Content-Type: application/json');
-    echo json_encode($_SERVER);
-    exit;
-}
-
-// ─────────────────────────────────────────────────────────────
-//  VERCEL FILE-SYSTEM WORKAROUND
-// ─────────────────────────────────────────────────────────────
 $isVercel = isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL']) || getenv('VERCEL');
 
 if ($isVercel) {
-    // 1. Storage path → /tmp/storage
+    // 1. Storage path → /tmp/storage (Vercel has read-only filesystem except /tmp)
     $storagePath = '/tmp/storage';
     $storageDirs = [
         'logs',
@@ -45,27 +33,22 @@ if ($isVercel) {
     }
 }
 
+// 3. Maintenance mode
 if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-require __DIR__ . '/../vendor/autoload.php';
-
+// 4. Bootstrap Laravel
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// Apply Vercel path overrides AFTER the app is created
 if ($isVercel) {
     $app->useStoragePath('/tmp/storage');
-    $app->useBootstrapPath('/tmp/bootstrap');
-}
-
-// Fix Vercel's SCRIPT_NAME so Laravel routes /api correctly
-if ($isVercel) {
+    // Laravel 11/13 handles bootstrap path differently, but this is a safe bridge
     $_SERVER['SCRIPT_NAME'] = '/index.php';
-    $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/index.php';
 }
 
 use Illuminate\Http\Request;
 
-// Handle the Request
+// 5. Handle Request
 $app->handleRequest(Request::capture());
+
