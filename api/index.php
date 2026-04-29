@@ -60,16 +60,10 @@ $response->send();
     $kernel->terminate($request, $response);
 
 } catch (\Throwable $e) {
-    // Biarkan exception Laravel (seperti Belum Login atau Validasi) ditangani secara normal
-    if ($e instanceof \Illuminate\Auth\AuthenticationException || 
-        $e instanceof \Illuminate\Validation\ValidationException ||
-        $e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
-        throw $e;
-    }
-
+    // Diagnosa Error - Selalu tampilkan jika ada masalah
     header('Content-Type: text/html', true, 500);
     echo "<div style='font-family:sans-serif; padding:20px; border:5px solid red; background:#fff1f1;'>";
-    echo "<h1>🚨 LOGIN ERROR DIAGNOSIS</h1>";
+    echo "<h1>🚨 FINAL DIAGNOSIS</h1>";
     echo "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
     echo "<p><b>File:</b> " . $e->getFile() . " baris " . $e->getLine() . "</p>";
     echo "<h3>Stack Trace:</h3>";
