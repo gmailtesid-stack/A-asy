@@ -15,10 +15,15 @@ try {
     /** @var \Illuminate\Foundation\Application $app */
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-    // 3. DAFTAR LAYANAN INTI SECARA MANUAL (WAJIB UNTUK VERCEL)
+    // 3. DAFTAR SELURUH LAYANAN INTI (WAJIB UNTUK VERCEL + LARAVEL 13)
     $app->register(\Illuminate\Filesystem\FilesystemServiceProvider::class);
-    $app->register(\Illuminate\View\ViewServiceProvider::class);
+    $app->register(\Illuminate\Cookie\CookieServiceProvider::class);
     $app->register(\Illuminate\Session\SessionServiceProvider::class);
+    $app->register(\Illuminate\View\ViewServiceProvider::class);
+    $app->register(\Illuminate\Database\DatabaseServiceProvider::class);
+    $app->register(\Illuminate\Encryption\EncryptionServiceProvider::class);
+    $app->register(\Illuminate\Routing\RoutingServiceProvider::class);
+    $app->register(\Illuminate\Auth\AuthServiceProvider::class);
 
     // 4. Force Storage Path & HTTPS
     $app->useStoragePath($storagePath);
@@ -43,7 +48,7 @@ try {
     }
 
     echo "<div style='background:#000;color:#0f0;padding:20px;border:5px solid red;font-family:monospace;'>";
-    echo "<h1>🚨 SYSTEM ERROR</h1>";
+    echo "<h1>🚨 CRITICAL SYSTEM RECOVERY</h1>";
     echo "<h3>" . htmlspecialchars($e->getMessage()) . "</h3>";
     echo "<p>File: " . $e->getFile() . " (Line: " . $e->getLine() . ")</p>";
     echo "<hr><pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
