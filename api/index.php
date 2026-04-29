@@ -12,7 +12,6 @@ try {
     require __DIR__ . '/../vendor/autoload.php';
 
     // 2. Vercel Storage Fix
-    $isVercel = true;
     $storagePath = '/tmp/storage';
     if (!is_dir($storagePath)) {
         mkdir($storagePath, 0777, true);
@@ -24,17 +23,21 @@ try {
     // 3. Bootstrap Laravel
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-    if ($isVercel) {
-        $app->useStoragePath($storagePath);
-        
-        $_SERVER['SCRIPT_NAME'] = '/index.php';
-        $_SERVER['HTTPS'] = 'on'; 
+    // FORCE VERCEL PATHS
+    $app->useStoragePath($storagePath);
+    $app->instance('path.public', __DIR__ . '/../public');
+    $app->instance('path.base', __DIR__ . '/..');
+    
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['HTTPS'] = 'on'; 
 
-        // Force HTTPS
-        $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterFacades::class, function ($app) {
-            $app['url']->forceScheme('https');
-        });
-    }
+    // Force HTTPS & Fix View Paths
+    $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterFacades::class, function ($app) {
+        $app['url']->forceScheme('https');
+        
+        // Pastikan folder views terdeteksi
+        $app['view.finder']->addLocation(__DIR__ . '/../resources/views');
+    });
 
     // 4. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
@@ -45,7 +48,7 @@ try {
     $kernel->terminate($request, $response);
 
 } catch (\Throwable $e) {
-    // Jangan diagnosa jika hanya butuh login
+    // Abaikan normal auth redirect
     if (str_contains(get_class($e), 'AuthenticationException')) {
         throw $e;
     }
