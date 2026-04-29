@@ -2,33 +2,58 @@
 
 use Illuminate\Http\Request;
 
-// 1. Force absolute path for autoloader
+// 1. Setup Error Reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// 2. Load Autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-// 2. Setup Storage & Cache for Serverless (MUST BE /tmp)
-$storagePath = '/tmp/storage';
-$cachePath = '/tmp/bootstrap/cache';
+// 3. Vercel Filesystem Fix (Crucial for Laravel 11/13)
+$isVercel = true;
+if ($isVercel) {
+    // Storage Fix
+    $storagePath = '/tmp/storage';
+    $storageDirs = ['logs', 'framework/views', 'framework/cache/data', 'framework/sessions', 'framework/testing', 'app/public'];
+    foreach (array_merge([$storagePath], array_map(fn($d) => "$storagePath/$d", $storageDirs)) as $dir) {
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+    }
 
-foreach ([$storagePath . '/framework/views', $storagePath . '/framework/sessions', $storagePath . '/framework/cache', $cachePath] as $dir) {
-    if (!is_dir($dir)) mkdir($dir, 0777, true);
+    // Bootstrap Cache Fix (The likely culprit for "view not found")
+    $tmpCache = '/tmp/bootstrap/cache';
+    if (!is_dir($tmpCache)) mkdir($tmpCache, 0777, true);
 }
 
-// 3. Bootstrap the Application
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-
-// 4. Overrides for Vercel
-$app->useStoragePath($storagePath);
-$app->bind('path.public', function() { return __DIR__ . '/../public'; });
-
-// 5. Handle Request
+// 4. Bootstrap Laravel
 try {
-    $app->handleRequest(Request::capture());
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
+
+    if ($isVercel) {
+        $app->useStoragePath('/tmp/storage');
+        // Pointing bootstrap cache to writable /tmp
+        $app->bind('path.bootstrap', fn() => '/tmp/bootstrap');
+        
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
+    }
+
+    // 5. Handle Request (Traditional Way for better stability on Serverless)
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    $response = $kernel->handle(
+        $request = Request::capture()
+    );
+    $response->send();
+    $kernel->terminate($request, $response);
+
 } catch (\Throwable $e) {
     header('Content-Type: text/html', true, 500);
-    echo "<h1>🚨 Error Fatal Terdeteksi</h1>";
-    echo "<p><b>Pesan:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<p><b>Lokasi:</b> " . $e->getFile() . " L" . $e->getLine() . "</p>";
-    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "<div style='font-family:sans-serif; padding:20px; border:5px solid red; background:#fff1f1;'>";
+    echo "<h1>🚨 FINAL DIAGNOSIS</h1>";
+    echo "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p><b>File:</b> " . $e->getFile() . " baris " . $e->getLine() . "</p>";
+    echo "<h3>Stack Trace:</h3>";
+    echo "<pre style='background:#eee; padding:10px; overflow:auto; max-height:400px;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "</div>";
 }
 
 
