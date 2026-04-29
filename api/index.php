@@ -1,24 +1,19 @@
 <?php
 
+use Illuminate\Http\Request;
+
+// 1. Setup Error Reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Vercel Entry Point (Laravel Bridge)
+// 2. Load Autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-$isVercel = isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL']) || getenv('VERCEL');
-
-if ($isVercel && !getenv('APP_KEY') && !isset($_ENV['APP_KEY'])) {
-    echo "<h1>Configuration Error</h1>";
-    echo "<p>Variabel <b>APP_KEY</b> tidak ditemukan di Environment Variables Vercel.</p>";
-    echo "<p>Silakan buka Vercel Dashboard > Settings > Environment Variables dan tambahkan APP_KEY.</p>";
-    exit;
-}
-
+// 3. Vercel Environment Detection & Storage Fix
+$isVercel = true; // Hardcode for this entry point
 
 if ($isVercel) {
-    // 1. Storage path → /tmp/storage (Vercel has read-only filesystem except /tmp)
     $storagePath = '/tmp/storage';
     $storageDirs = [
         'logs',
@@ -31,44 +26,29 @@ if ($isVercel) {
     foreach (array_merge([$storagePath], array_map(fn($d) => "$storagePath/$d", $storageDirs)) as $dir) {
         if (!is_dir($dir)) mkdir($dir, 0777, true);
     }
-
-    // 2. Bootstrap cache → /tmp/bootstrap/cache
-    $srcCache  = __DIR__ . '/../bootstrap/cache';
-    $tmpCache  = '/tmp/bootstrap/cache';
-    if (!is_dir($tmpCache)) mkdir($tmpCache, 0777, true);
-
-    foreach (['packages.php', 'services.php'] as $cacheFile) {
-        $dest = "$tmpCache/$cacheFile";
-        if (!file_exists($dest) && file_exists("$srcCache/$cacheFile")) {
-            copy("$srcCache/$cacheFile", $dest);
-        }
-    }
-}
-
-// 3. Maintenance mode
-if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
-    require $maintenance;
 }
 
 // 4. Bootstrap Laravel
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-
-if ($isVercel) {
-    $app->useStoragePath('/tmp/storage');
-    // Laravel 11/13 handles bootstrap path differently, but this is a safe bridge
-    $_SERVER['SCRIPT_NAME'] = '/index.php';
-}
-
-use Illuminate\Http\Request;
-
-// 5. Handle Request
 try {
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
+
+    if ($isVercel) {
+        $app->useStoragePath('/tmp/storage');
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
+    }
+
+    // 5. Handle Request
     $app->handleRequest(Request::capture());
+
 } catch (\Throwable $e) {
-    echo "<h1>Laravel Error</h1>";
-    echo "<p><b>Message:</b> " . $e->getMessage() . "</p>";
+    // Detailed error output if bootstrap fails
+    header('Content-Type: text/html', true, 500);
+    echo "<h1>Critical Bootstrap Error</h1>";
+    echo "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
     echo "<p><b>File:</b> " . $e->getFile() . " on line " . $e->getLine() . "</p>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    echo "<h3>Stack Trace:</h3>";
+    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
 }
+
 
 
