@@ -1,8 +1,8 @@
 {
     "version": 2,
     "outputDirectory": "public",
-    "installCommand": "composer install --no-dev --optimize-autoloader",
-    "buildCommand": "php artisan config:cache && php artisan route:cache && php artisan view:cache",
+    "installCommand": "echo 'Skipping npm install'",
+    "buildCommand": "echo 'Skipping build'",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.2"
