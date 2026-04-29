@@ -89,7 +89,8 @@ class TransactionController extends Controller
             }
 
             $discount     = $request->discount ?? 0;
-            $tax          = round(($subtotal - $discount) * 0.11, 2); // PPN 11%
+            $taxRate      = config('pos.tax_rate', 0.11);
+            $tax          = round(($subtotal - $discount) * $taxRate, 2);
             $total        = $subtotal - $discount + $tax;
             $cashAmount   = $request->cash_amount ?? $total;
             $changeAmount = max(0, $cashAmount - $total);
@@ -194,7 +195,7 @@ class TransactionController extends Controller
     {
         $outlet = \App\Models\Outlet::find($outletId);
         $date   = now()->format('Ymd');
-        $prefix = "INV-{$outlet->code}-{$date}-";
+        $prefix = config('pos.invoice_prefix', 'INV') . "-{$outlet->code}-{$date}-";
 
         $last = Transaction::where('invoice_number', 'like', $prefix . '%')
             ->latest('id')

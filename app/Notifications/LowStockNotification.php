@@ -4,10 +4,9 @@ namespace App\Notifications;
 
 use App\Models\Inventory;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class LowStockNotification extends Notification
+class LowStockNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
