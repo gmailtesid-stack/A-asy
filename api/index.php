@@ -31,19 +31,27 @@ try {
 
     if ($isVercel) {
         $app->useStoragePath('/tmp/storage');
-        // Pointing bootstrap cache to writable /tmp
         $app->bind('path.bootstrap', fn() => '/tmp/bootstrap');
         
+        // FORCED DEBUG: Show raw errors, bypass Laravel's view-based error handler
+        $app->singleton(
+            \Illuminate\Contracts\Debug\ExceptionHandler::class,
+            new class($app) extends \Illuminate\Foundation\Exceptions\Handler {
+                public function render($request, \Throwable $e) { throw $e; }
+            }
+        );
+
         $_SERVER['SCRIPT_NAME'] = '/index.php';
     }
 
-    // 5. Handle Request (Traditional Way for better stability on Serverless)
+    // 5. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle(
         $request = Request::capture()
     );
     $response->send();
     $kernel->terminate($request, $response);
+
 
 } catch (\Throwable $e) {
     header('Content-Type: text/html', true, 500);
