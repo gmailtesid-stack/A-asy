@@ -17,6 +17,10 @@ $tmpCache = '/tmp/bootstrap/cache';
 if (!is_dir($tmpCache)) mkdir($tmpCache, 0777, true);
 
 $_ENV['APP_CONFIG_CACHE'] = "$tmpCache/config.php";
+$_ENV['APP_ENV'] = 'production';
+$_ENV['APP_KEY'] = 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=';
+$_ENV['APP_DEBUG'] = 'true';
+$_ENV['APP_URL'] = 'https://e-asy.vercel.app';
 $_ENV['APP_SERVICES_CACHE'] = "$tmpCache/services.php";
 $_ENV['APP_PACKAGES_CACHE'] = "$tmpCache/packages.php";
 $_ENV['APP_ROUTES_CACHE'] = "$tmpCache/routes.php";
@@ -39,7 +43,10 @@ try {
         );
 
         $_SERVER['SCRIPT_NAME'] = '/index.php';
-        $_SERVER['HTTPS'] = 'on'; // Force HTTPS detection
+        $_SERVER['HTTPS'] = 'on'; 
+
+        // Force HTTPS for all generated URLs
+        \Illuminate\Support\Facades\URL::forceScheme('https');
     }
 
 // 4. Handle Request
