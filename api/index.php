@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 
-// 1. BUAT FOLDER STORAGE (WAJIB)
+// 1. BUAT FOLDER STORAGE
 $storagePath = '/tmp/storage';
 foreach (['', '/framework/views', '/framework/cache/data', '/framework/sessions'] as $path) {
     if (!is_dir($storagePath . $path)) mkdir($storagePath . $path, 0777, true);
@@ -15,10 +15,12 @@ try {
     /** @var \Illuminate\Foundation\Application $app */
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-    // REGISTER VIEW MANUALLY
+    // 3. DAFTAR LAYANAN INTI SECARA MANUAL (WAJIB UNTUK VERCEL)
+    $app->register(\Illuminate\Filesystem\FilesystemServiceProvider::class);
     $app->register(\Illuminate\View\ViewServiceProvider::class);
+    $app->register(\Illuminate\Session\SessionServiceProvider::class);
 
-    // 3. Force Storage Path
+    // 4. Force Storage Path & HTTPS
     $app->useStoragePath($storagePath);
     
     $_SERVER['SCRIPT_NAME'] = '/index.php';
@@ -28,7 +30,7 @@ try {
         $app['url']->forceScheme('https');
     });
 
-    // 4. Handle Request
+    // 5. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle($request = Request::capture());
     $response->send();
@@ -40,10 +42,10 @@ try {
         throw $e;
     }
 
-    echo "<div style='background:#000;color:#0f0;padding:20px;border:5px solid red;'>";
+    echo "<div style='background:#000;color:#0f0;padding:20px;border:5px solid red;font-family:monospace;'>";
     echo "<h1>🚨 SYSTEM ERROR</h1>";
     echo "<h3>" . htmlspecialchars($e->getMessage()) . "</h3>";
     echo "<p>File: " . $e->getFile() . " (Line: " . $e->getLine() . ")</p>";
-    echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "<hr><pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
     echo "</div>";
 }
