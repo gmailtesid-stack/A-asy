@@ -22,6 +22,4 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
-    ->create()
-    ->useStoragePath('/tmp/storage')
-    ->registerConfiguredProviders(); // PAKSA MUAT SEMUA PROVIDER
+    ->create();
