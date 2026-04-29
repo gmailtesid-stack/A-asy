@@ -34,12 +34,14 @@ try {
         $app->bind('path.bootstrap', fn() => '/tmp/bootstrap');
         
         // FORCED DEBUG: Show raw errors, bypass Laravel's view-based error handler
-        $app->singleton(
+        $app->instance(
             \Illuminate\Contracts\Debug\ExceptionHandler::class,
             new class($app) extends \Illuminate\Foundation\Exceptions\Handler {
+                public function __construct($app) { parent::__construct($app); }
                 public function render($request, \Throwable $e) { throw $e; }
             }
         );
+
 
         $_SERVER['SCRIPT_NAME'] = '/index.php';
     }
