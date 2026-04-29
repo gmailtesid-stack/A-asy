@@ -45,8 +45,10 @@ try {
         $_SERVER['SCRIPT_NAME'] = '/index.php';
         $_SERVER['HTTPS'] = 'on'; 
 
-        // Force HTTPS for all generated URLs
-        \Illuminate\Support\Facades\URL::forceScheme('https');
+        // Force HTTPS using the app instance instead of the Facade
+        $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterFacades::class, function ($app) {
+            $app['url']->forceScheme('https');
+        });
     }
 
 // 4. Handle Request
