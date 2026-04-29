@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
 
-        // Register alias middleware RBAC E-ASY POS
+        // Force redirect to login for guests
+        $middleware->redirectGuestsTo(fn () => route('login'));
+
         $middleware->alias([
             'role'        => \App\Http\Middleware\CheckRole::class,
             'same_outlet' => \App\Http\Middleware\EnsureSameOutlet::class,

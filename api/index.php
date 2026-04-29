@@ -17,7 +17,7 @@ try {
     if (!is_dir($storagePath)) {
         mkdir($storagePath, 0777, true);
         mkdir("$storagePath/framework/views", 0777, true);
-        mkdir("$storagePath/framework/cache", 0777, true);
+        mkdir("$storagePath/framework/cache/data", 0777, true);
         mkdir("$storagePath/framework/sessions", 0777, true);
     }
 
