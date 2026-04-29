@@ -208,27 +208,12 @@
             </ol>
         </nav>
         <div class="ms-auto d-flex align-items-center gap-3">
-            {{-- Notifikasi Low Stock --}}
+            {{-- Notifikasi Low Stock (Disabled temporarily due to missing table) --}}
+            {{-- 
             @if(auth()->user()->unreadNotifications->count() > 0)
-            <div class="dropdown">
-                <button class="btn btn-sm position-relative" id="notifBtn" data-bs-toggle="dropdown">
-                    <i class="bi bi-bell-fill text-warning fs-5"></i>
-                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                        {{ auth()->user()->unreadNotifications->count() }}
-                    </span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow" style="width:320px;">
-                    @foreach(auth()->user()->unreadNotifications->take(5) as $notif)
-                    <li>
-                        <div class="dropdown-item small">
-                            <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>
-                            {{ $notif->data['message'] }}
-                        </div>
-                    </li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
+            ...
+            @endif 
+            --}}
             <span class="text-muted small">{{ now()->format('d M Y, H:i') }}</span>
         </div>
     </div>
