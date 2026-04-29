@@ -22,25 +22,42 @@ $_ENV['APP_PACKAGES_CACHE'] = "$tmpCache/packages.php";
 $_ENV['APP_ROUTES_CACHE'] = "$tmpCache/routes.php";
 
 // 3. Bootstrap Laravel
-$app = require_once __DIR__ . '/../bootstrap/app.php';
+try {
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-if ($isVercel) {
-    $app->useStoragePath('/tmp/storage');
-    $app->bind('path.bootstrap', fn() => '/tmp/bootstrap');
-    
-    $_SERVER['SCRIPT_NAME'] = '/index.php';
-    $_SERVER['HTTPS'] = 'on'; 
+    if ($isVercel) {
+        $app->useStoragePath('/tmp/storage');
+        $app->bind('path.bootstrap', fn() => '/tmp/bootstrap');
+        
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
+        $_SERVER['HTTPS'] = 'on'; 
 
-    // Force HTTPS
-    $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterFacades::class, function ($app) {
-        $app['url']->forceScheme('https');
-    });
+        // Force HTTPS
+        $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\RegisterFacades::class, function ($app) {
+            $app['url']->forceScheme('https');
+        });
+    }
+
+    // 4. Handle Request
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    $response = $kernel->handle(
+        $request = Request::capture()
+    );
+    $response->send();
+    $kernel->terminate($request, $response);
+
+} catch (\Throwable $e) {
+    // Abaikan error "Unauthenticated" (karena itu normal jika belum login)
+    if (str_contains(get_class($e), 'AuthenticationException')) {
+        throw $e;
+    }
+
+    header('Content-Type: text/html', true, 500);
+    echo "<div style='font-family:sans-serif; padding:20px; border:5px solid red; background:#fff1f1;'>";
+    echo "<h1>🚨 POST-LOGIN ERROR DIAGNOSIS</h1>";
+    echo "<p><b>Message:</b> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p><b>File:</b> " . $e->getFile() . " baris " . $e->getLine() . "</p>";
+    echo "<h3>Stack Trace:</h3>";
+    echo "<pre style='background:#eee; padding:10px; overflow:auto; max-height:400px;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    echo "</div>";
 }
-
-// 4. Handle Request
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$response = $kernel->handle(
-    $request = Request::capture()
-);
-$response->send();
-$kernel->terminate($request, $response);
