@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "outputDirectory": "public",
+    "installCommand": "composer install --no-dev --optimize-autoloader",
+    "buildCommand": "php artisan config:cache && php artisan route:cache && php artisan view:cache",
+    "functions": {
+        "api/index.php": {
+            "runtime": "vercel-php@0.7.2"
+        }
+    },
+    "rewrites": [
+        {
+            "source": "/(css|js|images|fonts|build)/(.*)",
+            "destination": "/public/$1/$2"
+        },
+        {
+            "source": "/(robots.txt|favicon.ico)",
+            "destination": "/public/$1"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/api/index.php"
+        }
+    ]
+}

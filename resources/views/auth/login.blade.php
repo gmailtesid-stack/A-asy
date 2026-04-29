@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — E-ASY POS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Animated background blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(37,99,235,.25) 0%, transparent 70%);
+            top: -100px; left: -100px;
+            animation: float1 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56,189,248,.2) 0%, transparent 70%);
+            bottom: -50px; right: -50px;
+            animation: float2 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(40px, 30px); } }
+        @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-30px, -20px); } }
+
+        .login-card {
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-logo h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -1px;
+        }
+        .login-logo h1 span { color: #38bdf8; }
+        .login-logo p { color: #94a3b8; font-size: .875rem; margin-top: .25rem; }
+
+        label {
+            display: block;
+            color: #cbd5e1;
+            font-size: .8rem;
+            font-weight: 600;
+            margin-bottom: .4rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .input-wrap { position: relative; margin-bottom: 1.25rem; }
+        .input-wrap i {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1rem;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: .75rem 1rem .75rem 2.75rem;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: .9rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,.15);
+        }
+        input::placeholder { color: #475569; }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 1.5rem;
+        }
+        .remember-row label {
+            text-transform: none;
+            font-size: .85rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+        input[type="checkbox"] { accent-color: #2563eb; width: 16px; height: 16px; cursor: pointer; }
+
+        .btn-login {
+            width: 100%;
+            padding: .85rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .2s;
+            box-shadow: 0 4px 20px rgba(37,99,235,.4);
+        }
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(37,99,235,.5); }
+        .btn-login:active { transform: translateY(0); }
+
+        .error-box {
+            background: rgba(220,38,38,.15);
+            border: 1px solid rgba(220,38,38,.3);
+            border-radius: 8px;
+            padding: .75rem 1rem;
+            color: #fca5a5;
+            font-size: .85rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-accounts {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255,255,255,.04);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .demo-accounts p { color: #64748b; font-size: .75rem; margin-bottom: .5rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+        .demo-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: .3rem 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .demo-item:last-child { border: none; }
+        .demo-item span { color: #94a3b8; font-size: .78rem; }
+        .demo-item .badge {
+            font-size: .65rem; padding: 2px 8px; border-radius: 20px; font-weight: 600;
+        }
+        .badge-admin   { background: #fef3c7; color: #92400e; }
+        .badge-manager { background: #dcfce7; color: #166534; }
+        .badge-kasir   { background: #dbeafe; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-logo">
+            <h1>E<span>-ASY</span></h1>
+            <p>Point of Sale System — Multi Outlet</p>
+        </div>
+
+        @if($errors->any())
+        <div class="error-box">
+            <i>⚠</i> {{ $errors->first() }}
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('login.post') }}">
+            @csrf
+            <label>Email</label>
+            <div class="input-wrap">
+                <i>✉</i>
+                <input type="email" name="email" placeholder="Masukkan email Anda"
+                       value="{{ old('email') }}" required autofocus>
+            </div>
+
+            <label>Password</label>
+            <div class="input-wrap">
+                <i>🔒</i>
+                <input type="password" name="password" placeholder="Masukkan password" required>
+            </div>
+
+            <div class="remember-row">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Ingat saya</label>
+            </div>
+
+            <button type="submit" class="btn-login">Masuk ke E-ASY POS</button>
+        </form>
+
+        {{-- Demo Accounts --}}
+        <div class="demo-accounts">
+            <p>🔑 Akun Demo</p>
+            <div class="demo-item">
+                <span>admin@easy-pos.app / password</span>
+                <span class="badge badge-admin">Super Admin</span>
+            </div>
+            <div class="demo-item">
+                <span>manager.jkt@easy-pos.app / password</span>
+                <span class="badge badge-manager">Manager</span>
+            </div>
+            <div class="demo-item">
+                <span>kasir.jkt@easy-pos.app / password</span>
+                <span class="badge badge-kasir">Kasir</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
