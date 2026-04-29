@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'outlet_id' => null,
             'name'      => 'Super Admin',
-            'email'     => 'admin@easy-pos.app',
+            'email'     => 'admin@easy-pos.id',
             'password'  => Hash::make('password'),
             'role'      => 'super_admin',
             'is_active' => true,
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'outlet_id' => $outletA->id,
             'name'      => 'Manager Jakarta',
-            'email'     => 'manager.jkt@easy-pos.app',
+            'email'     => 'manager.jkt@easy-pos.id',
             'password'  => Hash::make('password'),
             'role'      => 'manager',
             'is_active' => true,
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'outlet_id' => $outletA->id,
             'name'      => 'Kasir Jakarta',
-            'email'     => 'kasir.jkt@easy-pos.app',
+            'email'     => 'kasir.jkt@easy-pos.id',
             'password'  => Hash::make('password'),
             'role'      => 'cashier',
             'is_active' => true,
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'outlet_id' => $outletB->id,
             'name'      => 'Manager Bandung',
-            'email'     => 'manager.bdg@easy-pos.app',
+            'email'     => 'manager.bdg@easy-pos.id',
             'password'  => Hash::make('password'),
             'role'      => 'manager',
             'is_active' => true,
