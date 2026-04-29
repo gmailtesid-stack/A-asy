@@ -12,8 +12,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
-
-        // Force redirect to login for guests
         $middleware->redirectGuestsTo(fn () => route('login'));
 
         $middleware->alias([
@@ -23,4 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create()
+    ->useStoragePath('/tmp/storage'); // PAKSA STORAGE KE /tmp
