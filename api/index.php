@@ -23,7 +23,14 @@ if ($isVercel) {
     // Bootstrap Cache Fix (The likely culprit for "view not found")
     $tmpCache = '/tmp/bootstrap/cache';
     if (!is_dir($tmpCache)) mkdir($tmpCache, 0777, true);
+
+    // Tell Laravel to use /tmp for all cache files
+    $_ENV['APP_CONFIG_CACHE'] = "$tmpCache/config.php";
+    $_ENV['APP_SERVICES_CACHE'] = "$tmpCache/services.php";
+    $_ENV['APP_PACKAGES_CACHE'] = "$tmpCache/packages.php";
+    $_ENV['APP_ROUTES_CACHE'] = "$tmpCache/routes.php";
 }
+
 
 // 4. Bootstrap Laravel
 try {
