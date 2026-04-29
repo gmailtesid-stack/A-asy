@@ -9,6 +9,14 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $isVercel = isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL']) || getenv('VERCEL');
 
+if ($isVercel && !getenv('APP_KEY') && !isset($_ENV['APP_KEY'])) {
+    echo "<h1>Configuration Error</h1>";
+    echo "<p>Variabel <b>APP_KEY</b> tidak ditemukan di Environment Variables Vercel.</p>";
+    echo "<p>Silakan buka Vercel Dashboard > Settings > Environment Variables dan tambahkan APP_KEY.</p>";
+    exit;
+}
+
+
 if ($isVercel) {
     // 1. Storage path → /tmp/storage (Vercel has read-only filesystem except /tmp)
     $storagePath = '/tmp/storage';
