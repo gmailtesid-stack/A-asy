@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 require __DIR__ . '/../vendor/autoload.php';
 
 // 2. Vercel Filesystem & Cache Fix
+$isVercel = true;
 $storagePath = '/tmp/storage';
 $storageDirs = ['logs', 'framework/views', 'framework/cache/data', 'framework/sessions', 'framework/testing', 'app/public'];
 foreach (array_merge([$storagePath], array_map(fn($d) => "$storagePath/$d", $storageDirs)) as $dir) {
