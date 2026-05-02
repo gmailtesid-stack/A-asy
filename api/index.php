@@ -28,6 +28,7 @@ putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 
 // 4. Alihkan Log ke stderr (PENTING UNTUK VERCEL)
 putenv('LOG_CHANNEL=stderr');
+putenv('APP_DEBUG=true');
 
 try {
     // 4. Load Autoloader & Bootstrap
