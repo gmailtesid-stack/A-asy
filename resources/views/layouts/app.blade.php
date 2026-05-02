@@ -189,11 +189,10 @@
 {{-- ── SIDEBAR ─────────────────────────────────────────────── --}}
 <nav id="sidebar">
     <div class="sidebar-brand">
-        <h4 class="align-items-center">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 40px; height: 40px; object-fit: contain;">
-            <span class="ms-2">E-ASY</span> <span style="font-weight: 300;">POS</span>
-        </h4>
-        <small class="ps-1">{{ auth()->user()->outlet?->name ?? 'Pusat Distribusi' }}</small>
+        <div class="d-flex justify-content-center">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 160px; height: auto; object-fit: contain;">
+        </div>
+        <small class="d-block text-center mt-2" style="color: #94a3b8; font-size: 0.75rem;">{{ auth()->user()->outlet?->name ?? 'Pusat Distribusi' }}</small>
     </div>
 
     <div class="sidebar-nav mt-2">
