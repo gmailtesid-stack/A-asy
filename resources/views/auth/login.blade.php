@@ -84,6 +84,7 @@
             transform: translateY(-50%);
             color: #64748b;
             font-size: 1rem;
+            z-index: 5;
         }
         .toggle-password {
             position: absolute;
@@ -93,24 +94,29 @@
             cursor: pointer;
             z-index: 20;
             transition: color .2s;
+            font-size: 1.1rem;
         }
         .toggle-password:hover { color: #38bdf8; }
+        
         input[type="email"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="text"] {
             width: 100%;
-            padding: .75rem 2.75rem .75rem 2.75rem;
-            background: rgba(255,255,255,.07);
+            padding: .85rem 2.75rem .85rem 2.75rem;
+            background: rgba(255,255,255,.07) !important;
             border: 1px solid rgba(255,255,255,.12);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #f1f5f9;
-            font-size: .9rem;
+            font-size: .95rem;
             font-family: 'Inter', sans-serif;
-            transition: border-color .2s, box-shadow .2s;
+            transition: all .2s;
             outline: none;
+            display: block;
         }
         input:focus {
             border-color: #38bdf8;
-            box-shadow: 0 0 0 3px rgba(56,189,248,.15);
+            box-shadow: 0 0 0 4px rgba(56,189,248,.15);
+            background: rgba(255,255,255,.1) !important;
         }
         input::placeholder { color: #475569; }
 
