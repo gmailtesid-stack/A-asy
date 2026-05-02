@@ -25,28 +25,17 @@ try {
     
     $app = require __DIR__ . '/../bootstrap/app.php';
 
-    // 4. Force Storage & HTTPS
+    // 4. Force Bootstrap Laravel (PENTING: Menjamin config, providers, & facades dimuat)
+    $app->bootstrapWith([
+        \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+        \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
+        \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
+        \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
+        \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
+        \Illuminate\Foundation\Bootstrap\BootProviders::class,
+    ]);
+
     $app->useStoragePath($storagePath);
-
-    // BRUTE FORCE REGISTRATION (PENTING UNTUK VERCEL)
-    $coreProviders = [
-        \Illuminate\Foundation\Providers\FoundationServiceProvider::class,
-        \Illuminate\Filesystem\FilesystemServiceProvider::class,
-        \Illuminate\Auth\AuthServiceProvider::class,
-        \Illuminate\Cookie\CookieServiceProvider::class,
-        \Illuminate\Database\DatabaseServiceProvider::class,
-        \Illuminate\Encryption\EncryptionServiceProvider::class,
-        \Illuminate\Session\SessionServiceProvider::class,
-        \Illuminate\View\ViewServiceProvider::class,
-        \Illuminate\Routing\RoutingServiceProvider::class,
-        \Illuminate\Validation\ValidationServiceProvider::class,
-        \Illuminate\Translation\TranslationServiceProvider::class,
-        \Illuminate\Pagination\PaginationServiceProvider::class,
-    ];
-
-    foreach ($coreProviders as $provider) {
-        $app->register($provider);
-    }
 
     // Cek APP_KEY
     if (!env('APP_KEY')) {
