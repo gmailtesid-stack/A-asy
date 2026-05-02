@@ -28,6 +28,12 @@ try {
     // 4. Force Storage & HTTPS
     $app->useStoragePath($storagePath);
 
+    // BRUTE FORCE REGISTRATION (PENTING UNTUK VERCEL)
+    // Daftarkan filesystem dulu karena view membutuhkannya
+    $app->register(\Illuminate\Filesystem\FilesystemServiceProvider::class);
+    $app->register(\Illuminate\View\ViewServiceProvider::class);
+    $app->register(\Illuminate\Session\SessionServiceProvider::class);
+
     // Cek APP_KEY
     if (!env('APP_KEY')) {
         die("🚨 ERROR: APP_KEY belum diset di Vercel Environment Variables!");
