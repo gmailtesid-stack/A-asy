@@ -187,7 +187,7 @@
 <body>
     <div class="login-card">
         <div class="login-logo">
-            <img src="{{ asset('logo-easy.png') }}" alt="E-ASY Logo" style="width: 180px; margin-bottom: 1rem;">
+            <img src="{{ asset('logo.png') }}" alt="E-ASY Logo" style="width: 180px; margin-bottom: 1rem;">
             <p>Point of Sale System — Multi Outlet</p>
         </div>
 
