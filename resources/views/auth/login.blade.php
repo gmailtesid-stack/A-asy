@@ -6,6 +6,7 @@
     <title>Login — E-ASY POS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -77,17 +78,27 @@
             letter-spacing: .05em;
         }
         .input-wrap { position: relative; margin-bottom: 1.25rem; }
-        .input-wrap i {
+        .input-wrap i:not(.toggle-password) {
             position: absolute;
             left: 14px; top: 50%;
             transform: translateY(-50%);
             color: #64748b;
             font-size: 1rem;
         }
+        .toggle-password {
+            position: absolute;
+            right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            z-index: 20;
+            transition: color .2s;
+        }
+        .toggle-password:hover { color: #38bdf8; }
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: .75rem 1rem .75rem 2.75rem;
+            padding: .75rem 2.75rem .75rem 2.75rem;
             background: rgba(255,255,255,.07);
             border: 1px solid rgba(255,255,255,.12);
             border-radius: 10px;
@@ -176,7 +187,7 @@
 
         @if($errors->any())
         <div class="error-box">
-            <i>⚠</i> {{ $errors->first() }}
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ $errors->first() }}
         </div>
         @endif
 
@@ -184,15 +195,16 @@
             @csrf
             <label>Email</label>
             <div class="input-wrap">
-                <i>✉</i>
+                <i class="bi bi-envelope"></i>
                 <input type="email" name="email" placeholder="Masukkan email Anda"
                        value="{{ old('email') }}" required autofocus>
             </div>
 
             <label>Password</label>
             <div class="input-wrap">
-                <i>🔒</i>
-                <input type="password" name="password" placeholder="Masukkan password" required>
+                <i class="bi bi-lock"></i>
+                <input type="password" name="password" id="passwordInput" placeholder="Masukkan password" required>
+                <i class="bi bi-eye toggle-password" id="togglePassword"></i>
             </div>
 
             <div class="remember-row">
@@ -218,7 +230,23 @@
                 <span>kasir.jkt@easy-pos.app / password</span>
                 <span class="badge badge-kasir">Kasir</span>
             </div>
+            <div class="demo-item" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; padding-top: 5px;">
+                <span>test@easy-pos.app / password</span>
+                <span class="badge badge-admin" style="background: #38bdf8; color: #0f172a;">Test Admin</span>
+            </div>
         </div>
     </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#passwordInput');
+
+        togglePassword.addEventListener('click', function (e) {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+    </script>
 </body>
 </html>
