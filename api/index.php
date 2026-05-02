@@ -26,6 +26,9 @@ putenv('APP_CONFIG_CACHE=' . $storagePath . '/framework/config.php');
 putenv('APP_ROUTES_CACHE=' . $storagePath . '/framework/routes.php');
 putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 
+// 4. Alihkan Log ke stderr (PENTING UNTUK VERCEL)
+putenv('LOG_CHANNEL=stderr');
+
 try {
     // 4. Load Autoloader & Bootstrap
     require __DIR__ . '/../vendor/autoload.php';
