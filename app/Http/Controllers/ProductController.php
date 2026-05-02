@@ -14,6 +14,7 @@ class ProductController extends Controller
     public function __construct(CloudinaryService $cloudinary)
     {
         $this->cloudinary = $cloudinary;
+        $this->authorizeResource(Product::class);
     }
 
     public function index()

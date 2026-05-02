@@ -35,9 +35,11 @@ class InventoryController extends Controller
         $this->authorize('update', $inventory);
 
         $request->validate([
-            'quantity_change' => 'required|integer',
+            'quantity_change' => 'required|integer|not_in:0',
             'type'            => 'required|in:in,out,adjustment',
             'notes'           => 'nullable|string|max:255',
+        ], [
+            'quantity_change.not_in' => 'Perubahan stok tidak boleh nol.',
         ]);
 
         DB::transaction(function() use ($request, $inventory) {

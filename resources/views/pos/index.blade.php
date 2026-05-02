@@ -6,93 +6,141 @@
 @endsection
 
 @push('styles')
+@push('styles')
 <style>
-    .pos-wrap { display: grid; grid-template-columns: 1fr 380px; gap: 1.25rem; height: calc(100vh - var(--topbar-h) - 3.5rem); }
+    .pos-container { 
+        display: grid; 
+        grid-template-columns: 1fr 420px; 
+        gap: 2rem; 
+        height: calc(100vh - var(--topbar-h) - 5rem);
+    }
 
-    /* Product Grid */
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .75rem; overflow-y: auto; padding-right: .25rem; }
+    /* Product Section */
+    .product-section { display: flex; flex-direction: column; gap: 1.5rem; overflow: hidden; }
+    
+    .product-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+        gap: 1.25rem; 
+        overflow-y: auto; 
+        padding-bottom: 2rem;
+    }
+    
     .product-card {
         background: #fff;
-        border-radius: 12px;
-        padding: 1rem;
+        border-radius: 20px;
+        padding: 1.25rem;
         cursor: pointer;
-        transition: all .2s;
-        border: 2px solid transparent;
+        transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
         text-align: center;
-        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        position: relative;
     }
-    .product-card:hover { transform: translateY(-2px); border-color: #2563eb; box-shadow: 0 6px 20px rgba(37,99,235,.15); }
-    .product-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: .5rem; }
-    .product-card .p-name { font-weight: 600; font-size: .82rem; color: #1e293b; }
-    .product-card .p-price { color: #2563eb; font-weight: 700; font-size: .9rem; }
-    .product-card .p-stock { font-size: .7rem; color: #64748b; }
+    .product-card:hover { 
+        transform: translateY(-8px); 
+        border-color: var(--primary); 
+        box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.1), 0 10px 10px -5px rgba(99, 102, 241, 0.04);
+    }
+    .product-card img { 
+        width: 100px; height: 100px; 
+        object-fit: cover; 
+        border-radius: 16px; 
+        margin-bottom: 1rem; 
+        box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+    .product-card .p-name { font-weight: 700; font-size: .95rem; color: #1e293b; margin-bottom: 4px; }
+    .product-card .p-price { color: var(--primary); font-weight: 800; font-size: 1.1rem; }
+    .product-card .p-stock { 
+        font-size: .75rem; 
+        color: #64748b; 
+        background: #f1f5f9; 
+        padding: 2px 10px; 
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 8px;
+    }
 
     /* Cart Panel */
     .cart-panel {
         background: #fff;
-        border-radius: 14px;
+        border-radius: 24px;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 1px 8px rgba(0,0,0,.08);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.8);
         overflow: hidden;
     }
-    .cart-header { padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
-    .cart-items { flex: 1; overflow-y: auto; padding: .75rem; }
+    .cart-header { padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    .cart-items { flex: 1; overflow-y: auto; padding: 1rem; }
     .cart-item {
         display: flex;
         align-items: center;
-        gap: .75rem;
-        padding: .6rem .5rem;
-        border-bottom: 1px solid #f8fafc;
-        animation: slideIn .2s ease;
-    }
-    @keyframes slideIn { from { opacity:0; transform: translateX(10px); } to { opacity:1; transform: translateX(0); } }
-    .cart-item .name { font-size: .82rem; font-weight: 600; flex: 1; }
-    .qty-btn { border: none; background: #f1f5f9; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: .9rem; transition: background .15s; }
-    .qty-btn:hover { background: #e2e8f0; }
-    .qty-display { min-width: 28px; text-align: center; font-weight: 700; font-size: .9rem; }
-
-    /* Cart Summary */
-    .cart-summary { padding: 1rem 1.25rem; border-top: 1px solid #f1f5f9; background: #f8fafc; }
-    .sum-row { display: flex; justify-content: space-between; font-size: .85rem; color: #64748b; margin-bottom: .3rem; }
-    .sum-row.total { color: #1e293b; font-weight: 700; font-size: 1.1rem; }
-
-    .payment-select { width: 100%; padding: .6rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: .875rem; margin: .75rem 0 .5rem; }
-    .btn-checkout {
-        width: 100%; padding: .85rem;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff; border: none; border-radius: 10px;
-        font-size: 1rem; font-weight: 700; cursor: pointer;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 16px;
+        margin-bottom: 0.75rem;
+        background: #fff;
+        border: 1px solid #f1f5f9;
         transition: all .2s;
-        box-shadow: 0 4px 15px rgba(37,99,235,.35);
     }
-    .btn-checkout:hover { transform: translateY(-1px); }
-    .btn-checkout:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-    /* Search */
-    .search-input {
-        width: 100%; padding: .6rem 1rem .6rem 2.5rem;
-        border: 1px solid #e2e8f0; border-radius: 10px;
-        font-size: .875rem; background: #f8fafc; outline: none;
-        transition: border-color .2s;
+    .cart-item:hover { background: #f8fafc; border-color: #e2e8f0; }
+    
+    .qty-controls { display: flex; align-items: center; gap: 0.75rem; background: #f1f5f9; border-radius: 10px; padding: 4px; }
+    .qty-btn { 
+        border: none; background: #fff; border-radius: 8px; 
+        width: 32px; height: 32px; cursor: pointer; 
+        font-weight: 800; color: var(--primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,.05);
+        transition: all .2s;
     }
-    .search-input:focus { border-color: #2563eb; background: #fff; }
-    .search-wrap { position: relative; margin-bottom: 1rem; }
-    .search-wrap i { position: absolute; left: .8rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .qty-btn:hover { background: var(--primary); color: #fff; }
 
-    .empty-cart { text-align: center; padding: 3rem 1rem; color: #94a3b8; }
-    .empty-cart i { font-size: 3rem; display: block; margin-bottom: .5rem; }
+    /* Summary */
+    .cart-summary { padding: 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+    .btn-checkout {
+        width: 100%; padding: 1.25rem;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dk));
+        color: #fff; border: none; border-radius: 16px;
+        font-size: 1.1rem; font-weight: 800; cursor: pointer;
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        transition: all .3s;
+    }
+    .btn-checkout:hover { transform: scale(1.02); box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4); }
+
+    /* Search bar */
+    .search-box {
+        position: relative;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+    }
+    .search-box input {
+        width: 100%; border: none; padding: 1rem 1rem 1rem 3rem;
+        border-radius: 16px; outline: none; font-weight: 500;
+    }
+    .search-box i { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 1.2rem; }
+
+    /* Recent Transactions Bar */
+    .recent-bar {
+        background: #fff; border-radius: 20px; padding: 1.25rem;
+        border: 1px solid #e2e8f0; margin-top: 1.5rem;
+    }
+    .recent-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;
+    }
+    .recent-item:last-child { border: none; }
 </style>
 @endpush
 
 @section('content')
-<div class="pos-wrap">
-
-    {{-- ── PRODUCT PANEL ─── --}}
-    <div class="d-flex flex-column gap-3">
-        <div class="search-wrap">
+<div class="pos-container animate__animated animate__fadeIn">
+    
+    <div class="product-section">
+        <div class="search-box">
             <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="Cari produk...">
+            <input type="text" id="searchInput" placeholder="Cari produk berdasarkan nama atau SKU...">
         </div>
 
         <div class="product-grid" id="productGrid">
@@ -104,56 +152,108 @@
                  data-stock="{{ $product->inventories->where('outlet_id', auth()->user()->outlet_id)->first()?->quantity ?? 0 }}"
                  data-image="{{ $product->image_url }}"
                  onclick="addToCart(this)">
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" onerror="this.src='https://placehold.co/80x80?text=IMG'">
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" onerror="this.src='https://placehold.co/100x100?text=IMG'">
                 <div class="p-name">{{ $product->name }}</div>
                 <div class="p-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                 <div class="p-stock">Stok: {{ $product->inventories->where('outlet_id', auth()->user()->outlet_id)->first()?->quantity ?? 0 }}</div>
             </div>
             @endforeach
         </div>
+
+        {{-- Recent Transactions --}}
+        <div class="recent-bar shadow-sm">
+            <h6 class="fw-bold mb-3"><i class="bi bi-clock-history me-2 text-primary"></i>Transaksi Terakhir</h6>
+            <div class="table-responsive">
+                <table class="table table-borderless table-sm align-middle mb-0" style="font-size: .85rem;">
+                    <thead>
+                        <tr class="text-muted">
+                            <th>Invoice</th>
+                            <th>Kasir</th>
+                            <th>Total</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($recentTransactions as $rt)
+                        <tr class="recent-item">
+                            <td class="fw-bold">{{ $rt->invoice_number }}</td>
+                            <td>{{ $rt->cashier->name }}</td>
+                            <td class="fw-bold text-primary">Rp {{ number_format($rt->total, 0, ',', '.') }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('pos.receipt', $rt) }}" target="_blank" class="btn btn-sm btn-light rounded-pill">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    {{-- ── CART PANEL ─── --}}
+    {{-- Cart Section --}}
     <div class="cart-panel">
         <div class="cart-header d-flex justify-content-between align-items-center">
-            <h6 class="fw-bold mb-0"><i class="bi bi-cart3 me-2"></i>Pesanan</h6>
-            <button class="btn btn-sm btn-outline-danger" onclick="clearCart()">
-                <i class="bi bi-trash"></i> Kosongkan
+            <h5 class="fw-800 mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Detail Pesanan</h5>
+            <button class="btn btn-sm btn-outline-danger border-0 rounded-pill" onclick="clearCart()">
+                <i class="bi bi-trash3-fill"></i> Reset
             </button>
         </div>
 
         <div class="cart-items" id="cartItems">
-            <div class="empty-cart" id="emptyCart">
-                <i class="bi bi-cart-x"></i>
-                Belum ada produk dipilih
+            <div class="text-center py-5 opacity-25" id="emptyCart">
+                <i class="bi bi-cart-x" style="font-size: 5rem; display: block;"></i>
+                <p class="mt-3 fw-bold">Keranjang masih kosong</p>
             </div>
         </div>
 
         <div class="cart-summary">
-            <div class="sum-row"><span>Subtotal</span><span id="sumSubtotal">Rp 0</span></div>
-            <div class="sum-row"><span>Diskon</span><span id="sumDiscount">Rp 0</span></div>
-            <div class="sum-row"><span>PPN (11%)</span><span id="sumTax">Rp 0</span></div>
-            <hr class="my-2">
-            <div class="sum-row total"><span>TOTAL</span><span id="sumTotal">Rp 0</span></div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal</span>
+                <span class="fw-bold" id="sumSubtotal">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Pajak (PPN 11%)</span>
+                <span class="fw-bold" id="sumTax">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-4 mt-2">
+                <span class="h5 fw-800 mb-0">TOTAL</span>
+                <span class="h5 fw-800 text-primary mb-0" id="sumTotal">Rp 0</span>
+            </div>
 
-            <select class="payment-select" id="paymentMethod">
-                <option value="cash">💵 Tunai (Cash)</option>
-                <option value="qris">📱 QRIS</option>
-                <option value="transfer">🏦 Transfer Bank</option>
-                <option value="card">💳 Kartu Debit/Kredit</option>
-            </select>
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-2">Metode Pembayaran</label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="radio" class="btn-check" name="payment_method" id="pay_cash" value="cash" checked>
+                        <label class="btn btn-outline-primary w-100 py-2 rounded-3" for="pay_cash">
+                            <i class="bi bi-cash me-1"></i> Tunai
+                        </label>
+                    </div>
+                    <div class="col-6">
+                        <input type="radio" class="btn-check" name="payment_method" id="pay_qris" value="qris">
+                        <label class="btn btn-outline-primary w-100 py-2 rounded-3" for="pay_qris">
+                            <i class="bi bi-qr-code-scan me-1"></i> QRIS
+                        </label>
+                    </div>
+                </div>
+            </div>
 
-            <div id="cashRow" class="mb-2">
-                <input type="number" id="cashAmount" class="form-control form-control-sm"
-                       placeholder="Nominal uang diterima" min="0">
-                <div class="d-flex justify-content-between mt-1">
-                    <small class="text-muted">Kembalian:</small>
-                    <small class="fw-bold text-success" id="changeDisplay">Rp 0</small>
+            <div id="cashRow" class="bg-primary-subtle p-3 rounded-4 mb-4">
+                <label class="small fw-bold text-primary mb-2">Nominal Uang Diterima</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-0 text-primary fw-bold">Rp</span>
+                    <input type="number" id="cashAmount" class="form-control border-0 shadow-none" placeholder="0">
+                </div>
+                <div class="d-flex justify-content-between mt-3 px-1">
+                    <span class="small fw-bold text-primary opacity-75">Kembalian:</span>
+                    <span class="fw-800 text-primary" id="changeDisplay">Rp 0</span>
                 </div>
             </div>
 
             <button class="btn-checkout" id="btnCheckout" onclick="processCheckout()" disabled>
-                <i class="bi bi-bag-check-fill me-2"></i>Proses Transaksi
+                BAYAR SEKARANG
             </button>
         </div>
     </div>
@@ -203,16 +303,49 @@ function renderCart() {
 
     items.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'cart-item';
-        div.innerHTML = `
-            <div class="name">${item.name}</div>
-            <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
-            <span class="qty-display">${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
-            <small class="text-muted" style="min-width:70px;text-align:right;">
-                Rp ${fmt(item.price * item.qty)}
-            </small>
+        div.className = 'cart-item animate__animated animate__fadeInRight animate__faster';
+        
+        // Elemen Nama & Info
+        const infoDiv = document.createElement('div');
+        infoDiv.style.flex = '1';
+        infoDiv.innerHTML = `
+            <div class="fw-bold" style="font-size: .85rem;">${item.name}</div>
+            <div class="text-primary fw-bold" style="font-size: .8rem;">Rp ${fmt(item.price)}</div>
         `;
+
+        // Controls
+        const controls = document.createElement('div');
+        controls.className = 'qty-controls';
+        
+        const btnMinus = document.createElement('button');
+        btnMinus.className = 'qty-btn';
+        btnMinus.textContent = '−';
+        btnMinus.onclick = () => changeQty(item.id, -1);
+        
+        const qtySpan = document.createElement('span');
+        qtySpan.className = 'qty-display';
+        qtySpan.textContent = item.qty;
+        
+        const btnPlus = document.createElement('button');
+        btnPlus.className = 'qty-btn';
+        btnPlus.textContent = '+';
+        btnPlus.onclick = () => changeQty(item.id, 1);
+
+        controls.appendChild(btnMinus);
+        controls.appendChild(qtySpan);
+        controls.appendChild(btnPlus);
+        
+        // Subtotal
+        const subtotalDiv = document.createElement('div');
+        subtotalDiv.className = 'fw-800 text-end';
+        subtotalDiv.style.minWidth = '80px';
+        subtotalDiv.style.fontSize = '.9rem';
+        subtotalDiv.textContent = `Rp ${fmt(item.price * item.qty)}`;
+        
+        div.appendChild(infoDiv);
+        div.appendChild(controls);
+        div.appendChild(subtotalDiv);
+        
         container.appendChild(div);
     });
 
@@ -255,8 +388,11 @@ document.getElementById('cashAmount').addEventListener('input', () => {
     updateChange(subtotal + subtotal * TAX_RATE);
 });
 
-document.getElementById('paymentMethod').addEventListener('change', e => {
-    document.getElementById('cashRow').style.display = e.target.value === 'cash' ? 'block' : 'none';
+// Update payment method logic
+document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', e => {
+        document.getElementById('cashRow').style.display = e.target.value === 'cash' ? 'block' : 'none';
+    });
 });
 
 // ── Proses checkout ───────────────────────────────────────────────
@@ -266,9 +402,11 @@ async function processCheckout() {
 
     const btn = document.getElementById('btnCheckout');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>MEMPROSES...';
 
     try {
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
         const res = await fetch('{{ route("pos.checkout") }}', {
             method: 'POST',
             headers: {
@@ -277,7 +415,7 @@ async function processCheckout() {
             },
             body: JSON.stringify({
                 items: items.map(i => ({ product_id: i.id, quantity: i.qty })),
-                payment_method: document.getElementById('paymentMethod').value,
+                payment_method: paymentMethod,
                 cash_amount: parseFloat(document.getElementById('cashAmount').value) || null,
             }),
         });
@@ -285,18 +423,30 @@ async function processCheckout() {
         const data = await res.json();
 
         if (data.success) {
-            alert(`✅ Transaksi Berhasil!\nNo: ${data.invoice}\nKembalian: Rp ${fmt(data.change)}`);
+            Swal.fire({
+                title: 'Transaksi Berhasil!',
+                html: `Invoice: <b>${data.invoice}</b><br>Kembalian: <b>Rp ${fmt(data.change)}</b>`,
+                icon: 'success',
+                confirmButtonText: 'Cetak Struk',
+                confirmButtonColor: '#6366f1',
+                showCancelButton: true,
+                cancelButtonText: 'Tutup'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.open(`/pos/receipt/${data.data.id}`, '_blank');
+                }
+            });
             cart = {};
             renderCart();
-            window.open(`/pos/receipt/${data.data.id}`, '_blank');
+            document.getElementById('cashAmount').value = '';
         } else {
-            alert('❌ Gagal: ' + (data.message || 'Terjadi kesalahan.'));
+            Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
         }
     } catch (e) {
-        alert('❌ Error koneksi: ' + e.message);
+        Swal.fire('Error!', e.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-bag-check-fill me-2"></i>Proses Transaksi';
+        btn.innerHTML = originalText;
     }
 }
 

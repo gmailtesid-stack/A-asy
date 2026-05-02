@@ -28,7 +28,13 @@ class TransactionController extends Controller
             ->whereHas('inventories', fn($q) => $q->where('outlet_id', $outletId)->where('quantity', '>', 0))
             ->get();
 
-        return view('pos.index', compact('products'));
+        $recentTransactions = Transaction::where('outlet_id', $outletId)
+            ->with('cashier')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('pos.index', compact('products', 'recentTransactions'));
     }
 
     /**
@@ -52,8 +58,11 @@ class TransactionController extends Controller
         $outletId = $cashier->outlet_id;
 
         $transaction = DB::transaction(function () use ($request, $cashier, $outletId) {
+            $inventoryItems = [];
+            $subtotal       = 0;
+            $details        = [];
 
-            // 1. Pre-check stok (lockForUpdate = cegah race condition)
+            // 1. Pre-check stok & load inventory objects (lockForUpdate)
             foreach ($request->items as $item) {
                 $inventory = Inventory::where('outlet_id', $outletId)
                     ->where('product_id', $item['product_id'])
@@ -66,12 +75,12 @@ class TransactionController extends Controller
                         "Tersedia: {$inventory->quantity}, Diminta: {$item['quantity']}"
                     );
                 }
+                
+                // Simpan inventory object untuk diproses nanti
+                $inventoryItems[$item['product_id']] = $inventory;
             }
 
-            // 2. Hitung total
-            $subtotal = 0;
-            $details  = [];
-
+            // 2. Hitung total & siapkan detail
             foreach ($request->items as $item) {
                 $product      = Product::findOrFail($item['product_id']);
                 $lineDiscount = $item['discount'] ?? 0;
@@ -117,12 +126,10 @@ class TransactionController extends Controller
                     array_merge(['transaction_id' => $transaction->id], $detail)
                 );
 
-                $inventory = Inventory::where('outlet_id', $outletId)
-                    ->where('product_id', $detail['product_id'])
-                    ->lockForUpdate()
-                    ->first();
-
-                $before = $inventory->quantity;
+                // Gunakan inventory object yang sudah di-lock sebelumnya
+                $inventory = $inventoryItems[$detail['product_id']];
+                $before    = $inventory->quantity;
+                
                 $inventory->decrement('quantity', $detail['quantity']);
                 $inventory->refresh();
 
