@@ -19,8 +19,14 @@ foreach (['', '/framework/views', '/framework/cache/data', '/framework/sessions'
     }
 }
 
+// 3. Alihkan Cache Laravel ke /tmp (PENTING UNTUK VERCEL)
+putenv('APP_PACKAGES_CACHE=' . $storagePath . '/framework/packages.php');
+putenv('APP_CONFIG_CACHE=' . $storagePath . '/framework/config.php');
+putenv('APP_ROUTES_CACHE=' . $storagePath . '/framework/routes.php');
+putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
+
 try {
-    // 3. Load Autoloader & Bootstrap
+    // 4. Load Autoloader & Bootstrap
     require __DIR__ . '/../vendor/autoload.php';
     
     $app = require __DIR__ . '/../bootstrap/app.php';
