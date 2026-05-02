@@ -60,6 +60,11 @@ try {
     // Pastikan view compiled path juga mengarah ke /tmp
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
 
+    // PAKSA SSL UNTUK TIDB CLOUD (PENTING)
+    $app['config']->set('database.connections.mysql.options', [
+        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+    ]);
+
     // Cek APP_KEY
     if (!env('APP_KEY')) {
         die("🚨 ERROR: APP_KEY belum diset di Vercel Environment Variables!");
