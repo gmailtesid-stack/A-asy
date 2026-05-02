@@ -13,30 +13,39 @@ foreach (['config.php', 'services.php', 'packages.php', 'routes.php'] as $file) 
 
 // 2. BUAT FOLDER STORAGE DI /tmp
 $storagePath = '/tmp/storage';
-foreach (['', '/framework/views', '/framework/cache/data', '/framework/sessions', '/framework/cache', '/app/public'] as $path) {
+if (!is_dir($storagePath)) {
+    mkdir($storagePath, 0777, true);
+}
+foreach (['/framework/views', '/framework/cache/data', '/framework/sessions', '/framework/cache', '/app/public'] as $path) {
     if (!is_dir($storagePath . $path)) {
         @mkdir($storagePath . $path, 0777, true);
     }
 }
 
 // 3. Alihkan Cache Laravel ke /tmp (PENTING UNTUK VERCEL)
+putenv('TMPDIR=/tmp');
 putenv('APP_PACKAGES_CACHE=' . $storagePath . '/framework/packages.php');
 putenv('APP_SERVICES_CACHE=' . $storagePath . '/framework/services.php');
 putenv('APP_CONFIG_CACHE=' . $storagePath . '/framework/config.php');
 putenv('APP_ROUTES_CACHE=' . $storagePath . '/framework/routes.php');
 putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 
-// 4. Alihkan Log ke stderr (PENTING UNTUK VERCEL)
+// 4. Alihkan Log & Debug
 putenv('LOG_CHANNEL=stderr');
 putenv('APP_DEBUG=true');
 
+// Supresi khusus untuk tempnam() warning di Vercel
+set_error_handler(function ($errno, $errstr) {
+    return (strpos($errstr, 'tempnam()') !== false);
+}, E_WARNING | E_NOTICE);
+
 try {
-    // 4. Load Autoloader & Bootstrap
+    // 5. Load Autoloader & Bootstrap
     require __DIR__ . '/../vendor/autoload.php';
     
     $app = require __DIR__ . '/../bootstrap/app.php';
 
-    // 4. Force Bootstrap Laravel (PENTING: Menjamin config, providers, & facades dimuat)
+    // 6. Force Bootstrap Laravel
     $app->bootstrapWith([
         \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
         \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
@@ -48,6 +57,9 @@ try {
 
     $app->useStoragePath($storagePath);
 
+    // Pastikan view compiled path juga mengarah ke /tmp
+    $app['config']->set('view.compiled', $storagePath . '/framework/views');
+
     // Cek APP_KEY
     if (!env('APP_KEY')) {
         die("🚨 ERROR: APP_KEY belum diset di Vercel Environment Variables!");
@@ -56,7 +68,7 @@ try {
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['HTTPS'] = 'on'; 
 
-    // 5. Handle Request
+    // 7. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle($request = Request::capture());
     $response->send();
