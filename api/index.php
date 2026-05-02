@@ -29,10 +29,24 @@ try {
     $app->useStoragePath($storagePath);
 
     // BRUTE FORCE REGISTRATION (PENTING UNTUK VERCEL)
-    // Daftarkan filesystem dulu karena view membutuhkannya
-    $app->register(\Illuminate\Filesystem\FilesystemServiceProvider::class);
-    $app->register(\Illuminate\View\ViewServiceProvider::class);
-    $app->register(\Illuminate\Session\SessionServiceProvider::class);
+    $coreProviders = [
+        \Illuminate\Foundation\Providers\FoundationServiceProvider::class,
+        \Illuminate\Filesystem\FilesystemServiceProvider::class,
+        \Illuminate\Auth\AuthServiceProvider::class,
+        \Illuminate\Cookie\CookieServiceProvider::class,
+        \Illuminate\Database\DatabaseServiceProvider::class,
+        \Illuminate\Encryption\EncryptionServiceProvider::class,
+        \Illuminate\Session\SessionServiceProvider::class,
+        \Illuminate\View\ViewServiceProvider::class,
+        \Illuminate\Routing\RoutingServiceProvider::class,
+        \Illuminate\Validation\ValidationServiceProvider::class,
+        \Illuminate\Translation\TranslationServiceProvider::class,
+        \Illuminate\Pagination\PaginationServiceProvider::class,
+    ];
+
+    foreach ($coreProviders as $provider) {
+        $app->register($provider);
+    }
 
     // Cek APP_KEY
     if (!env('APP_KEY')) {
