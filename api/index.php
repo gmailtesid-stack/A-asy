@@ -60,8 +60,9 @@ try {
     // Pastikan view compiled path juga mengarah ke /tmp
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
 
-    // PAKSA SSL UNTUK TIDB CLOUD (PENTING)
-    putenv('DB_URL='); // Jangan gunakan URL agar opsi manual terbaca
+    // PAKSA DATABASE & SSL UNTUK TIDB CLOUD (PENTING)
+    putenv('DB_URL='); 
+    $app['config']->set('database.connections.mysql.database', 'test');
     $app['config']->set('database.connections.mysql.options', [
         \PDO::MYSQL_ATTR_SSL_CA => '', 
         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
