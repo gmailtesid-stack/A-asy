@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'E-ASY POS')</title>
     <meta name="description" content="@yield('meta_description', 'Sistem POS Multi-Outlet E-ASY — Kasir, Inventori, Laporan')">
+    <link rel="icon" type="image/png" href="{{ asset('logo-easy.png') }}">
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -188,11 +189,9 @@
 {{-- ── SIDEBAR ─────────────────────────────────────────────── --}}
 <nav id="sidebar">
     <div class="sidebar-brand">
-        <h4>
-            <div class="brand-logo">
-                <i class="bi bi-rocket-takeoff-fill text-white"></i>
-            </div>
-            E<span>-ASY</span> POS
+        <h4 class="align-items-center">
+            <img src="{{ asset('logo-easy.png') }}" alt="Logo" style="width: 40px; height: 40px; object-fit: contain;">
+            <span class="ms-2">E-ASY</span> <span style="font-weight: 300;">POS</span>
         </h4>
         <small class="ps-1">{{ auth()->user()->outlet?->name ?? 'Pusat Distribusi' }}</small>
     </div>
