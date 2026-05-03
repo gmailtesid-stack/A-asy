@@ -30,6 +30,8 @@ class OutletController extends Controller
             'code'    => 'required|string|unique:outlets,code|max:10',
             'address' => 'required|string',
             'phone'   => 'nullable|string|max:20',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         Outlet::create($request->all());
@@ -52,6 +54,8 @@ class OutletController extends Controller
             'code'    => ['required', 'string', 'max:10', Rule::unique('outlets')->ignore($outlet->id)],
             'address' => 'required|string',
             'phone'   => 'nullable|string|max:20',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         $outlet->update($request->all());

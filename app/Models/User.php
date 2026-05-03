@@ -21,10 +21,29 @@ class User extends Authenticatable
         'is_active'         => 'boolean',
     ];
 
-    // ── Role Helpers ─────────────────────────────────────────────────
-    public function isSuperAdmin(): bool { return $this->role === 'super_admin'; }
-    public function isManager(): bool    { return $this->role === 'manager'; }
-    public function isCashier(): bool    { return $this->role === 'cashier'; }
+    // ── RBAC Helpers ─────────────────────────────────────────────────
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
+            ->where('model_type', static::class);
+    }
+
+    public function hasRole($roleSlug): bool
+    {
+        return $this->roles()->where('slug', $roleSlug)->exists();
+    }
+
+    public function hasPermission($permissionSlug): bool
+    {
+        return $this->roles()->whereHas('permissions', function ($q) use ($permissionSlug) {
+            $q->where('slug', $permissionSlug);
+        })->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('admin'); // Mapping new admin role to superadmin check
+    }
 
     public function canAccessOutlet(int $outletId): bool
     {

@@ -41,9 +41,11 @@
                         </td>
                         <td>{{ $user->email }}</td>
                         <td>
-                            <span class="role-badge role-{{ $user->role }}">
-                                {{ ucfirst(str_replace('_', ' ', $user->role)) }}
-                            </span>
+                            @foreach($user->roles as $role)
+                                <span class="role-badge role-{{ $role->slug }}">
+                                    {{ $role->name }}
+                                </span>
+                            @endforeach
                         </td>
                         <td>{{ $user->outlet->name ?? 'Semua Outlet (Pusat)' }}</td>
                         <td class="text-center">

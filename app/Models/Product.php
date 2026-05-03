@@ -10,7 +10,7 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'category_id', 'name', 'sku', 'description',
+        'category_id', 'brand_id', 'supplier_id', 'name', 'sku', 'description',
         'price', 'cost_price', 'unit', 'image', 'is_active',
     ];
 
@@ -25,9 +25,39 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     public function inventories()
     {
         return $this->hasMany(Inventory::class);
+    }
+
+    public function poItems()
+    {
+        return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function grnItems()
+    {
+        return $this->hasMany(GrnItem::class);
+    }
+
+    public function soItems()
+    {
+        return $this->hasMany(SalesOrderItem::class);
+    }
+
+    public function pickingItems()
+    {
+        return $this->hasMany(PickingItem::class);
     }
 
     public function scopeActive($query)

@@ -35,10 +35,21 @@
                         <input type="text" name="phone" class="form-control" value="{{ old('phone', $outlet->phone) }}">
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="form-label fw-600">Alamat Lengkap</label>
-                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="3" required>{{ old('address', $outlet->address) }}</textarea>
+                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" rows="2" required>{{ old('address', $outlet->address) }}</textarea>
                         @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-600 text-primary">Latitude</label>
+                            <input type="text" name="latitude" class="form-control" value="{{ old('latitude', $outlet->latitude) }}" placeholder="-6.200000">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-600 text-primary">Longitude</label>
+                            <input type="text" name="longitude" class="form-control" value="{{ old('longitude', $outlet->longitude) }}" placeholder="106.816666">
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2">

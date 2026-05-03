@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role'        => \App\Http\Middleware\CheckRole::class,
+            'permission'  => \App\Http\Middleware\CheckPermission::class,
             'same_outlet' => \App\Http\Middleware\EnsureSameOutlet::class,
         ]);
     })

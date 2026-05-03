@@ -12,9 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $this->authorize('viewAny', User::class);
-
-        $users = User::with('outlet')
+        $users = User::with(['outlet', 'roles'])
             ->when(!auth()->user()->isSuperAdmin(), function($q) {
                 return $q->where('outlet_id', auth()->user()->outlet_id);
             })
@@ -26,61 +24,57 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorize('create', User::class);
         $outlets = Outlet::all();
-        return view('users.create', compact('outlets'));
+        $roles = \App\Models\Role::all();
+        return view('users.create', compact('outlets', 'roles'));
     }
 
     public function store(Request $request)
     {
-        $this->authorize('create', User::class);
-
         $request->validate([
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|min:8|confirmed',
-            'role'      => 'required|in:super_admin,manager,cashier',
-            'outlet_id' => 'required_if:role,manager,cashier|exists:outlets,id',
+            'role_id'   => 'required|exists:roles,id',
+            'outlet_id' => 'nullable|exists:outlets,id',
             'is_active' => 'boolean',
         ]);
 
-        User::create([
+        $user = User::create([
             'name'      => $request->name,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
-            'role'      => $request->role,
-            'outlet_id' => $request->role === 'super_admin' ? null : $request->outlet_id,
+            'outlet_id' => $request->outlet_id,
             'is_active' => $request->boolean('is_active', true),
         ]);
+
+        $user->roles()->sync([$request->role_id]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil dibuat.');
     }
 
     public function edit(User $user)
     {
-        $this->authorize('update', $user);
         $outlets = Outlet::all();
-        return view('users.edit', compact('user', 'outlets'));
+        $roles = \App\Models\Role::all();
+        return view('users.edit', compact('user', 'outlets', 'roles'));
     }
 
     public function update(Request $request, User $user)
     {
-        $this->authorize('update', $user);
-
         $request->validate([
             'name'      => 'required|string|max:255',
             'email'     => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password'  => 'nullable|min:8|confirmed',
-            'role'      => 'required|in:super_admin,manager,cashier',
-            'outlet_id' => 'required_if:role,manager,cashier|exists:outlets,id',
+            'role_id'   => 'required|exists:roles,id',
+            'outlet_id' => 'nullable|exists:outlets,id',
             'is_active' => 'boolean',
         ]);
 
         $data = [
             'name'      => $request->name,
             'email'     => $request->email,
-            'role'      => $request->role,
-            'outlet_id' => $request->role === 'super_admin' ? null : $request->outlet_id,
+            'outlet_id' => $request->outlet_id,
             'is_active' => $request->boolean('is_active', true),
         ];
 
@@ -89,6 +83,7 @@ class UserController extends Controller
         }
 
         $user->update($data);
+        $user->roles()->sync([$request->role_id]);
 
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');
     }

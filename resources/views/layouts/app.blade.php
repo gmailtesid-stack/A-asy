@@ -22,6 +22,7 @@
 
     <style>
         :root {
+            /* Light Theme (Default) */
             --primary:    #6366f1;
             --primary-dk: #4f46e5;
             --secondary:  #64748b;
@@ -29,105 +30,102 @@
             --sidebar-bg: #0f172a;
             --topbar-h:   72px;
             --accent:     #818cf8;
-            --glass:      rgba(255, 255, 255, 0.7);
+            --glass:      rgba(255, 255, 255, 0.75);
             --bg-main:    #f8fafc;
+            --card-bg:    #ffffff;
+            --text-main:  #1e293b;
+            --text-muted: #64748b;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 8px 15px -6px rgba(0, 0, 0, 0.04);
+            --border-color: rgba(226, 232, 240, 0.5);
+        }
+
+        [data-theme='dark'] {
+            --bg-main:    #020617;
+            --card-bg:    #0f172a;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --glass:      rgba(15, 23, 42, 0.8);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
         }
 
         * { box-sizing: border-box; }
         body { 
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
             background: var(--bg-main); 
-            color: #1e293b; 
+            color: var(--text-main); 
             margin: 0;
             overflow-x: hidden;
+            transition: background .3s, color .3s;
         }
 
         /* ── Sidebar ─────────────────────────────────────── */
         #sidebar {
             width: var(--sidebar-w);
             min-height: 100vh;
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            background: #0f172a;
             position: fixed;
             top: 0; left: 0;
             display: flex;
             flex-direction: column;
             z-index: 1000;
             transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 10px 0 30px rgba(0,0,0,.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
         }
         .sidebar-brand {
-            padding: 2rem 1.5rem;
-            margin-bottom: 1rem;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
         }
-        .sidebar-brand h4 {
-            color: #fff;
-            font-weight: 800;
-            font-size: 1.6rem;
-            margin: 0;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .brand-logo {
-            width: 38px; height: 38px;
-            background: var(--primary);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-        }
-        .sidebar-brand span { color: var(--accent); }
-        .sidebar-brand small { color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 4px; }
+        .sidebar-brand img { filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3)); }
 
         .nav-section-label {
             color: #475569;
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.65rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 1.5rem 1.75rem 0.75rem;
+            letter-spacing: 0.15em;
+            padding: 1.5rem 2rem 0.75rem;
         }
         .sidebar-nav a {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 0.85rem 1.5rem;
+            padding: 0.85rem 1.75rem;
             color: #94a3b8;
             text-decoration: none;
-            font-size: .925rem;
+            font-size: .9rem;
             font-weight: 600;
             border-radius: 12px;
             margin: 4px 16px;
-            transition: all .3s;
+            transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .sidebar-nav a:hover {
-            background: rgba(255,255,255,.05);
+            background: rgba(255,255,255,.03);
             color: #f8fafc;
             transform: translateX(5px);
         }
         .sidebar-nav a.active {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%);
             color: #fff;
-            border-left: 4px solid var(--primary);
-            padding-left: 1.25rem;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
         }
-        .sidebar-nav a i { font-size: 1.2rem; transition: transform .3s; }
-        .sidebar-nav a:hover i { transform: scale(1.2); }
+        .sidebar-nav a i { font-size: 1.25rem; transition: transform .3s; }
+        .sidebar-nav a:hover i { transform: scale(1.1); }
 
         .sidebar-user {
-            margin: 2rem 16px 1.5rem;
+            margin: 1.5rem 16px;
             padding: 1.25rem;
-            background: rgba(255,255,255,.03);
-            border-radius: 16px;
+            background: rgba(255,255,255,.02);
+            border-radius: 20px;
             border: 1px solid rgba(255,255,255,.05);
         }
         .sidebar-user .avatar {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dk));
-            border-radius: 12px;
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            color: #fff; font-weight: 700; font-size: 1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,.2);
+            color: #fff; font-weight: 800; font-size: 1.1rem;
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
         }
 
         /* ── Main Content ─────────────────────────────────── */
@@ -140,46 +138,74 @@
         }
         #topbar {
             height: var(--topbar-h);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             position: sticky;
             top: 0; z-index: 900;
         }
         .page-content { padding: 2.5rem; flex: 1; }
 
-        /* ── Cards ───────────────────────────────────────── */
+        /* ── Premium Cards ───────────────────────────────── */
         .card { 
-            border: 1px solid rgba(226, 232, 240, 0.8); 
-            border-radius: 20px; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            transition: transform .3s ease, box-shadow .3s ease;
+            border: none;
+            border-radius: 24px; 
+            box-shadow: var(--card-shadow);
+            background: var(--card-bg);
+            transition: transform .4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .4s ease, background .3s;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }
+        .card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08); 
+        }
 
-        /* ── Glass Elements ─────────────────────────────── */
+        /* ── Glassmorphism ─────────────────────────────── */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        /* ── Custom Badges ─────────────────────────────── */
+        /* ── Badges & Status ───────────────────────────── */
         .role-badge {
             font-size: 0.65rem;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 100px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .role-super_admin { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .role-manager     { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .role-cashier     { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .role-super_admin { background: #fef3c7; color: #92400e; }
+        .role-manager     { background: #dcfce7; color: #166534; }
+        .role-cashier     { background: #dbeafe; color: #1e40af; }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            transition: all .3s ease;
+        }
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
+            color: #fff;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
     </style>
 
     @stack('styles')
@@ -199,31 +225,67 @@
 
         <p class="nav-section-label">Menu Utama</p>
 
-        @if(auth()->user()->isCashier() || auth()->user()->isManager() || auth()->user()->isSuperAdmin())
+        @if(auth()->user()->hasPermission('create-so') || auth()->user()->isSuperAdmin())
         <a href="{{ route('pos.index') }}" class="{{ request()->routeIs('pos.*') ? 'active' : '' }}">
             <i class="bi bi-grid-1x2-fill"></i> Kasir / POS
         </a>
         @endif
 
-        @if(!auth()->user()->isCashier())
-        <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
-            <i class="bi bi-pie-chart-fill"></i> Laporan
+        @if(auth()->user()->hasPermission('view-reports') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">
+            <i class="bi bi-pie-chart-fill"></i> Laporan Penjualan
         </a>
-        <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
-            <i class="bi bi-box-fill"></i> Produk
+        <a href="{{ route('reports.wms') }}" class="{{ request()->routeIs('reports.wms') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart-steps"></i> Laporan Logistik
         </a>
-        <a href="{{ route('inventories.index') }}" class="{{ request()->routeIs('inventories.*') ? 'active' : '' }}">
-            <i class="bi bi-archive-fill"></i> Inventori
+        <a href="{{ route('assets.map') }}" class="{{ request()->routeIs('assets.map') ? 'active' : '' }}">
+            <i class="bi bi-geo-fill"></i> GPS Tracking Asset
         </a>
         @endif
 
-        @if(auth()->user()->isSuperAdmin())
-        <p class="nav-section-label">Administrasi</p>
+        <p class="nav-section-label">Logistik</p>
+
+        @if(auth()->user()->hasPermission('create-po') || auth()->user()->hasPermission('create-grn') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('inbound.index') }}" class="{{ request()->routeIs('inbound.*') ? 'active' : '' }}">
+            <i class="bi bi-arrow-down-left-square-fill"></i> Inbound (Masuk)
+        </a>
+        @endif
+
+        @if(auth()->user()->hasPermission('create-so') || auth()->user()->hasPermission('process-picking') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('outbound.index') }}" class="{{ request()->routeIs('outbound.*') ? 'active' : '' }}">
+            <i class="bi bi-arrow-up-right-square-fill"></i> Outbound (Keluar)
+        </a>
+        @endif
+
+        @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->hasPermission('manage-stock-adjustment') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('inventories.index') }}" class="{{ request()->routeIs('inventories.index') ? 'active' : '' }}">
+            <i class="bi bi-archive-fill"></i> Stok Saat Ini
+        </a>
+        <a href="{{ route('inventories.logs') }}" class="{{ request()->routeIs('inventories.logs') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i> Movement Log
+        </a>
+        @endif
+
+        <p class="nav-section-label">Data Master</p>
+
+        @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('master.index') }}" class="{{ request()->routeIs('master.*') ? 'active' : '' }}">
+            <i class="bi bi-database-fill-gear"></i> Pusat Data SKU
+        </a>
+        @if(auth()->user()->hasPermission('manage-master-data'))
+        <a href="{{ route('warehouses.index') }}" class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
+            <i class="bi bi-building-fill"></i> Gudang & Lokasi
+        </a>
+        @endif
+        @endif
+
+        @if(auth()->user()->hasPermission('manage-users') || auth()->user()->isSuperAdmin())
+        <p class="nav-section-label">Sistem</p>
         <a href="{{ route('outlets.index') }}" class="{{ request()->routeIs('outlets.*') ? 'active' : '' }}">
-            <i class="bi bi-shop"></i> Outlet
+            <i class="bi bi-shop"></i> Cabang / Outlet
         </a>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
-            <i class="bi bi-person-badge-fill"></i> Pengguna
+            <i class="bi bi-person-badge-fill"></i> Akun & Role RBAC
         </a>
         @endif
 
@@ -235,9 +297,11 @@
             <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
             <div class="flex-grow-1 overflow-hidden">
                 <div class="text-white fw-bold text-truncate" style="font-size:.85rem;">{{ auth()->user()->name }}</div>
-                <span class="role-badge role-{{ auth()->user()->role }}">
-                    {{ str_replace('_', ' ', auth()->user()->role) }}
+                @foreach(auth()->user()->roles as $role)
+                <span class="role-badge role-{{ $role->slug }}">
+                    {{ $role->name }}
                 </span>
+                @endforeach
             </div>
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mt-3">
@@ -259,14 +323,21 @@
                 @yield('breadcrumb')
             </ol>
         </nav>
-        <div class="ms-auto d-flex align-items-center gap-3">
-            {{-- Notifikasi Low Stock (Disabled temporarily due to missing table) --}}
-            {{-- 
-            @if(auth()->user()->unreadNotifications->count() > 0)
-            ...
-            @endif 
-            --}}
-            <span class="text-muted small">{{ now()->format('d M Y, H:i') }}</span>
+        <div class="ms-auto d-flex align-items-center gap-4">
+            <div id="digital-clock" class="d-none d-lg-flex flex-column align-items-end text-end">
+                <div class="fw-800 text-primary" id="clock-time" style="font-size: 1.1rem; line-height: 1;">00:00:00</div>
+                <div class="text-muted small" id="clock-date" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Memuat...</div>
+            </div>
+            <button id="theme-toggle" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-color: var(--border-color) !important;">
+                <i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i>
+            </button>
+            <div class="vr mx-2 opacity-25"></div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar-small rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+                <span class="fw-bold small d-none d-md-block">{{ auth()->user()->name }}</span>
+            </div>
         </div>
     </div>
 
@@ -289,6 +360,54 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-@stack('scripts')
+    @stack('scripts')
+    <script>
+        // ── Theme Toggle Logic ──────────────────────────────────────────
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon   = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                themeIcon.classList.replace('text-primary', 'text-warning');
+            } else {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                themeIcon.classList.replace('text-warning', 'text-primary');
+            }
+        }
+
+        // ── Digital Clock ──────────────────────────────────────────────
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour12: false });
+            const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const clockTime = document.getElementById('clock-time');
+            const clockDate = document.getElementById('clock-date');
+            
+            if (clockTime) clockTime.innerText = timeStr;
+            if (clockDate) clockDate.innerText = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ── Auto-focus barcode input ────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            const barcodeInput = document.querySelector('.barcode-input');
+            if (barcodeInput) barcodeInput.focus();
+        });
+    </script>
 </body>
 </html>

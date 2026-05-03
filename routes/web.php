@@ -14,26 +14,58 @@ Route::post('/logout',[\App\Http\Controllers\AuthController::class, 'logout'])->
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', fn() => redirect()->route('dashboard'));
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\ReportController::class, 'dashboard'])->name('dashboard');
 
-    // ── KASIR (semua role) ────────────────────────────────────────────
-    Route::middleware(['role:super_admin,manager,cashier'])->group(function () {
+    // ── KASIR / POS ───────────────────────────────────────────────
+    Route::middleware(['role:admin,supervisor,operator'])->group(function () {
         Route::get('/pos',                         [TransactionController::class, 'posPage'])->name('pos.index');
         Route::post('/pos/checkout',               [TransactionController::class, 'checkout'])->name('pos.checkout');
         Route::get('/pos/receipt/{transaction}',   [TransactionController::class, 'receipt'])->name('pos.receipt');
     });
 
-    // ── MANAGER + ADMIN ───────────────────────────────────────────────
-    Route::middleware(['role:super_admin,manager'])->group(function () {
-        Route::get('/reports',                  [ReportController::class, 'index'])->name('reports.index');
-        Route::get('/api/reports/live-stats',   [ReportController::class, 'liveStats'])->name('reports.live');
+    // ── LOGISTIK ──────────────────────────────────────────────────
+    Route::middleware(['role:admin,supervisor,operator'])->group(function () {
+        Route::get('/inbound',              [\App\Http\Controllers\InboundController::class, 'index'])->name('inbound.index');
+        Route::get('/inbound/create',       [\App\Http\Controllers\InboundController::class, 'create'])->name('inbound.create');
+        Route::post('/inbound',             [\App\Http\Controllers\InboundController::class, 'store'])->name('inbound.store');
+        Route::post('/inbound/{po}/confirm',[\App\Http\Controllers\InboundController::class, 'confirm'])->name('inbound.confirm');
+        Route::get('/inbound/{po}/receive', [\App\Http\Controllers\InboundController::class, 'receive'])->name('inbound.receive');
+        Route::post('/inbound/{po}/receive',[\App\Http\Controllers\InboundController::class, 'storeGrn'])->name('inbound.grn.store');
 
-        Route::resource('products',   ProductController::class);
-        Route::resource('inventories',\App\Http\Controllers\InventoryController::class);
+        Route::get('/outbound',              [\App\Http\Controllers\OutboundController::class, 'index'])->name('outbound.index');
+        Route::get('/outbound/create',       [\App\Http\Controllers\OutboundController::class, 'create'])->name('outbound.create');
+        Route::post('/outbound',             [\App\Http\Controllers\OutboundController::class, 'store'])->name('outbound.store');
+        Route::post('/outbound/{so}/confirm',[\App\Http\Controllers\OutboundController::class, 'confirm'])->name('outbound.confirm');
+        Route::get('/outbound/{so}/picking', [\App\Http\Controllers\OutboundController::class, 'picking'])->name('outbound.picking');
+        Route::post('/outbound/{so}/picking',[\App\Http\Controllers\OutboundController::class, 'storePicking'])->name('outbound.picking.store');
+        Route::post('/outbound/{so}/ship',   [\App\Http\Controllers\OutboundController::class, 'ship'])->name('outbound.ship');
+        Route::post('/outbound/{so}/deliver',[\App\Http\Controllers\OutboundController::class, 'deliver'])->name('outbound.deliver');
+
+        Route::get('/inventories/logs',      [\App\Http\Controllers\InventoryController::class, 'logs'])->name('inventories.logs');
+        Route::resource('inventories',  \App\Http\Controllers\InventoryController::class);
     });
 
-    // ── SUPER ADMIN ONLY ──────────────────────────────────────────────
-    Route::middleware(['role:super_admin'])->group(function () {
+    // ── DATA MASTER ───────────────────────────────────────────────
+    Route::middleware(['role:admin,supervisor'])->group(function () {
+        Route::get('/master',           [\App\Http\Controllers\MasterDataController::class, 'index'])->name('master.index');
+        Route::resource('brands',       \App\Http\Controllers\BrandController::class);
+        Route::resource('suppliers',    \App\Http\Controllers\SupplierController::class);
+        Route::resource('categories',   \App\Http\Controllers\CategoryController::class);
+        Route::resource('products',     ProductController::class);
+        Route::resource('warehouses',   \App\Http\Controllers\WarehouseController::class);
+        Route::resource('locations',    \App\Http\Controllers\LocationController::class);
+    });
+
+    // ── LAPORAN ───────────────────────────────────────────────────
+    Route::middleware(['role:admin,supervisor'])->group(function () {
+        Route::get('/reports',                  [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/wms',              [ReportController::class, 'wms'])->name('reports.wms');
+        Route::get('/assets/map',               [ReportController::class, 'assetMap'])->name('assets.map');
+        Route::get('/api/reports/live-stats',   [ReportController::class, 'liveStats'])->name('reports.live');
+    });
+
+    // ── ADMINISTRASI SISTEM ────────────────────────────────────────
+    Route::middleware(['role:admin'])->group(function () {
         Route::resource('outlets', \App\Http\Controllers\OutletController::class);
         Route::resource('users',   \App\Http\Controllers\UserController::class);
         Route::get('/reports/all', [ReportController::class, 'allOutlets'])->name('reports.all');

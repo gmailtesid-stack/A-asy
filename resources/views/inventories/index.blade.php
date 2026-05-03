@@ -21,8 +21,9 @@
                 <thead class="bg-light-subtle">
                     <tr>
                         <th class="ps-4 py-3 text-uppercase fs-xs fw-800 text-muted">Produk</th>
-                        <th class="py-3 text-uppercase fs-xs fw-800 text-muted">Lokasi / Outlet</th>
+                        <th class="py-3 text-uppercase fs-xs fw-800 text-muted">Outlet & Gudang</th>
                         <th class="py-3 text-uppercase fs-xs fw-800 text-muted">Kategori</th>
+                        <th class="py-3 text-uppercase fs-xs fw-800 text-muted">Lokasi Spesifik</th>
                         <th class="text-center py-3 text-uppercase fs-xs fw-800 text-muted">Stok Saat Ini</th>
                         <th class="text-center py-3 text-uppercase fs-xs fw-800 text-muted">Status</th>
                         <th class="text-end pe-4 py-3 text-uppercase fs-xs fw-800 text-muted">Aksi</th>
@@ -38,13 +39,14 @@
                             </div>
                         </td>
                         <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-geo-alt-fill text-primary small"></i>
-                                <span class="fw-600 text-dark" style="font-size: .85rem;">{{ $inventory->outlet->name }}</span>
-                            </div>
+                            <div class="fw-bold text-dark" style="font-size: .85rem;">{{ $inventory->outlet->name }}</div>
+                            <div class="text-muted small"><i class="bi bi-building me-1"></i> {{ $inventory->warehouse->name }}</div>
                         </td>
                         <td>
                             <span class="text-muted" style="font-size: .85rem;">{{ $inventory->product->category->name }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-primary border rounded-pill">{{ $inventory->location->name ?? 'Belum Ditentukan' }}</span>
                         </td>
                         <td class="text-center">
                             <div class="fw-800 {{ $inventory->isLowStock() ? 'text-danger' : 'text-dark' }} fs-5">
@@ -64,9 +66,13 @@
                             @endif
                         </td>
                         <td class="text-end pe-4">
+                            @if(auth()->user()->hasPermission('manage-stock-adjustment'))
                             <a href="{{ route('inventories.edit', $inventory) }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm">
                                 <i class="bi bi-plus-slash-minus me-1"></i> Update
                             </a>
+                            @else
+                            <span class="text-muted small">View Only</span>
+                            @endif
                         </td>
                     </tr>
                     @empty

@@ -7,6 +7,32 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
+    public function dashboard()
+    {
+        $user     = auth()->user();
+        $outletId = $user->isSuperAdmin() ? null : $user->outlet_id;
+
+        $stats = [
+            'total_stock_value' => \App\Models\Inventory::join('products', 'inventories.product_id', '=', 'products.id')
+                ->sum(DB::raw('inventories.quantity * products.cost_price')),
+            'low_stock_count'   => \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count(),
+            'pending_po'        => \App\Models\PurchaseOrder::whereIn('status', ['pending', 'confirmed'])->count(),
+            'pending_so'        => \App\Models\SalesOrder::whereIn('status', ['pending', 'confirmed', 'picking', 'packing'])->count(),
+            'picking_failures'  => \App\Models\PickingItem::whereIn('status', ['not_found', 'partial'])->count(),
+        ];
+
+        $recentActivity = DB::table('inventory_logs')
+            ->join('inventories', 'inventory_logs.inventory_id', '=', 'inventories.id')
+            ->join('products', 'inventories.product_id', '=', 'products.id')
+            ->join('users', 'inventory_logs.user_id', '=', 'users.id')
+            ->select('inventory_logs.*', 'products.name as product_name', 'users.name as user_name')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('dashboard_wms', compact('stats', 'recentActivity'));
+    }
+
     public function index()
     {
         $user     = auth()->user();
@@ -18,6 +44,39 @@ class ReportController extends Controller
             'topProducts'   => $this->getTopSellingProducts($outletId, 10),
             'summaryStats'  => $this->getSummaryStats($outletId),
         ]);
+    }
+
+    public function wms()
+    {
+        $user = auth()->user();
+        $this->middleware('permission:view-reports');
+
+        $poStatus = \App\Models\PurchaseOrder::selectRaw('status, count(*) as count')->groupBy('status')->get();
+        $soStatus = \App\Models\SalesOrder::selectRaw('status, count(*) as count')->groupBy('status')->get();
+        
+        $topMovement = \App\Models\InventoryLog::join('inventories', 'inventory_logs.inventory_id', '=', 'inventories.id')
+            ->join('products', 'inventories.product_id', '=', 'products.id')
+            ->selectRaw('products.name, sum(abs(quantity_change)) as total_movement')
+            ->groupBy('products.name')
+            ->orderByDesc('total_movement')
+            ->take(10)
+            ->get();
+
+        $pickingFailures = \App\Models\PickingItem::with(['picking.salesOrder', 'product'])
+            ->whereIn('status', ['not_found', 'partial'])
+            ->latest()
+            ->take(20)
+            ->get();
+
+        return view('reports.wms', compact('poStatus', 'soStatus', 'topMovement', 'pickingFailures'));
+    }
+
+    public function assetMap()
+    {
+        $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
+        $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
+
+        return view('reports.asset_map', compact('outlets', 'warehouses'));
     }
 
     public function liveStats()

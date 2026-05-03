@@ -14,7 +14,7 @@ class InventoryController extends Controller
     {
         $user = auth()->user();
         
-        $inventories = Inventory::with(['product.category', 'outlet'])
+        $inventories = Inventory::with(['product.category', 'outlet', 'warehouse', 'location'])
             ->when(!$user->isSuperAdmin(), function($q) use ($user) {
                 return $q->where('outlet_id', $user->outlet_id);
             })
@@ -22,6 +22,22 @@ class InventoryController extends Controller
             ->paginate(20);
 
         return view('inventories.index', compact('inventories'));
+    }
+
+    public function logs()
+    {
+        $user = auth()->user();
+        
+        $logs = \App\Models\InventoryLog::with(['inventory.product', 'inventory.warehouse', 'user'])
+            ->when(!$user->isSuperAdmin(), function($q) use ($user) {
+                return $q->whereHas('inventory', function($iq) use ($user) {
+                    $iq->where('outlet_id', $user->outlet_id);
+                });
+            })
+            ->latest()
+            ->paginate(30);
+
+        return view('inventories.logs', compact('logs'));
     }
 
     public function edit(Inventory $inventory)

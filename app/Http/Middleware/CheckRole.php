@@ -26,7 +26,15 @@ class CheckRole
                 ->with('error', 'Akun Anda dinonaktifkan. Hubungi Administrator.');
         }
 
-        if (! in_array($user->role, $roles)) {
+        $hasRole = false;
+        foreach ($roles as $role) {
+            if ($user->hasRole($role)) {
+                $hasRole = true;
+                break;
+            }
+        }
+
+        if (!$hasRole) {
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Akses ditolak.'], 403);
             }
