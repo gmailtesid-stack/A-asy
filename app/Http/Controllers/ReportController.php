@@ -13,7 +13,8 @@ class ReportController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:view-reports'),
+            // Laporan detail hanya untuk Admin & Supervisor
+            new Middleware('permission:view-reports', only: ['index', 'wms', 'assetMap', 'allOutlets']),
         ];
     }
 
