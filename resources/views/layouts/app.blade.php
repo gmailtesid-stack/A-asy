@@ -321,7 +321,7 @@
     </div>
 
     {{-- User Info --}}
-    <div class="sidebar-user">
+    <div class="sidebar-user mt-auto">
         <div class="d-flex align-items-center gap-3">
             <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
             <div class="flex-grow-1 overflow-hidden">
@@ -340,6 +340,16 @@
                 <i class="bi bi-power"></i> Keluar Sistem
             </button>
         </form>
+    </div>
+
+    {{-- Watermark / Powered By --}}
+    <div class="text-center pb-4 pt-1">
+        <span style="font-size: 0.6rem; font-weight: 800; color: #475569; letter-spacing: 0.05em; text-transform: uppercase;">
+            Powered By
+        </span><br>
+        <span style="font-size: 0.65rem; font-weight: 800; color: #6366f1; letter-spacing: 0.05em;">
+            PT. SADAJIWA TEKNOLOGI INDONESIA
+        </span>
     </div>
 </nav>
 
