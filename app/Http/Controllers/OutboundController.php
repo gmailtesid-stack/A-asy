@@ -7,6 +7,14 @@ use App\Models\SalesOrder;
 
 class OutboundController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:create-so')->only(['create', 'store']);
+        $this->middleware('permission:confirm-so')->only(['confirm']);
+        $this->middleware('permission:process-picking')->only(['picking', 'storePicking']);
+        $this->middleware('permission:process-shipping')->only(['ship', 'deliver']);
+    }
+
     public function index()
     {
         $sos = \App\Models\SalesOrder::with(['user', 'warehouse'])
@@ -18,7 +26,6 @@ class OutboundController extends Controller
 
     public function create()
     {
-        $this->middleware('permission:create-so');
         $warehouses = \App\Models\Warehouse::all();
         $products = \App\Models\Product::all();
         return view('outbound.create', compact('warehouses', 'products'));
@@ -26,7 +33,6 @@ class OutboundController extends Controller
 
     public function store(Request $request)
     {
-        $this->middleware('permission:create-so');
         $request->validate([
             'warehouse_id' => 'required|exists:warehouses,id',
             'items'        => 'required|array|min:1',
@@ -54,7 +60,6 @@ class OutboundController extends Controller
 
     public function confirm(\App\Models\SalesOrder $so)
     {
-        $this->middleware('permission:confirm-so');
         if ($so->status !== 'pending') {
             return back()->with('error', 'SO sudah dikonfirmasi atau dibatalkan.');
         }
@@ -70,7 +75,6 @@ class OutboundController extends Controller
 
     public function picking(\App\Models\SalesOrder $so)
     {
-        $this->middleware('permission:process-picking');
         if ($so->status !== 'confirmed' && $so->status !== 'picking') {
             return back()->with('error', 'SO harus dikonfirmasi terlebih dahulu.');
         }
@@ -83,7 +87,6 @@ class OutboundController extends Controller
 
     public function storePicking(Request $request, \App\Models\SalesOrder $so)
     {
-        $this->middleware('permission:process-picking');
         $request->validate([
             'items' => 'required|array',
             'items.*.product_id' => 'required|exists:products,id',
@@ -137,7 +140,6 @@ class OutboundController extends Controller
 
     public function ship(Request $request, \App\Models\SalesOrder $so)
     {
-        $this->middleware('permission:process-shipping');
         $request->validate([
             'tracking_number' => 'required|string',
             'carrier'         => 'required|string',
@@ -159,7 +161,6 @@ class OutboundController extends Controller
 
     public function deliver(\App\Models\SalesOrder $so)
     {
-        $this->middleware('permission:process-shipping');
         $so->update(['status' => 'delivered']);
         return back()->with('success', 'Order ditandai sebagai terkirim (Delivered).');
     }

@@ -42,7 +42,17 @@ class User extends Authenticatable
 
     public function isSuperAdmin(): bool
     {
-        return $this->hasRole('admin'); // Mapping new admin role to superadmin check
+        return $this->hasRole('admin');
+    }
+
+    public function isSupervisor(): bool
+    {
+        return $this->hasRole('supervisor');
+    }
+
+    public function isOperator(): bool
+    {
+        return $this->hasRole('operator');
     }
 
     public function canAccessOutlet(int $outletId): bool

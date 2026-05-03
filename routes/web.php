@@ -71,3 +71,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/all', [ReportController::class, 'allOutlets'])->name('reports.all');
     });
 });
+
+// ── CRON / API (Exempt from CSRF) ──────────────────────────────────
+Route::post('/api/cron/stock-check', [\App\Http\Controllers\InventoryController::class, 'checkStock']);

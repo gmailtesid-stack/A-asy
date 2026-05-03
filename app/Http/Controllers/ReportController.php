@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view-reports');
+    }
+
     public function dashboard()
     {
         $user     = auth()->user();
@@ -49,7 +54,6 @@ class ReportController extends Controller
     public function wms()
     {
         $user = auth()->user();
-        $this->middleware('permission:view-reports');
 
         $poStatus = \App\Models\PurchaseOrder::selectRaw('status, count(*) as count')->groupBy('status')->get();
         $soStatus = \App\Models\SalesOrder::selectRaw('status, count(*) as count')->groupBy('status')->get();

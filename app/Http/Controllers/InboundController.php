@@ -8,6 +8,13 @@ use App\Models\Warehouse;
 
 class InboundController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:create-po')->only(['create', 'store']);
+        $this->middleware('permission:confirm-po')->only(['confirm']);
+        $this->middleware('permission:create-grn')->only(['receive', 'storeGrn']);
+    }
+
     public function index()
     {
         $pos = PurchaseOrder::with(['supplier', 'user', 'warehouse'])
@@ -19,7 +26,6 @@ class InboundController extends Controller
 
     public function create()
     {
-        $this->middleware('permission:create-po');
         $suppliers = \App\Models\Supplier::all();
         $warehouses = \App\Models\Warehouse::all();
         $products = \App\Models\Product::all();
@@ -28,7 +34,6 @@ class InboundController extends Controller
 
     public function store(Request $request)
     {
-        $this->middleware('permission:create-po');
         $request->validate([
             'supplier_id'  => 'required|exists:suppliers,id',
             'warehouse_id' => 'required|exists:warehouses,id',
@@ -58,7 +63,6 @@ class InboundController extends Controller
 
     public function confirm(PurchaseOrder $po)
     {
-        $this->middleware('permission:confirm-po');
         if ($po->status !== 'pending') {
             return back()->with('error', 'PO sudah dikonfirmasi atau dibatalkan.');
         }
@@ -70,7 +74,6 @@ class InboundController extends Controller
 
     public function receive(PurchaseOrder $po)
     {
-        $this->middleware('permission:create-grn');
         if ($po->status !== 'confirmed') {
             return back()->with('error', 'PO harus dikonfirmasi terlebih dahulu.');
         }
@@ -80,7 +83,6 @@ class InboundController extends Controller
 
     public function storeGrn(Request $request, PurchaseOrder $po)
     {
-        $this->middleware('permission:create-grn');
         if ($po->status !== 'confirmed') {
             return back()->with('error', 'PO harus dikonfirmasi terlebih dahulu.');
         }

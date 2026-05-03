@@ -19,7 +19,7 @@ class InventoryPolicy
 
     public function update(User $user, Inventory $inventory): bool
     {
-        // Hanya Admin atau Manager yang bisa ubah stok manual
-        return $user->isSuperAdmin() || ($user->isManager() && $user->outlet_id === $inventory->outlet_id);
+        // Hanya Admin atau Supervisor yang bisa ubah stok manual
+        return $user->isSuperAdmin() || ($user->isSupervisor() && $user->outlet_id === $inventory->outlet_id);
     }
 }

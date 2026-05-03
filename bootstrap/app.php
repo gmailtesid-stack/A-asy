@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(fn () => route('login'));
+        $middleware->validateCsrfTokens(except: [
+            '/api/cron/*',
+        ]);
 
         $middleware->alias([
             'role'        => \App\Http\Middleware\CheckRole::class,

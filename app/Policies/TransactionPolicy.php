@@ -26,7 +26,7 @@ class TransactionPolicy
      */
     public function delete(User $user, Transaction $transaction): bool
     {
-        // Hanya Super Admin atau Manager outlet terkait yang bisa hapus/batal
-        return $user->isSuperAdmin() || ($user->isManager() && $user->outlet_id === $transaction->outlet_id);
+        // Hanya Super Admin atau Supervisor outlet terkait yang bisa hapus/batal
+        return $user->isSuperAdmin() || ($user->isSupervisor() && $user->outlet_id === $transaction->outlet_id);
     }
 }

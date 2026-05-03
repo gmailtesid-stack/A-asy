@@ -81,4 +81,28 @@ class InventoryController extends Controller
 
         return redirect()->route('inventories.index')->with('success', 'Stok berhasil diperbarui.');
     }
+    public function checkStock(Request $request)
+    {
+        // Simple token check for security (matched with GitHub Secret)
+        if ($request->header('Authorization') !== 'Bearer ' . env('CRON_SECRET')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $lowStockItems = Inventory::with('product')
+            ->whereColumn('quantity', '<', 'min_quantity')
+            ->get();
+
+        foreach ($lowStockItems as $item) {
+            // Notify admins of the outlet
+            $admins = \App\Models\User::where('outlet_id', $item->outlet_id)
+                ->whereHas('roles', fn($q) => $q->where('slug', 'admin'))
+                ->get();
+
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\LowStockNotification($item, $item->product->name));
+            }
+        }
+
+        return response()->json(['status' => 'Check completed', 'count' => $lowStockItems->count()]);
+    }
 }
