@@ -46,5 +46,22 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('globalLowStockCount', $lowStockCount);
             }
         });
+
+        // Ensure /tmp storage directories exist on Vercel
+        if (env('VERCEL')) {
+            $paths = [
+                '/tmp/storage/framework/cache/data',
+                '/tmp/storage/framework/sessions',
+                '/tmp/storage/framework/views',
+                '/tmp/storage/app/public',
+                '/tmp/storage/app/private',
+                '/tmp/storage/logs',
+            ];
+            foreach ($paths as $path) {
+                if (!is_dir($path)) {
+                    mkdir($path, 0777, true);
+                }
+            }
+        }
     }
 }

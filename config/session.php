@@ -60,7 +60,7 @@ return [
     |
     */
 
-    'files' => storage_path('framework/sessions'),
+    'files' => env('VERCEL') ? '/tmp/storage/framework/sessions' : storage_path('framework/sessions'),
 
     /*
     |--------------------------------------------------------------------------

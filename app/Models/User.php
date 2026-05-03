@@ -21,22 +21,35 @@ class User extends Authenticatable
         'is_active'         => 'boolean',
     ];
 
-    // ── RBAC Helpers ─────────────────────────────────────────────────
+    // ── RBAC Helpers (Optimized for Serverless Performance) ──────────
     public function roles()
     {
         return $this->morphToMany(Role::class, 'model', 'model_has_roles', 'model_id', 'role_id');
     }
 
+    /**
+     * Cache the roles collection to prevent multiple DB queries per request.
+     */
+    protected $loadedRoles = null;
+
+    protected function getLoadedRoles()
+    {
+        if ($this->loadedRoles === null) {
+            $this->loadedRoles = $this->roles()->with('permissions')->get();
+        }
+        return $this->loadedRoles;
+    }
+
     public function hasRole($roleSlug): bool
     {
-        return $this->roles()->where('slug', $roleSlug)->exists();
+        return $this->getLoadedRoles()->contains('slug', $roleSlug);
     }
 
     public function hasPermission($permissionSlug): bool
     {
-        return $this->roles()->whereHas('permissions', function ($q) use ($permissionSlug) {
-            $q->where('slug', $permissionSlug);
-        })->exists();
+        return $this->getLoadedRoles()->flatMap(function ($role) {
+            return $role->permissions;
+        })->contains('slug', $permissionSlug);
     }
 
     public function isSuperAdmin(): bool
