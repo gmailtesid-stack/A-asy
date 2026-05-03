@@ -30,21 +30,18 @@ Sistem ini bekerja melalui jaring-jaring integrasi otomatis yang saling mengunci
 ## 📦 2. BEDAH MODUL & FITUR MENDALAM (DEEP MODULES)
 
 ### **I. Point of Sale (POS) — Ultra Fast Cashier**
-*Files: `TransactionController.php`, `Transaction.php`, `TransactionDetail.php`*
 - **Atomic Checkout Logic**: Menjamin stok tidak akan pernah minus atau "oversell". Menggunakan protokol `DB::transaction` dengan `lockForUpdate()`.
 - **Dynamic Tax System**: Kalkulasi PPN (Default 11%) yang dikonfigurasi di `config/pos.php`.
 - **Multi-Payment Gateway**: Pencatatan metode Cash, Transfer, QRIS, dan Card secara terpisah.
 - **Sequential Smart Invoicing**: Faktur unik per outlet (e.g., `INV-JKT-20260503-0001`) yang di-generate dengan proteksi duplikasi di level database.
 
 ### **II. Warehouse Management (WMS) — Total Logistics Control**
-*Files: `InboundController.php`, `OutboundController.php`, `Location.php`, `StockTransfer.php`*
 - **Inbound Pipeline**: PO Supplier -> Goods Received Note (GRN) -> Automasi *Stock Increment* pada lokasi rak yang spesifik.
 - **Outbound Pipeline**: Sales Order (SO) -> Picking (Status: Found/Partial/Not Found) -> Packing -> Shipping.
 - **Mapping Lokasi (Bin)**: Inventori terpetakan hingga level `Gudang -> Zona -> Baris -> Rak -> Bin (Wadah)`.
 - **Stock Transfer**: Mutasi stok antar cabang dengan sistem *In-Transit* (stok dipotong saat kirim, bertambah saat diterima).
 
 ### **III. Order Management (OMS) — Global Integration**
-*Files: `SyncMarketplaceJob.php`, `Channel.php`, `MarketplaceController.php`*
 - **Marketplace Bridge**: Menghubungkan stok fisik gudang dengan kanal online (Shopee/Tokopedia).
 - **Automated Reconcile**: Sinkronisasi stok otomatis setiap kali ada transaksi fisik atau perubahan status di marketplace.
 
@@ -63,25 +60,13 @@ Sistem ini bekerja melalui jaring-jaring integrasi otomatis yang saling mengunci
 | Manajemen Lokasi Bin | ✅ | ✅ | ✅ |
 
 ### **B. Security Middleware Layer**
-- **`CheckRole`**: Memastikan hanya peran tertentu yang bisa mengakses modul (e.g., Modul User hanya untuk Admin).
-- **`CheckPermission`**: Gating fungsionalitas di level fitur (e.g., tombol 'Hapus' hanya muncul jika punya izin).
-- **`EnsureSameOutlet`**: Fitur Multi-Outlet Isolation. Staff di Outlet A tidak diizinkan melihat atau mengedit data milik Outlet B.
+- **`CheckRole`**: Memastikan hanya peran tertentu yang bisa mengakses modul.
+- **`CheckPermission`**: Gating fungsionalitas di level fitur.
+- **`EnsureSameOutlet`**: Fitur Multi-Outlet Isolation (Data Privacy).
 
 ---
 
-## 💾 4. DATABASE DEEP-DIVE (TECHNICAL SCHEMA)
-
-| Tabel Utama | Tujuan Bisnis | Primary Key / Indexing |
-| :--- | :--- | :--- |
-| `users` | Autentikasi & Mapping Role | `id`, `email` (Unique), `role_id` |
-| `products` | Katalog Master (SKU/Barcode) | `id`, `sku` (Unique Index), `status` |
-| `inventories` | Stok Real-time Terdistribusi | `id`, Composite Index: `[product, outlet, warehouse]` |
-| `transactions` | Rekam Jejak Penjualan POS | `id`, `invoice_number` (Unique Index) |
-| `inventory_logs`| Audit Trail (Log Perubahan Stok)| `id`, `reference` (Indexed), `type` |
-
----
-
-## 🔄 5. LOGIKA OPERASIONAL (HOW IT WORKS)
+## 🔄 4. LOGIKA OPERASIONAL (HOW IT WORKS)
 
 ### **A. Logika Checkout POS (Pseudo-Logic)**
 ```php
@@ -102,37 +87,42 @@ Sistem ini bekerja melalui jaring-jaring integrasi otomatis yang saling mengunci
 
 ---
 
-## 🛠️ 6. SPESIFIKASI TEKNIS & PEMELIHARAAN
+## 🛠️ 5. SPESIFIKASI TEKNIS & PEMELIHARAAN
 
 ### **A. Hardware Compatibility**
-- **Thermal Printer**: Mendukung ESC/POS (80mm/58mm) via Driver Windows/Linux.
-- **Barcode Scanner**: Seluruh tipe HID (Keyboard Mode) Laser/CCD.
-- **Mobile device**: Dioptimalkan untuk layar 5.5" ke atas (Android PDA/Smartphone).
+- **Thermal Printer**: Mendukung ESC/POS (80mm/58mm).
+- **Barcode Scanner**: Seluruh tipe HID (Keyboard Mode).
+- **Mobile device**: Dioptimalkan untuk Android/iOS (Responsive UI).
 
 ### **B. Jadwal Pemeliharaan (Maintenance)**
-1. **Daily Check**: Notifikasi stok menipis dikirim otomatis via **GitHub Actions Cron** setiap hari.
-2. **Snapshot DB**: TiDB Cloud melakukan backup otomatis setiap 24 jam.
-3. **Log Rotation**: Disarankan melakukan pengarsipan `inventory_logs` setiap 12 bulan jika volume transaksi tinggi.
+1. **Daily Check**: Notifikasi stok menipis via Cron Job harian.
+2. **Snapshot DB**: Backup otomatis TiDB Cloud setiap 24 jam.
+3. **Log Audit**: Pelacakan mutasi barang via `inventory_logs`.
 
 ---
 
-## 📁 7. PETA STRUKTUR PROYEK (DIRECTORY MAP)
+## 📁 6. PETA STRUKTUR & DOKUMENTASI LENGKAP
 
+Untuk detail terdalam mengenai setiap komponen, silakan merujuk pada direktori `docs/`:
+
+1.  **[Manifest Komponen](docs/COMPONENT_MANIFEST.md)**: Daftar lengkap setiap file, controller, dan model beserta fungsinya.
+2.  **[Kamus Database](docs/DATABASE_DICTIONARY.md)**: Detail setiap tabel, kolom, indeks, dan relasi data.
+3.  **[Alur Logika Bisnis](docs/BUSINESS_WORKFLOWS.md)**: Penjelasan langkah-demi-langkah proses POS, WMS, dan OMS.
+
+### Struktur Proyek Utama:
 ```
 easy-pos/
 ├── api/index.php              # Jembatan Laravel ke Vercel Serverless (Tmp redirection)
-├── app/Http/Controllers/      # Logic Utama (POS, WMS, OMS, Master Data)
-├── app/Http/Middleware/       # Layer Keamanan, RBAC, & Multi-outlet Isolation
-├── app/Models/                # Definisi Skema Data & Relasi Eloquent
-├── app/Jobs/                  # Asynchronous Tasks (Marketplace Sync)
-├── app/Policies/              # Aturan Otorisasi Akses Data (Product, User)
-├── app/Services/              # Integrasi Layanan (Cloudinary, Services)
-├── config/pos.php             # Konfigurasi Aturan Bisnis (Tax, Prefix)
-├── database/migrations/       # Evolusi Skema Tabel & Indeks Performa
-├── database/seeders/          # Inisialisasi Data (RBAC, Outlets, Users)
-├── resources/views/           # Antarmuka Blade (POS UI, Dashboard)
-├── vercel.json                # Konfigurasi Deployment Awan (IaC)
-└── README.md                  # Dokumen Referensi Otoritatif ini
+├── app/Http/Controllers/      # Logic POS, WMS, OMS
+├── app/Http/Middleware/       # Layer Keamanan & Multi-outlet
+├── app/Models/                # Skema Data & Relasi Eloquent
+├── app/Jobs/                  # Sync Marketplace Background Job
+├── config/pos.php             # Aturan Bisnis (Tax, Prefix Invoice)
+├── database/migrations/       # Skema Tabel & Performance Indexing
+├── docs/                      # DOKUMENTASI TERPERINCI (Bible)
+├── resources/views/           # Antarmuka Blade UI
+├── vercel.json                # Infrastruktur Awan (IaC)
+└── README.md                  # Manual Referensi ini
 ```
 
 ---
