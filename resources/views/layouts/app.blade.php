@@ -55,14 +55,13 @@
             background: var(--bg-main); 
             color: var(--text-main); 
             margin: 0;
-            overflow-x: hidden;
             transition: background .3s, color .3s;
         }
 
         /* ── Sidebar ─────────────────────────────────────── */
         #sidebar {
             width: var(--sidebar-w);
-            min-height: 100vh;
+            height: 100vh;
             background: #0f172a;
             position: fixed;
             top: 0; left: 0;
@@ -71,7 +70,13 @@
             z-index: 1000;
             transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
             border-right: 1px solid rgba(255,255,255,0.05);
+            overflow-y: auto;
         }
+        /* Custom Scrollbar for Sidebar */
+        #sidebar::-webkit-scrollbar { width: 6px; }
+        #sidebar::-webkit-scrollbar-track { background: transparent; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        #sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
         .sidebar-brand {
             padding: 2.5rem 1.5rem;
             text-align: center;
@@ -200,17 +205,34 @@
             color: #fff;
         }
 
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary), #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
+        /* ── Responsive Sidebar ───────────────────────────── */
+        @media (max-width: 991.98px) {
+            #sidebar {
+                transform: translateX(-100%);
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+            #sidebar.show {
+                transform: translateX(0);
+            }
+            #main {
+                margin-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5); z-index: 999;
+                backdrop-filter: blur(3px);
+            }
+            .sidebar-overlay.show { display: block; }
         }
     </style>
 
     @stack('styles')
 </head>
 <body>
+
+{{-- ── SIDEBAR OVERLAY (MOBILE) ───────────────────────── --}}
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 {{-- ── SIDEBAR ─────────────────────────────────────────────── --}}
 <nav id="sidebar">
@@ -317,12 +339,17 @@
 {{-- ── MAIN CONTENT ──────────────────────────────────────────── --}}
 <main id="main">
     <div id="topbar">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                @yield('breadcrumb')
-            </ol>
-        </nav>
+        <div class="d-flex align-items-center gap-3">
+            <button id="sidebar-toggle" class="btn btn-light d-lg-none border shadow-sm rounded-3 p-2 d-flex align-items-center justify-content-center">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Home</a></li>
+                    @yield('breadcrumb')
+                </ol>
+            </nav>
+        </div>
         <div class="ms-auto d-flex align-items-center gap-4">
             <div id="digital-clock" class="d-none d-lg-flex flex-column align-items-end text-end">
                 <div class="fw-800 text-primary" id="clock-time" style="font-size: 1.1rem; line-height: 1;">00:00:00</div>
@@ -408,6 +435,23 @@
             const barcodeInput = document.querySelector('.barcode-input');
             if (barcodeInput) barcodeInput.focus();
         });
+
+        // ── Mobile Sidebar Toggle ───────────────────────────────────────
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        if (sidebarToggle && sidebar && sidebarOverlay) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            });
+        }
     </script>
 </body>
 </html>
