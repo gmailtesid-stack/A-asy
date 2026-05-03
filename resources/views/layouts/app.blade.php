@@ -186,6 +186,7 @@
             letter-spacing: 0.05em;
         }
         .role-super_admin { background: #fef3c7; color: #92400e; }
+        .role-admin       { background: #fef3c7; color: #92400e; }
         .role-manager     { background: #dcfce7; color: #166534; }
         .role-cashier     { background: #dbeafe; color: #1e40af; }
 
@@ -335,8 +336,8 @@
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mt-3">
             @csrf
-            <button class="btn btn-sm w-100 text-muted d-flex align-items-center justify-content-center gap-2" 
-                    style="background:rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);">
+            <button class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2" 
+                    style="background:rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #94a3b8; transition: all .3s;">
                 <i class="bi bi-power"></i> Keluar Sistem
             </button>
         </form>
