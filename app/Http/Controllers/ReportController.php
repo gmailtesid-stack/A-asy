@@ -23,32 +23,37 @@ class ReportController extends Controller implements HasMiddleware
         $user     = auth()->user();
         $outletId = $user->isSuperAdmin() ? null : $user->outlet_id;
 
-        $stats = [
-            'total_stock_value' => \App\Models\Inventory::join('products', 'inventories.product_id', '=', 'products.id')
-                ->sum(DB::raw('inventories.quantity * products.cost_price')),
-            'low_stock_count'   => \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count(),
-            'pending_po'        => \App\Models\PurchaseOrder::whereIn('status', ['pending', 'confirmed'])->count(),
-            'pending_so'        => \App\Models\SalesOrder::whereIn('status', ['pending', 'confirmed'])->count(),
-            'picking_so'        => \App\Models\SalesOrder::where('status', 'picking')->count(),
-            'packing_so'        => \App\Models\SalesOrder::where('status', 'packing')->count(),
-            'picking_failures'  => \App\Models\PickingItem::whereIn('status', ['not_found', 'partial'])->count(),
-            
-            // OMS Lifecycle Stats
-            'oms_live'          => \App\Models\Product::where('status', 'live')->count(),
-            'oms_draft'         => \App\Models\Product::where('status', 'draft')->count(),
-            'oms_review'        => \App\Models\Product::where('status', 'under_review')->count(),
-        ];
+        // Cache dashboard stats for 5 minutes to prevent 504 timeouts on slow queries
+        $stats = \Illuminate\Support\Facades\Cache::remember('dashboard_stats_' . ($outletId ?? 'all'), 300, function () {
+            return [
+                'total_stock_value' => \App\Models\Inventory::join('products', 'inventories.product_id', '=', 'products.id')
+                    ->sum(DB::raw('inventories.quantity * products.cost_price')),
+                'low_stock_count'   => \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count(),
+                'pending_po'        => \App\Models\PurchaseOrder::whereIn('status', ['pending', 'confirmed'])->count(),
+                'pending_so'        => \App\Models\SalesOrder::whereIn('status', ['pending', 'confirmed'])->count(),
+                'picking_so'        => \App\Models\SalesOrder::where('status', 'picking')->count(),
+                'packing_so'        => \App\Models\SalesOrder::where('status', 'packing')->count(),
+                'picking_failures'  => \App\Models\PickingItem::whereIn('status', ['not_found', 'partial'])->count(),
+                
+                // OMS Lifecycle Stats
+                'oms_live'          => \App\Models\Product::where('status', 'live')->count(),
+                'oms_draft'         => \App\Models\Product::where('status', 'draft')->count(),
+                'oms_review'        => \App\Models\Product::where('status', 'under_review')->count(),
+            ];
+        });
 
-        $recentActivity = DB::table('inventory_logs')
-            ->join('inventories', 'inventory_logs.inventory_id', '=', 'inventories.id')
-            ->join('products', 'inventories.product_id', '=', 'products.id')
-            ->join('users', 'inventory_logs.user_id', '=', 'users.id')
-            ->select('inventory_logs.*', 'products.name as product_name', 'users.name as user_name')
-            ->latest()
-            ->take(10)
-            ->get();
+        $recentActivity = \Illuminate\Support\Facades\Cache::remember('dashboard_activity', 60, function () {
+            return DB::table('inventory_logs')
+                ->join('inventories', 'inventory_logs.inventory_id', '=', 'inventories.id')
+                ->join('products', 'inventories.product_id', '=', 'products.id')
+                ->join('users', 'inventory_logs.user_id', '=', 'users.id')
+                ->select('inventory_logs.*', 'products.name as product_name', 'users.name as user_name')
+                ->latest()
+                ->take(10)
+                ->get();
+        });
 
-        // Data for GPS Map
+        // Data for GPS Map (Low frequency change, keep as is or cache)
         $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
         $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
 

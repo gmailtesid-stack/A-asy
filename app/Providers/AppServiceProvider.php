@@ -36,10 +36,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Outlet::class,      OutletPolicy::class);
         Gate::policy(User::class,        UserPolicy::class);
 
-        // Share low stock count to all views
-        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+        // Share low stock count to app layout only (Performance Optimization)
+        \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
             if (auth()->check()) {
-                $lowStockCount = \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count();
+                // Cache the count for 60 seconds to prevent DB hammering on every partial render
+                $lowStockCount = \Illuminate\Support\Facades\Cache::remember('low_stock_count_' . auth()->id(), 60, function () {
+                    return \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count();
+                });
                 $view->with('globalLowStockCount', $lowStockCount);
             }
         });
