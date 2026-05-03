@@ -403,11 +403,13 @@
 
         const currentTheme = localStorage.getItem('theme') || 'light';
         htmlElement.setAttribute('data-theme', currentTheme);
+        htmlElement.setAttribute('data-bs-theme', currentTheme); // Sync with Bootstrap 5
         updateThemeIcon(currentTheme);
 
         themeToggle.addEventListener('click', () => {
             const newTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
             htmlElement.setAttribute('data-theme', newTheme);
+            htmlElement.setAttribute('data-bs-theme', newTheme); // Sync with Bootstrap 5
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
         });

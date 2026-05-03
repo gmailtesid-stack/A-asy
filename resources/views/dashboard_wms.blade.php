@@ -312,8 +312,8 @@
                     <a href="{{ route('inbound.create') }}" class="btn btn-premium rounded-pill px-4"><i class="bi bi-plus-lg me-2"></i> Buat PO Baru</a>
                 </div>
                 <div class="table-responsive p-4 pt-0">
-                    <table class="table table-borderless table-custom align-middle mb-0 mt-3">
-                        <thead class="bg-light bg-opacity-50" style="border-radius: 16px;">
+                    <table class="table table-borderless table-custom align-middle mb-0 mt-3 bg-transparent" style="--bs-table-bg: transparent;">
+                        <thead class="bg-secondary bg-opacity-10 text-muted" style="border-radius: 16px;">
                             <tr>
                                 <th class="rounded-start-3">Informasi Produk</th>
                                 <th>Lokasi / Gudang</th>
