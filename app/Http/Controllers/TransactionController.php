@@ -178,7 +178,9 @@ class TransactionController extends Controller
     private function sendLowStockAlert(Inventory $inventory, string $productName): void
     {
         try {
-            $admins = User::whereIn('role', ['super_admin', 'manager'])
+            $admins = User::whereHas('roles', function ($q) {
+                    $q->whereIn('slug', ['admin', 'supervisor']);
+                })
                 ->where(function ($q) use ($inventory) {
                     $q->whereNull('outlet_id')
                       ->orWhere('outlet_id', $inventory->outlet_id);

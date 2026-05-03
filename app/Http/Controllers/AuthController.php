@@ -30,13 +30,17 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Akun tidak aktif. Hubungi Admin.']);
             }
 
-            // Redirect berdasarkan role
-            return match ($user->role) {
-                'cashier'     => redirect()->route('pos.index'),
-                'manager'     => redirect()->route('reports.index'),
-                'super_admin' => redirect()->route('dashboard'),
-                default       => redirect()->route('dashboard'),
-            };
+            // Redirect berdasarkan role RBAC baru
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('dashboard');
+            }
+            if ($user->isSupervisor()) {
+                return redirect()->route('reports.index');
+            }
+            if ($user->isOperator()) {
+                return redirect()->route('pos.index');
+            }
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([

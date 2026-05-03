@@ -114,6 +114,14 @@ class OutboundController extends Controller
                     ])->first();
 
                     if ($inventory) {
+                        // Guard: pastikan stok tidak jadi negatif
+                        if ($inventory->quantity < $item['quantity_found']) {
+                            throw new \Exception(
+                                "Stok produk ID {$item['product_id']} tidak cukup untuk picking. " .
+                                "Tersedia: {$inventory->quantity}, Diminta: {$item['quantity_found']}"
+                            );
+                        }
+
                         $quantityBefore = $inventory->quantity;
                         $inventory->decrement('quantity', $item['quantity_found']);
 
