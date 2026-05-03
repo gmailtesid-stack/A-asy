@@ -305,24 +305,25 @@
                 <div class="p-0 overflow-auto" style="max-height: 450px;">
                     <div class="list-group list-group-flush">
                         @forelse($recentActivity as $activity)
+                            @if(!is_object($activity)) @continue @endif
                         <div class="list-group-item border-0 p-4 bg-transparent position-relative" style="border-bottom: 1px dashed var(--dash-glass-border) !important;">
                             <div class="d-flex align-items-start gap-3">
-                                <div class="rounded-circle mt-1 flex-shrink-0" style="width: 12px; height: 12px; background: {{ $activity->type == 'in' ? '#10b981' : ($activity->type == 'out' ? '#6366f1' : '#f59e0b') }}; box-shadow: 0 0 10px {{ $activity->type == 'in' ? '#10b981' : ($activity->type == 'out' ? '#6366f1' : '#f59e0b') }};"></div>
+                                <div class="rounded-circle mt-1 flex-shrink-0" style="width: 12px; height: 12px; background: {{ ($activity->type ?? '') == 'in' ? '#10b981' : (($activity->type ?? '') == 'out' ? '#6366f1' : '#f59e0b') }}; box-shadow: 0 0 10px {{ ($activity->type ?? '') == 'in' ? '#10b981' : (($activity->type ?? '') == 'out' ? '#6366f1' : '#f59e0b') }};"></div>
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="badge bg-{{ $activity->type == 'in' ? 'success' : ($activity->type == 'out' ? 'primary' : 'warning') }}-subtle text-{{ $activity->type == 'in' ? 'success' : ($activity->type == 'out' ? 'primary' : 'warning') }} rounded-pill" style="font-size: 0.65rem; font-weight: 800;">{{ strtoupper($activity->type) }}</span>
-                                        <span class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($activity->created_at)->diffForHumans() }}</span>
+                                        <span class="badge bg-{{ ($activity->type ?? '') == 'in' ? 'success' : (($activity->type ?? '') == 'out' ? 'primary' : 'warning') }}-subtle text-{{ ($activity->type ?? '') == 'in' ? 'success' : (($activity->type ?? '') == 'out' ? 'primary' : 'warning') }} rounded-pill" style="font-size: 0.65rem; font-weight: 800;">{{ strtoupper($activity->type ?? 'LOG') }}</span>
+                                        <span class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($activity->created_at ?? now())->diffForHumans() }}</span>
                                     </div>
                                     <p class="mb-2 small lh-sm">
-                                        <span class="fw-800 text-dark">{{ $activity->product_name }}</span> 
-                                        {{ $activity->type == 'in' ? 'bertambah' : ($activity->type == 'out' ? 'berkurang' : 'diatur (adjust)') }} 
-                                         <span class="fw-800 {{ $activity->type == 'in' ? 'text-success' : ($activity->type == 'out' ? 'text-primary' : 'text-warning') }} fs-6">{{ abs($activity->quantity_change) }}</span> unit.
+                                        <span class="fw-800 text-dark">{{ $activity->product_name ?? 'Produk' }}</span> 
+                                        {{ ($activity->type ?? '') == 'in' ? 'bertambah' : (($activity->type ?? '') == 'out' ? 'berkurang' : 'diatur (adjust)') }} 
+                                         <span class="fw-800 {{ ($activity->type ?? '') == 'in' ? 'text-success' : (($activity->type ?? '') == 'out' ? 'text-primary' : 'text-warning') }} fs-6">{{ abs($activity->quantity_change ?? 0) }}</span> unit.
                                     </p>
                                     <div class="d-flex align-items-center gap-1 text-muted" style="font-size: 0.7rem; font-weight: 600;">
                                         <div class="avatar-small rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 18px; height: 18px; font-size: 0.5rem;">
-                                            {{ strtoupper(substr($activity->user_name, 0, 1)) }}
+                                            {{ strtoupper(substr($activity->user_name ?? 'U', 0, 1)) }}
                                         </div>
-                                        {{ $activity->user_name }}
+                                        {{ $activity->user_name ?? 'System' }}
                                     </div>
                                 </div>
                             </div>

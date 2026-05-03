@@ -47,6 +47,11 @@ class ReportController extends Controller
                 ->get();
         });
 
+        // Fail-safe: Ensure it's a collection to avoid "property on string" error in view
+        if (!($recentActivity instanceof \Illuminate\Support\Collection)) {
+            $recentActivity = collect([]);
+        }
+
         // Data for GPS Map (Low frequency change, keep as is or cache)
         $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
         $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
