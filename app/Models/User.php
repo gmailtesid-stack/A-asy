@@ -24,8 +24,7 @@ class User extends Authenticatable
     // ── RBAC Helpers ─────────────────────────────────────────────────
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
-            ->where('model_type', static::class);
+        return $this->morphToMany(Role::class, 'model', 'model_has_roles', 'model_id', 'role_id');
     }
 
     public function hasRole($roleSlug): bool

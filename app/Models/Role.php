@@ -14,9 +14,8 @@ class Role extends Model
         return $this->belongsToMany(Permission::class, 'role_permission');
     }
 
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class, 'model_has_roles', 'role_id', 'model_id')
-            ->where('model_type', User::class);
+        return $this->morphedByMany(User::class, 'model', 'model_has_roles', 'role_id', 'model_id');
     }
 }
