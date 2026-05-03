@@ -17,10 +17,27 @@ class ProductController extends Controller
         $this->authorizeResource(Product::class);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(20);
-        return view('products.index', compact('products'));
+        $status = $request->query('status', 'all');
+
+        $query = Product::with('category')->latest();
+        
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $products = $query->paginate(20)->appends(['status' => $status]);
+
+        $metrics = [
+            'all'          => Product::count(),
+            'live'         => Product::where('status', 'live')->count(),
+            'under_review' => Product::where('status', 'under_review')->count(),
+            'draft'        => Product::where('status', 'draft')->count(),
+            'failed'       => Product::where('status', 'failed')->count(),
+        ];
+
+        return view('products.index', compact('products', 'metrics', 'status'));
     }
 
     public function create()

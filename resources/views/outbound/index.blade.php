@@ -24,40 +24,75 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4">No. SO</th>
-                            <th>Tanggal</th>
+                            <th class="ps-4">No. SO / Tanggal</th>
                             <th>Gudang Asal</th>
-                            <th>Total</th>
-                            <th>Status</th>
+                            <th class="text-center" style="width: 300px;">Fulfillment Progress</th>
+                            <th class="text-end">Total Nilai</th>
                             <th>Tracking</th>
                             <th class="text-end pe-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($sos as $so)
-                        <tr>
-                            <td class="ps-4 fw-bold text-success">{{ $so->so_number }}</td>
-                            <td>{{ $so->created_at->format('d/m/Y') }}</td>
-                            <td><span class="badge bg-light text-dark border">{{ $so->warehouse->name }}</span></td>
-                            <td>Rp {{ number_format($so->total_amount, 0, ',', '.') }}</td>
-                            <td>
-                                @php
-                                    $statusClass = [
-                                        'pending' => 'bg-secondary',
-                                        'picking' => 'bg-warning',
-                                        'packing' => 'bg-info',
-                                        'shipping' => 'bg-primary',
-                                        'completed' => 'bg-success',
-                                        'cancelled' => 'bg-danger'
-                                    ][$so->status] ?? 'bg-secondary';
-                                @endphp
-                                <span class="badge {{ $statusClass }} rounded-pill">{{ ucfirst($so->status) }}</span>
+                        <tr class="align-middle">
+                            <td class="ps-4">
+                                <div class="fw-bold text-success" style="font-size: 0.95rem;">{{ $so->so_number }}</div>
+                                <div class="text-muted small">{{ $so->created_at->format('d/m/Y H:i') }}</div>
                             </td>
                             <td>
-                                @if($so->status == 'shipping')
-                                    <small class="text-primary fw-bold"><i class="bi bi-truck me-1"></i> {{ $so->shipping?->tracking_number }}</small>
+                                <span class="badge bg-light text-dark border border-secondary-subtle px-3 py-2 rounded-pill"><i class="bi bi-building me-1"></i> {{ $so->warehouse->name }}</span>
+                            </td>
+                            <td>
+                                {{-- Progress Tracker Visual --}}
+                                @php
+                                    $steps = ['pending', 'confirmed', 'picking', 'packing', 'shipping', 'delivered'];
+                                    $currentIndex = array_search($so->status, $steps);
+                                    if ($so->status === 'cancelled') $currentIndex = -1;
+                                @endphp
+                                
+                                @if($so->status === 'cancelled')
+                                    <div class="text-danger fw-bold text-center small"><i class="bi bi-x-circle-fill me-1"></i> DIBATALKAN</div>
                                 @else
-                                    -
+                                    <div class="position-relative m-3">
+                                        <div class="progress" style="height: 4px; background-color: var(--bs-secondary-bg-subtle);">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ ($currentIndex / (count($steps)-1)) * 100 }}%"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between position-absolute w-100" style="top: -6px; left: 0;">
+                                            @foreach($steps as $index => $step)
+                                                @php
+                                                    $isCompleted = $index <= $currentIndex;
+                                                    $isCurrent = $index === $currentIndex;
+                                                    $icon = match($step) {
+                                                        'pending' => 'bi-file-earmark-text',
+                                                        'confirmed' => 'bi-check2-circle',
+                                                        'picking' => 'bi-box-seam',
+                                                        'packing' => 'bi-box',
+                                                        'shipping' => 'bi-truck',
+                                                        'delivered' => 'bi-house-check',
+                                                        default => 'bi-circle'
+                                                    };
+                                                @endphp
+                                                <div class="text-center position-relative" title="{{ ucfirst($step) }}" style="width: 16px;">
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center {{ $isCompleted ? 'bg-primary text-white shadow-sm' : 'bg-light text-muted border border-white' }}" 
+                                                         style="width: 16px; height: 16px; font-size: 0.5rem; {{ $isCurrent ? 'transform: scale(1.3); transition: transform 0.2s; z-index: 2;' : '' }}">
+                                                        <i class="bi {{ $icon }}"></i>
+                                                    </div>
+                                                    @if($isCurrent)
+                                                        <div class="position-absolute text-primary fw-bold" style="font-size: 0.55rem; top: 20px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-transform: uppercase;">{{ $step }}</div>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="mt-4"></div>
+                                @endif
+                            </td>
+                            <td class="text-end fw-bold">Rp {{ number_format($so->total_amount, 0, ',', '.') }}</td>
+                            <td>
+                                @if($so->status == 'shipping' || $so->status == 'delivered')
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1"><i class="bi bi-truck me-1"></i> {{ $so->shipping?->tracking_number ?? 'Resi Pending' }}</span>
+                                @else
+                                    <span class="text-muted small">-</span>
                                 @endif
                             </td>
                             <td class="text-end pe-4">

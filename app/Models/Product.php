@@ -10,9 +10,36 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'category_id', 'brand_id', 'supplier_id', 'name', 'sku', 'description',
-        'price', 'cost_price', 'unit', 'image', 'is_active',
+        'category_id',
+        'brand_id',
+        'supplier_id',
+        'name',
+        'sku',
+        'status',
+        'type',
+        'csku',
+        'description',
+        'price',
+        'cost_price',
+        'unit',
+        'image',
+        'is_active',
     ];
+
+    public function scopeLive($query)
+    {
+        return $query->where('status', 'live');
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeUnderReview($query)
+    {
+        return $query->where('status', 'under_review');
+    }
 
     protected $casts = [
         'price'      => 'decimal:2',

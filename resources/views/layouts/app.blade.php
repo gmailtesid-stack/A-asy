@@ -253,69 +253,73 @@
 
     <div class="sidebar-nav mt-2">
 
-        <p class="nav-section-label">Menu Utama</p>
+        <p class="nav-section-label">Dashboard</p>
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i> Control Tower
+        </a>
 
-        @if(auth()->user()->hasPermission('create-so') || auth()->user()->isSuperAdmin())
-        <a href="{{ route('pos.index') }}" class="{{ request()->routeIs('pos.*') ? 'active' : '' }}">
-            <i class="bi bi-grid-1x2-fill"></i> Kasir / POS
+        <p class="nav-section-label">OMS (Order Management)</p>
+        @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+            <i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)
         </a>
         @endif
-
-        @if(auth()->user()->hasPermission('view-reports') || auth()->user()->isSuperAdmin())
-        <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">
-            <i class="bi bi-pie-chart-fill"></i> Laporan Penjualan
+        <a href="#" class="text-secondary" style="pointer-events: none; opacity: 0.6;">
+            <i class="bi bi-shop-window"></i> Marketplaces <span class="badge bg-primary rounded-pill ms-auto" style="font-size:0.55rem;">SOON</span>
         </a>
-        <a href="{{ route('reports.wms') }}" class="{{ request()->routeIs('reports.wms') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart-steps"></i> Laporan Logistik
-        </a>
-        <a href="{{ route('assets.map') }}" class="{{ request()->routeIs('assets.map') ? 'active' : '' }}">
-            <i class="bi bi-geo-fill"></i> GPS Tracking Asset
-        </a>
-        @endif
 
-        <p class="nav-section-label">Logistik</p>
-
+        <p class="nav-section-label">WMS (Warehouse Management)</p>
         @if(auth()->user()->hasPermission('create-po') || auth()->user()->hasPermission('create-grn') || auth()->user()->isSuperAdmin())
         <a href="{{ route('inbound.index') }}" class="{{ request()->routeIs('inbound.*') ? 'active' : '' }}">
-            <i class="bi bi-arrow-down-left-square-fill"></i> Inbound (Masuk)
+            <i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)
         </a>
         @endif
-
         @if(auth()->user()->hasPermission('create-so') || auth()->user()->hasPermission('process-picking') || auth()->user()->isSuperAdmin())
         <a href="{{ route('outbound.index') }}" class="{{ request()->routeIs('outbound.*') ? 'active' : '' }}">
-            <i class="bi bi-arrow-up-right-square-fill"></i> Outbound (Keluar)
+            <i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)
         </a>
         @endif
-
         @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->hasPermission('manage-stock-adjustment') || auth()->user()->isSuperAdmin())
         <a href="{{ route('inventories.index') }}" class="{{ request()->routeIs('inventories.index') ? 'active' : '' }}">
-            <i class="bi bi-archive-fill"></i> Stok Saat Ini
+            <i class="bi bi-archive-fill"></i> Stok Real-time
         </a>
         <a href="{{ route('inventories.logs') }}" class="{{ request()->routeIs('inventories.logs') ? 'active' : '' }}">
             <i class="bi bi-clock-history"></i> Movement Log
         </a>
         @endif
 
-        <p class="nav-section-label">Data Master</p>
-
-        @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->isSuperAdmin())
-        <a href="{{ route('master.index') }}" class="{{ request()->routeIs('master.*') ? 'active' : '' }}">
-            <i class="bi bi-database-fill-gear"></i> Pusat Data SKU
+        <p class="nav-section-label">Retail & Offline</p>
+        @if(auth()->user()->hasPermission('create-so') || auth()->user()->isSuperAdmin())
+        <a href="{{ route('pos.index') }}" class="{{ request()->routeIs('pos.*') ? 'active' : '' }}">
+            <i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline
         </a>
+        @endif
+
+        @if(auth()->user()->hasPermission('view-reports') || auth()->user()->isSuperAdmin())
+        <p class="nav-section-label">Analytics</p>
+        <a href="{{ route('reports.wms') }}" class="{{ request()->routeIs('reports.wms') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart-steps"></i> Metrik Operasional WMS
+        </a>
+        <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">
+            <i class="bi bi-pie-chart-fill"></i> Analisa Penjualan (POS)
+        </a>
+        <a href="{{ route('assets.map') }}" class="{{ request()->routeIs('assets.map') ? 'active' : '' }}">
+            <i class="bi bi-geo-fill"></i> GPS Tracking Asset
+        </a>
+        @endif
+
+        @if(auth()->user()->hasPermission('manage-users') || auth()->user()->hasPermission('manage-master-data') || auth()->user()->isSuperAdmin())
+        <p class="nav-section-label">System & Settings</p>
         @if(auth()->user()->hasPermission('manage-master-data'))
         <a href="{{ route('warehouses.index') }}" class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
-            <i class="bi bi-building-fill"></i> Gudang & Lokasi
+            <i class="bi bi-building-fill"></i> Manajemen Gudang
         </a>
         @endif
-        @endif
-
-        @if(auth()->user()->hasPermission('manage-users') || auth()->user()->isSuperAdmin())
-        <p class="nav-section-label">Sistem</p>
         <a href="{{ route('outlets.index') }}" class="{{ request()->routeIs('outlets.*') ? 'active' : '' }}">
             <i class="bi bi-shop"></i> Cabang / Outlet
         </a>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
-            <i class="bi bi-person-badge-fill"></i> Akun & Role RBAC
+            <i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC
         </a>
         @endif
 
