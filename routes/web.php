@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
         // OMS Channels
         Route::get('/channels',          [\App\Http\Controllers\ChannelController::class, 'index'])->name('channels.index');
         Route::post('/channels/{channel}/sync', [\App\Http\Controllers\ChannelController::class, 'sync'])->name('channels.sync');
+        Route::post('/channels/{channel}/toggle', [\App\Http\Controllers\ChannelController::class, 'toggleConnection'])->name('channels.toggle');
     });
 
     // ── LAPORAN ───────────────────────────────────────────────────

@@ -55,15 +55,37 @@
 
                     <div class="row g-2">
                         <div class="col-8">
-                            <form action="{{ route('channels.sync', $channel) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-primary w-100 rounded-pill fw-bold" {{ $channel->status == 'disconnected' ? 'disabled' : '' }}>
-                                    <i class="bi bi-arrow-repeat me-2"></i> Sinkron Sekarang
-                                </button>
-                            </form>
+                            @if($channel->status == 'connected')
+                                <form action="{{ route('channels.sync', $channel) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-primary w-100 rounded-pill fw-bold" {{ $channel->sync_status == 'processing' ? 'disabled' : '' }}>
+                                        @if($channel->sync_status == 'processing')
+                                            <span class="spinner-border spinner-border-sm me-2"></span> Memproses...
+                                        @else
+                                            <i class="bi bi-arrow-repeat me-2"></i> Sinkron Sekarang
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('channels.toggle', $channel) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">
+                                        <i class="bi bi-plug-fill me-2"></i> Hubungkan Sekarang
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                         <div class="col-4">
-                            <a href="#" class="btn btn-light border w-100 rounded-pill fw-bold"><i class="bi bi-gear"></i></a>
+                            @if($channel->status == 'connected')
+                                <form action="{{ route('channels.toggle', $channel) }}" method="POST" onsubmit="return confirm('Putuskan koneksi?')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-light border w-100 rounded-pill fw-bold text-danger">
+                                        <i class="bi bi-power"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <button class="btn btn-light border w-100 rounded-pill fw-bold" disabled><i class="bi bi-gear"></i></button>
+                            @endif
                         </div>
                     </div>
                 </div>

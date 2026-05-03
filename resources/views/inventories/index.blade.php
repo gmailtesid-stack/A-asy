@@ -84,12 +84,12 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="fw-bold text-dark mb-0">{{ $inventory->warehouse->name }}</div>
+                                <div class="fw-bold text-dark mb-0">{{ $inventory->warehouse->name ?? 'Tanpa Gudang' }}</div>
                                 <span class="badge bg-secondary-subtle text-secondary px-2 rounded-pill" style="font-size: 0.65rem;">
                                     <i class="bi bi-geo-alt-fill me-1"></i> {{ $inventory->location->name ?? 'Default' }}
                                 </span>
                             </td>
-                            <td><span class="text-muted">{{ $inventory->product->category->name }}</span></td>
+                            <td><span class="text-muted">{{ $inventory->product->category->name ?? 'N/A' }}</span></td>
                             <td class="text-center">
                                 <div class="fw-800 {{ $inventory->isLowStock() ? 'text-danger' : 'text-dark' }} fs-5">
                                     {{ $inventory->quantity }}
