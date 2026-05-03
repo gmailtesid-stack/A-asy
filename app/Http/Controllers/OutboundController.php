@@ -5,19 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SalesOrder;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-
-class OutboundController extends Controller implements HasMiddleware
+class OutboundController extends Controller
 {
-    public static function middleware(): array
+    public function __construct()
     {
-        return [
-            new Middleware('permission:create-so',       only: ['create', 'store']),
-            new Middleware('permission:confirm-so',      only: ['confirm']),
-            new Middleware('permission:process-picking', only: ['picking', 'storePicking']),
-            new Middleware('permission:process-shipping',only: ['ship', 'deliver']),
-        ];
+        $this->middleware('permission:create-so')->only(['create', 'store']);
+        $this->middleware('permission:confirm-so')->only(['confirm']);
+        $this->middleware('permission:process-picking')->only(['picking', 'storePicking']);
+        $this->middleware('permission:process-shipping')->only(['ship', 'deliver']);
     }
 
     public function index()

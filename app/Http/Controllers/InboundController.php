@@ -6,18 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\Warehouse;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-
-class InboundController extends Controller implements HasMiddleware
+class InboundController extends Controller
 {
-    public static function middleware(): array
+    public function __construct()
     {
-        return [
-            new Middleware('permission:create-po',  only: ['create', 'store']),
-            new Middleware('permission:confirm-po', only: ['confirm']),
-            new Middleware('permission:create-grn', only: ['receive', 'storeGrn']),
-        ];
+        $this->middleware('permission:create-po')->only(['create', 'store']);
+        $this->middleware('permission:confirm-po')->only(['confirm']);
+        $this->middleware('permission:create-grn')->only(['receive', 'storeGrn']);
     }
 
     public function index()

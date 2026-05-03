@@ -5,17 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-
-class ReportController extends Controller implements HasMiddleware
+class ReportController extends Controller
 {
-    public static function middleware(): array
+    public function __construct()
     {
-        return [
-            // Laporan detail hanya untuk Admin & Supervisor
-            new Middleware('permission:view-reports', only: ['index', 'wms', 'assetMap', 'allOutlets']),
-        ];
+        $this->middleware('permission:view-reports')->only(['index', 'wms', 'assetMap', 'allOutlets']);
     }
 
     public function dashboard()
