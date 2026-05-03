@@ -41,7 +41,11 @@ class ReportController extends Controller implements HasMiddleware
             ->take(10)
             ->get();
 
-        return view('dashboard_wms', compact('stats', 'recentActivity'));
+        // Data for GPS Map
+        $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
+        $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
+
+        return view('dashboard_wms', compact('stats', 'recentActivity', 'outlets', 'warehouses'));
     }
 
     public function index()
