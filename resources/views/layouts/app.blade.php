@@ -62,31 +62,29 @@
         #sidebar {
             width: var(--sidebar-w);
             height: 100vh;
-            background: #ffffff;
+            background: #0f172a;
             position: fixed;
             top: 0; left: 0;
             display: flex;
             flex-direction: column;
             z-index: 1000;
             transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 1px solid #e2e8f0;
+            border-right: 1px solid rgba(255,255,255,0.05);
             overflow-y: auto;
         }
         /* Custom Scrollbar for Sidebar */
         #sidebar::-webkit-scrollbar { width: 6px; }
         #sidebar::-webkit-scrollbar-track { background: transparent; }
-        #sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
-        #sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.1); }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        #sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
         .sidebar-brand {
             padding: 2.5rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid #f1f5f9;
-            background: #fff;
         }
-        .sidebar-brand img { filter: none; }
+        .sidebar-brand img { filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3)); }
 
         .nav-section-label {
-            color: #94a3b8;
+            color: #475569;
             font-size: 0.65rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -98,34 +96,35 @@
             align-items: center;
             gap: 1rem;
             padding: 0.85rem 1.75rem;
-            color: #64748b;
+            color: #94a3b8;
             text-decoration: none;
             font-size: .9rem;
             font-weight: 600;
             border-radius: 12px;
             margin: 4px 16px;
             transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
         }
         .sidebar-nav a:hover {
-            background: #f8fafc;
-            color: var(--primary);
+            background: rgba(255,255,255,.03);
+            color: #f8fafc;
             transform: translateX(5px);
         }
         .sidebar-nav a.active {
-            background: #f1f5ff;
-            color: var(--primary);
-            border: 1px solid #e0e7ff;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 100%);
+            color: #fff;
+            border-left: 3px solid var(--primary);
         }
-        .sidebar-nav a i { font-size: 1.25rem; transition: transform .3s; color: #94a3b8; }
+        .sidebar-nav a i { font-size: 1.25rem; transition: transform .3s; color: #475569; }
         .sidebar-nav a.active i { color: var(--primary); }
         .sidebar-nav a:hover i { transform: scale(1.1); color: var(--primary); }
 
         .sidebar-user {
             margin: 1.5rem 16px;
             padding: 1.25rem;
-            background: #f8fafc;
+            background: rgba(255,255,255,.02);
             border-radius: 20px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(255,255,255,.05);
         }
         .sidebar-user .avatar {
             width: 44px; height: 44px;
@@ -133,7 +132,7 @@
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-weight: 800; font-size: 1.1rem;
-            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
         }
 
         /* ── Main Content ─────────────────────────────────── */
@@ -346,16 +345,16 @@
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mt-3">
             @csrf
-            <button class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 fw-bold" 
-                    style="background:#fff; border: 1px solid #e2e8f0; color: #64748b; transition: all .3s; border-radius: 12px; padding: 8px;">
-                <i class="bi bi-power text-danger"></i> Keluar Sistem
+            <button class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2" 
+                    style="background:rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #94a3b8; transition: all .3s;">
+                <i class="bi bi-power"></i> Keluar Sistem
             </button>
         </form>
     </div>
 
     {{-- Watermark / Powered By --}}
     <div class="text-center pb-4 pt-1">
-        <span style="font-size: 0.6rem; font-weight: 800; color: #94a3b8; letter-spacing: 0.05em; text-transform: uppercase;">
+        <span style="font-size: 0.6rem; font-weight: 800; color: #475569; letter-spacing: 0.05em; text-transform: uppercase;">
             Powered By
         </span><br>
         <span style="font-size: 0.65rem; font-weight: 800; color: #6366f1; letter-spacing: 0.05em;">
