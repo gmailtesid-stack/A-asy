@@ -205,6 +205,13 @@
             color: #fff;
         }
 
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
         /* ── Responsive Sidebar ───────────────────────────── */
         @media (max-width: 991.98px) {
             #sidebar {

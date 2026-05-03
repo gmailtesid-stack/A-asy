@@ -104,17 +104,13 @@
 @endpush
 
 @section('content')
-<!-- BACKGROUND BLOBS UNTUK EFEK GLASSMORPHISM -->
-<div style="position:fixed; top:-100px; right:-100px; width:400px; height:400px; background:radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(0,0,0,0) 70%); border-radius:50%; z-index:-1; pointer-events:none;"></div>
-<div style="position:fixed; bottom:-100px; left:-100px; width:500px; height:500px; background:radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(0,0,0,0) 70%); border-radius:50%; z-index:-1; pointer-events:none;"></div>
-
 <div class="animate__animated animate__fadeIn">
 
     <!-- HEADER: WIDGET JAM, KALENDER & GREETING -->
     <div class="row mb-5 align-items-center">
         <div class="col-xl-7 col-lg-6 mb-4 mb-lg-0">
             <h1 class="fw-800 mb-1" style="font-size: 2.5rem; letter-spacing:-1px;">
-                Selamat Datang, <span class="text-gradient">{{ auth()->user()->name }}</span> 👋
+                Selamat Datang, <span class="text-gradient">{{ auth()->user()->name }}</span>
             </h1>
             <p class="text-muted fs-6 mb-0">Pusat kendali E-ASY WMS & POS. Semua operasi terpantau secara real-time.</p>
         </div>
