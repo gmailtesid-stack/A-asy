@@ -4,52 +4,63 @@
 
 @section('content')
 <div class="animate__animated animate__fadeIn">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
         <div>
-            <h2 class="fw-bold mb-1">Kategori Produk</h2>
-            <p class="text-muted">Kelola pengelompokan produk Anda.</p>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="h4 mb-0 fw-800 text-dark text-uppercase" style="letter-spacing: 0.05em;">Kategori SKU</h2>
+            </div>
+            <p class="text-muted small mb-0">Kelola pengelompokan produk Anda untuk optimasi pencarian dan pelaporan.</p>
         </div>
         @if(auth()->user()->hasPermission('manage-master-data'))
-        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
             <i class="bi bi-plus-lg me-2"></i> Tambah Kategori
         </button>
         @endif
     </div>
 
-    <div class="card border-0 shadow-sm overflow-hidden">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                    <thead class="bg-light text-muted" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                         <tr>
-                            <th class="ps-4">Nama Kategori</th>
-                            <th>Deskripsi</th>
-                            <th class="text-center">Jumlah Produk</th>
-                            <th class="text-end pe-4">Aksi</th>
+                            <th class="ps-4 py-3">Nama Kategori</th>
+                            <th class="py-3">Deskripsi</th>
+                            <th class="py-3 text-center">Produk Terkait</th>
+                            <th class="text-end pe-4 py-3">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="border-top-0">
                         @forelse($categories as $cat)
-                        <tr>
-                            <td class="ps-4 fw-bold text-primary">{{ $cat->name }}</td>
-                            <td>{{ $cat->description ?? '-' }}</td>
+                        <tr class="bg-white border-bottom transition-all">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        <i class="bi bi-grid-fill"></i>
+                                    </div>
+                                    <span class="fw-800 text-dark">{{ $cat->name }}</span>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ $cat->description ?? 'Tidak ada deskripsi' }}</td>
                             <td class="text-center">
-                                <span class="badge bg-info-subtle text-info rounded-pill px-3">{{ $cat->products_count }} Products</span>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold" style="font-size: 0.7rem;">
+                                    {{ $cat->products_count }} ITEMS
+                                </span>
                             </td>
                             <td class="text-end pe-4">
-                                @if(auth()->user()->hasPermission('manage-master-data'))
-                                <button class="btn btn-sm btn-light rounded-pill" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $cat->id }}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form action="{{ route('categories.destroy', $cat) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-light text-danger rounded-pill" onclick="return confirm('Hapus kategori ini?')">
-                                        <i class="bi bi-trash"></i>
+                                <div class="d-flex justify-content-end gap-2">
+                                    @if(auth()->user()->hasPermission('manage-master-data'))
+                                    <button class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px;" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $cat->id }}">
+                                        <i class="bi bi-pencil text-primary"></i>
                                     </button>
-                                </form>
-                                @else
-                                <span class="text-muted small">View Only</span>
-                                @endif
+                                    <form action="{{ route('categories.destroy', $cat) }}" method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px;" onclick="return confirm('Hapus kategori ini?')">
+                                            <i class="bi bi-trash text-danger"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
 
@@ -118,3 +129,10 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .fw-800 { font-weight: 800; }
+    .transition-all:hover { background-color: #f8fafc !important; }
+</style>
+@endpush
