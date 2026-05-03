@@ -35,5 +35,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Transaction::class, TransactionPolicy::class);
         Gate::policy(Outlet::class,      OutletPolicy::class);
         Gate::policy(User::class,        UserPolicy::class);
+
+        // Share low stock count to all views
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            if (auth()->check()) {
+                $lowStockCount = \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count();
+                $view->with('globalLowStockCount', $lowStockCount);
+            }
+        });
     }
 }

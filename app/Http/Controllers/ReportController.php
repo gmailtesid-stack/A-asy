@@ -28,8 +28,15 @@ class ReportController extends Controller implements HasMiddleware
                 ->sum(DB::raw('inventories.quantity * products.cost_price')),
             'low_stock_count'   => \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count(),
             'pending_po'        => \App\Models\PurchaseOrder::whereIn('status', ['pending', 'confirmed'])->count(),
-            'pending_so'        => \App\Models\SalesOrder::whereIn('status', ['pending', 'confirmed', 'picking', 'packing'])->count(),
+            'pending_so'        => \App\Models\SalesOrder::whereIn('status', ['pending', 'confirmed'])->count(),
+            'picking_so'        => \App\Models\SalesOrder::where('status', 'picking')->count(),
+            'packing_so'        => \App\Models\SalesOrder::where('status', 'packing')->count(),
             'picking_failures'  => \App\Models\PickingItem::whereIn('status', ['not_found', 'partial'])->count(),
+            
+            // OMS Lifecycle Stats
+            'oms_live'          => \App\Models\Product::where('status', 'live')->count(),
+            'oms_draft'         => \App\Models\Product::where('status', 'draft')->count(),
+            'oms_review'        => \App\Models\Product::where('status', 'under_review')->count(),
         ];
 
         $recentActivity = DB::table('inventory_logs')
@@ -103,6 +110,54 @@ class ReportController extends Controller implements HasMiddleware
             'top_products'  => $this->getTopSellingProducts($outletId, 5),
             'summary'       => $this->getSummaryStats($outletId),
         ]);
+    }
+
+    public function exportSalesCsv()
+    {
+        $user     = auth()->user();
+        $outletId = $user->isSuperAdmin() ? null : $user->outlet_id;
+
+        $fileName = 'sales_report_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $query = DB::table('transactions as t')
+            ->join('transaction_details as td', 't.id', '=', 'td.transaction_id')
+            ->select('t.transaction_number', 't.created_at', 'td.product_name', 'td.quantity', 'td.price', 'td.subtotal', 't.total')
+            ->where('t.status', 'completed');
+
+        if ($outletId) $query->where('t.outlet_id', $outletId);
+
+        $results = $query->orderBy('t.created_at', 'desc')->get();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('No. Transaksi', 'Tanggal', 'Nama Produk', 'Jumlah', 'Harga Satuan', 'Subtotal', 'Total Transaksi');
+
+        $callback = function() use($results, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($results as $row) {
+                fputcsv($file, array(
+                    $row->transaction_number,
+                    $row->created_at,
+                    $row->product_name,
+                    $row->quantity,
+                    $row->price,
+                    $row->subtotal,
+                    $row->total
+                ));
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     private function getDailyRevenue(?int $outletId, int $days = 30): array

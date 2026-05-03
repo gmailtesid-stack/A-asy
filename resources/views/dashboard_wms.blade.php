@@ -194,40 +194,84 @@
 
     <!-- STATS CARDS OVERVIEW -->
     <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="glass-panel p-4 h-100" style="background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);">
-                <div class="stat-icon-wrapper bg-white bg-opacity-25 text-white mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-panel p-4 h-100" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+                <div class="stat-icon-wrapper bg-white bg-opacity-20 text-white mb-4">
                     <i class="bi bi-wallet2"></i>
                 </div>
-                <div class="stat-label text-white text-opacity-75">Total Nilai Stok Asset</div>
+                <div class="stat-label text-white text-opacity-75">Inventory Asset Value</div>
                 <div class="stat-value text-white">Rp {{ number_format($stats['total_stock_value'], 0, ',', '.') }}</div>
+                <div class="mt-3 pt-3 border-top border-white border-opacity-10">
+                    <div class="d-flex justify-content-between text-white small opacity-75">
+                        <span>OMS Live SKU</span>
+                        <span class="fw-bold">{{ $stats['oms_live'] }}</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-xl-3 col-md-6">
             <div class="glass-panel p-4 h-100">
-                <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger mb-4">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-danger-subtle text-danger rounded-pill px-2">Urgent</span>
+                    </div>
                 </div>
                 <div class="stat-label">Stok Kritis / Menipis</div>
                 <div class="stat-value text-danger">{{ $stats['low_stock_count'] }} <span class="fs-6 text-muted fw-normal">Items</span></div>
+                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i> Perlu restock segera.</p>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-xl-3 col-md-6">
             <div class="glass-panel p-4 h-100">
-                <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary mb-4">
-                    <i class="bi bi-cart-plus-fill"></i>
+                <div class="stat-icon-wrapper bg-info bg-opacity-10 text-info mb-4">
+                    <i class="bi bi-box-seam-fill"></i>
                 </div>
-                <div class="stat-label">Purchase Order Pending</div>
-                <div class="stat-value text-primary">{{ $stats['pending_po'] }} <span class="fs-6 text-muted fw-normal">Orders</span></div>
+                <div class="stat-label">OMS Lifecycle Status</div>
+                <div class="d-flex align-items-center gap-3 mt-2">
+                    <div class="text-center">
+                        <div class="fw-800 text-dark" style="font-size: 1.2rem;">{{ $stats['oms_draft'] }}</div>
+                        <div class="text-muted fs-xs fw-bold">DRAFT</div>
+                    </div>
+                    <div class="vr opacity-25"></div>
+                    <div class="text-center">
+                        <div class="fw-800 text-warning" style="font-size: 1.2rem;">{{ $stats['oms_review'] }}</div>
+                        <div class="text-muted fs-xs fw-bold">REVIEW</div>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 6px; border-radius: 10px; background: rgba(0,0,0,0.05);">
+                    @php 
+                        $total = max(1, $stats['oms_live'] + $stats['oms_draft'] + $stats['oms_review']);
+                        $pLive = ($stats['oms_live'] / $total) * 100;
+                        $pDraft = ($stats['oms_draft'] / $total) * 100;
+                    @endphp
+                    <div class="progress-bar bg-success" style="width: {{ $pLive }}%"></div>
+                    <div class="progress-bar bg-secondary" style="width: {{ $pDraft }}%"></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="glass-panel p-4 h-100">
-                <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning mb-4">
-                    <i class="bi bi-search"></i>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-panel p-4 h-100" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: none;">
+                <div class="stat-icon-wrapper bg-white bg-opacity-10 text-white mb-4">
+                    <i class="bi bi-truck"></i>
                 </div>
-                <div class="stat-label">Picking Failures (Not Found)</div>
-                <div class="stat-value text-warning">{{ $stats['picking_failures'] }} <span class="fs-6 text-muted fw-normal">Issues</span></div>
+                <div class="stat-label text-white text-opacity-75">Order Pipeline</div>
+                <div class="row g-2 mt-2">
+                    <div class="col-4 text-center">
+                        <div class="fw-800 text-white" style="font-size: 1.1rem;">{{ $stats['pending_so'] }}</div>
+                        <div class="text-white text-opacity-50 fs-xs">NEW</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="fw-800 text-warning" style="font-size: 1.1rem;">{{ $stats['picking_so'] }}</div>
+                        <div class="text-white text-opacity-50 fs-xs">PICK</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="fw-800 text-info" style="font-size: 1.1rem;">{{ $stats['packing_so'] }}</div>
+                        <div class="text-white text-opacity-50 fs-xs">PACK</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

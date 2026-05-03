@@ -43,6 +43,11 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/inventories/logs',      [\App\Http\Controllers\InventoryController::class, 'logs'])->name('inventories.logs');
         Route::resource('inventories',  \App\Http\Controllers\InventoryController::class);
+
+        // Stock Transfer
+        Route::post('/stock_transfers/{stock_transfer}/ship',    [\App\Http\Controllers\StockTransferController::class, 'ship'])->name('stock_transfers.ship');
+        Route::post('/stock_transfers/{stock_transfer}/receive', [\App\Http\Controllers\StockTransferController::class, 'receive'])->name('stock_transfers.receive');
+        Route::resource('stock_transfers', \App\Http\Controllers\StockTransferController::class);
     });
 
     // ── DATA MASTER ───────────────────────────────────────────────
@@ -54,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('products',     ProductController::class);
         Route::resource('warehouses',   \App\Http\Controllers\WarehouseController::class);
         Route::resource('locations',    \App\Http\Controllers\LocationController::class);
+
+        // OMS Channels
+        Route::get('/channels',          [\App\Http\Controllers\ChannelController::class, 'index'])->name('channels.index');
+        Route::post('/channels/{channel}/sync', [\App\Http\Controllers\ChannelController::class, 'sync'])->name('channels.sync');
     });
 
     // ── LAPORAN ───────────────────────────────────────────────────
@@ -62,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/wms',              [ReportController::class, 'wms'])->name('reports.wms');
         Route::get('/assets/map',               [ReportController::class, 'assetMap'])->name('assets.map');
         Route::get('/api/reports/live-stats',   [ReportController::class, 'liveStats'])->name('reports.live');
+        Route::get('/reports/export/sales',     [ReportController::class, 'exportSalesCsv'])->name('reports.export.sales');
     });
 
     // ── ADMINISTRASI SISTEM ────────────────────────────────────────

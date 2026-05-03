@@ -263,10 +263,10 @@
         <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
             <i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)
         </a>
-        @endif
-        <a href="#" class="text-secondary" style="pointer-events: none; opacity: 0.6;">
-            <i class="bi bi-shop-window"></i> Marketplaces <span class="badge bg-primary rounded-pill ms-auto" style="font-size:0.55rem;">SOON</span>
+        <a href="{{ route('channels.index') }}" class="{{ request()->routeIs('channels.*') ? 'active' : '' }}">
+            <i class="bi bi-intersect"></i> Marketplace Channels
         </a>
+        @endif
 
         <p class="nav-section-label">WMS (Warehouse Management)</p>
         @if(auth()->user()->hasPermission('create-po') || auth()->user()->hasPermission('create-grn') || auth()->user()->isSuperAdmin())
@@ -282,6 +282,9 @@
         @if(auth()->user()->hasPermission('view-master-data') || auth()->user()->hasPermission('manage-stock-adjustment') || auth()->user()->isSuperAdmin())
         <a href="{{ route('inventories.index') }}" class="{{ request()->routeIs('inventories.index') ? 'active' : '' }}">
             <i class="bi bi-archive-fill"></i> Stok Real-time
+        </a>
+        <a href="{{ route('stock_transfers.index') }}" class="{{ request()->routeIs('stock_transfers.*') ? 'active' : '' }}">
+            <i class="bi bi-arrow-left-right"></i> Stock Transfer
         </a>
         <a href="{{ route('inventories.logs') }}" class="{{ request()->routeIs('inventories.logs') ? 'active' : '' }}">
             <i class="bi bi-clock-history"></i> Movement Log
@@ -377,6 +380,15 @@
                 <div class="fw-800 text-primary" id="clock-time" style="font-size: 1.1rem; line-height: 1;">00:00:00</div>
                 <div class="text-muted small" id="clock-date" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Memuat...</div>
             </div>
+            <div class="vr mx-2 opacity-25"></div>
+            <a href="{{ route('inventories.index') }}" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center position-relative" style="width: 40px; height: 40px; border-color: var(--border-color) !important;">
+                <i class="bi bi-bell-fill text-primary"></i>
+                @if(isset($globalLowStockCount) && $globalLowStockCount > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                    {{ $globalLowStockCount }}
+                </span>
+                @endif
+            </a>
             <button id="theme-toggle" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-color: var(--border-color) !important;">
                 <i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i>
             </button>

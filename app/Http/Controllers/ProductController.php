@@ -52,6 +52,9 @@ class ProductController extends Controller
             'name'        => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'sku'         => 'required|string|unique:products,sku',
+            'csku'        => 'nullable|string',
+            'type'        => 'required|in:simple,variant,kit',
+            'status'      => 'required|in:live,draft,under_review,failed',
             'price'       => 'required|numeric|min:0',
             'cost_price'  => 'required|numeric|min:0',
             'unit'        => 'required|string',
@@ -67,16 +70,19 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'name'        => $request->name,
             'sku'         => $request->sku,
+            'csku'        => $request->csku ?? $request->sku,
+            'type'        => $request->type,
+            'status'      => $request->status,
             'description' => $request->description,
             'price'       => $request->price,
             'cost_price'  => $request->cost_price,
             'unit'        => $request->unit,
             'image'       => $imageUrl,
-            'is_active'   => $request->boolean('is_active', true),
+            'is_active'   => $request->status === 'live',
         ]);
 
         return redirect()->route('products.index')
-            ->with('success', 'Produk berhasil ditambahkan!');
+            ->with('success', 'Produk berhasil ditambahkan ke katalog!');
     }
 
     public function edit(Product $product)
@@ -90,13 +96,14 @@ class ProductController extends Controller
         $request->validate([
             'name'        => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'type'        => 'required|in:simple,variant,kit',
+            'status'      => 'required|in:live,draft,under_review,failed',
             'price'       => 'required|numeric|min:0',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $imageUrl = $product->image;
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
             if ($product->image) {
                 $publicId = CloudinaryService::extractPublicId($product->image);
                 if ($publicId) $this->cloudinary->delete($publicId);
@@ -104,10 +111,14 @@ class ProductController extends Controller
             $imageUrl = $this->cloudinary->upload($request->file('image')->getRealPath(), 'easy-pos/products');
         }
 
-        $product->update(array_merge($request->except('image'), ['image' => $imageUrl]));
+        $product->update(array_merge($request->except('image'), [
+            'image' => $imageUrl,
+            'csku'  => $request->csku ?? $product->csku,
+            'is_active' => $request->status === 'live',
+        ]));
 
         return redirect()->route('products.index')
-            ->with('success', 'Produk berhasil diupdate!');
+            ->with('success', 'Data katalog produk diperbarui!');
     }
 
     public function destroy(Product $product)

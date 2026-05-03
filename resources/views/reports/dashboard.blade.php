@@ -113,9 +113,14 @@
         <div class="chart-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="mb-0">📈 Pendapatan Harian (30 Hari Terakhir)</h6>
-                <button class="btn btn-sm btn-outline-primary" onclick="refreshCharts()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh
-                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('reports.export.sales') }}" class="btn btn-sm btn-success rounded-pill px-3">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Export CSV
+                    </a>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="refreshCharts()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
             </div>
             <canvas id="dailyRevenueChart"></canvas>
         </div>
