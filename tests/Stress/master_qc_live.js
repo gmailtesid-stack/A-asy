@@ -145,6 +145,6 @@ export async function visualTesting() {
     await page.screenshot({ path: 'qc-artifacts/e-asy-403-rigid-server.png' });
 
   } finally {
-    page.close();
+    await page.close();
   }
 }
