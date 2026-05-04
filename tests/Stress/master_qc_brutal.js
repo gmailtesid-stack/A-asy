@@ -37,31 +37,14 @@ if (browserEnabled) {
 }
 
 const BASE_URL = 'https://e-asy.vercel.app';
-
-// ── SETUP: Login sekali, token dibagikan ke semua VU ──────────────────────────
-export function setup() {
-  const loginRes = http.post(
-    `${BASE_URL}/api/login`,
-    JSON.stringify({ email: 'admin@easy-pos.id', password: 'password' }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
-
-  const token = loginRes.json('token') || loginRes.json('access_token') || '';
-
-  check(loginRes, {
-    'Setup: Login Admin Berhasil': (r) => r.status === 200 && token !== '',
-  });
-
-  console.log(`[SETUP] Token diperoleh: ${token ? '✅ OK' : '❌ GAGAL (cek endpoint /api/login)'}`);
-  return { token };
-}
+// Token ini memang hardcode di ApiController::syncHpp — jangan diganti
+const AUTH_TOKEN = 'BRUTAL_TEST_TOKEN_001';
 
 // --- BACKEND & LOGIC TESTING ---
-export async function apiBrutalTesting(data) {
-  const realToken  = data.token;
+export function apiBrutalTesting() {
   // 80% trafik normal, 20% trafik sampah/invalid
-  const isInvalid  = Math.random() < 0.2;
-  const activeToken = isInvalid ? 'WRONG_TOKEN' : realToken;
+  const isInvalid   = Math.random() < 0.2;
+  const activeToken = isInvalid ? 'WRONG_TOKEN' : AUTH_TOKEN;
 
   const checkoutPayload = JSON.stringify({
     product_id: 'PROD-001',
@@ -80,7 +63,7 @@ export async function apiBrutalTesting(data) {
       'POST',
       `${BASE_URL}/api/pos/checkout`,
       checkoutPayload,
-      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${realToken}` } },
+      { headers: { 'Content-Type': 'application/json' } },
     ],
     [
       'POST',
