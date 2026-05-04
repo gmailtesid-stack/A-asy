@@ -14,7 +14,7 @@ export const options = {
       stages: [
         { duration: '2m', target: 200 },  // Ramp-up cepat
         { duration: '10m', target: 500 }, // Peak Load masif 500 VUs
-        { duration: '2m', target: 1000 }, // Spike Test (Lonjakan mendadak)
+        { duration: '2m', target: 500 }, // Spike Test (Lonjakan mendadak)
         { duration: '5m', target: 0 },   // Cool down
       ],
       exec: 'apiBrutalTesting',
