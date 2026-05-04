@@ -40,7 +40,7 @@
         }
 
         [data-theme='dark'] {
-            --bg-main:    #020617;
+            --bg-main:    #0a0a0a;
             --card-bg:    #0f172a;
             --text-main:  #f8fafc;
             --text-muted: #94a3b8;
@@ -355,7 +355,7 @@
 <nav id="sidebar">
     <div class="sidebar-brand">
         <div class="d-flex justify-content-center">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 160px; height: auto; object-fit: contain;">
+            <img src="{{ asset('images/logo.png') }}" id="semicolon-brand-logo" alt="Logo" style="width: 160px; height: auto; object-fit: contain;">
         </div>
         <small class="d-block text-center mt-2" style="color: #94a3b8; font-size: 0.75rem;">{{ auth()->user()->outlet?->name ?? 'Pusat Distribusi' }}</small>
     </div>
