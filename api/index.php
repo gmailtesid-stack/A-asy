@@ -66,9 +66,9 @@ try {
     // KONFIGURASI SSL UNTUK TIDB CLOUD (Dinamis via ENV)
     if (env('DB_CONNECTION') === 'mysql') {
         $app['config']->set('database.connections.mysql.options', array_filter([
-            \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-        ]));
+            \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
+            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+        ], fn($value) => $value !== null));
     }
 
     // Cek APP_KEY
