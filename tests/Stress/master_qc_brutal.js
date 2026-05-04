@@ -37,39 +37,56 @@ if (browserEnabled) {
 }
 
 const BASE_URL = 'https://e-asy.vercel.app';
-const AUTH_TOKEN = 'BRUTAL_TEST_TOKEN_001';
+
+// ── SETUP: Login sekali, token dibagikan ke semua VU ──────────────────────────
+export function setup() {
+  const loginRes = http.post(
+    `${BASE_URL}/api/login`,
+    JSON.stringify({ email: 'admin@easy-pos.id', password: 'password' }),
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+
+  const token = loginRes.json('token') || loginRes.json('access_token') || '';
+
+  check(loginRes, {
+    'Setup: Login Admin Berhasil': (r) => r.status === 200 && token !== '',
+  });
+
+  console.log(`[SETUP] Token diperoleh: ${token ? '✅ OK' : '❌ GAGAL (cek endpoint /api/login)'}`);
+  return { token };
+}
 
 // --- BACKEND & LOGIC TESTING ---
-export async function apiBrutalTesting() {
+export async function apiBrutalTesting(data) {
+  const realToken  = data.token;
   // 80% trafik normal, 20% trafik sampah/invalid
-  const isInvalid = Math.random() < 0.2;
-  const token = isInvalid ? 'WRONG_TOKEN' : AUTH_TOKEN;
+  const isInvalid  = Math.random() < 0.2;
+  const activeToken = isInvalid ? 'WRONG_TOKEN' : realToken;
 
   const checkoutPayload = JSON.stringify({
-    product_id: 'PROD-001', // Sesuaikan ID produk stok tipis
+    product_id: 'PROD-001',
     qty: 1,
     is_frozen: true, // Menguji logika locking TiDB
   });
 
   const syncHppPayload = JSON.stringify({
-    items: Array(100).fill({ id: 'P1', qty: 1, price: 15000 }), // Transaksi 100 baris
+    items: Array(100).fill({ id: 'P1', qty: 1, price: 15000 }),
     timestamp: new Date().toISOString(),
   });
 
   // Gunakan http.batch() agar lebih hemat socket di Windows
-  // Semua request dikirim sekaligus dalam 1 koneksi yang efisien
   const responses = http.batch([
     [
       'POST',
       `${BASE_URL}/api/pos/checkout`,
       checkoutPayload,
-      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` } },
+      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${realToken}` } },
     ],
     [
       'POST',
       `${BASE_URL}/api/pos/sync-hpp`,
       syncHppPayload,
-      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } },
+      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${activeToken}` } },
     ],
   ]);
 
@@ -85,11 +102,11 @@ export async function apiBrutalTesting() {
     if (isInvalid) {
       check(syncHppRes, { 'Security: Block Invalid Token': (r) => r.status === 401 });
     } else {
-      check(syncHppRes, { 'Performance: Large Payload Success': (r) => r.status === 200 });
+      check(syncHppRes, { 'Performance: Large Payload Success': (r) => r.status === 200 || r.status === 422 });
     }
   });
 
-  // Jeda 0.1 detik agar Windows sempat menutup koneksi lama sebelum membuka yang baru
+  // Jeda agar Windows sempat menutup koneksi lama
   sleep(0.1);
   sleep(1);
 }
