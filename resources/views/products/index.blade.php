@@ -88,7 +88,7 @@
                         <tr class="transition-all bg-white border-bottom">
                             <td class="ps-4"><input type="checkbox" class="form-check-input"></td>
                             <td>
-                                <img src="{{ $product->image_url }}" alt="" class="rounded border" style="width: 40px; height: 40px; object-fit: cover; background: #f8fafc;" onerror="this.src='https://placehold.co/100x100?text=IMG'">
+                                <img src="{{ $product->image_url }}" alt="" class="rounded border" style="width: 40px; height: 40px; object-fit: cover; background: var(--bg-main);" onerror="this.src='https://placehold.co/100x100?text=IMG'">
                             </td>
                             <td><span class="text-primary fw-bold">{{ $product->sku }}</span></td>
                             <td>
@@ -153,7 +153,16 @@
 <style>
     .fw-500 { font-weight: 500; }
     .fw-800 { font-weight: 800; }
-    .transition-all:hover { background-color: #f8fafc !important; }
-    .table>tbody>tr>td { vertical-align: middle; padding-top: 12px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
+    .transition-all:hover { background-color: rgba(99, 102, 241, 0.05) !important; }
+    .table>tbody>tr>td { 
+        vertical-align: middle; 
+        padding-top: 12px; 
+        padding-bottom: 12px; 
+        border-bottom: 1px solid var(--border-color); 
+    }
+    
+    [data-theme='dark'] .table thead {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
 </style>
 @endsection

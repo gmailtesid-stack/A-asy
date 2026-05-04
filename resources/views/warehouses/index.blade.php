@@ -32,14 +32,14 @@
                     <h5 class="fw-bold mb-1">{{ $warehouse->name }}</h5>
                     <p class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i> {{ $warehouse->address ?? 'Alamat tidak diatur' }}</p>
                     
-                    <div class="bg-light rounded-3 p-3 mb-3">
+                    <div class="themed-summary rounded-3 p-3 mb-3">
                         <div class="d-flex justify-content-between small text-muted mb-2">
                             <span>Total Lokasi (Rak/Bin)</span>
-                            <span class="fw-bold text-dark">{{ $warehouse->locations->count() }}</span>
+                            <span class="fw-bold text-main">{{ $warehouse->locations->count() }}</span>
                         </div>
                         <div class="d-flex justify-content-between small text-muted">
                             <span>Total Stok SKU</span>
-                            <span class="fw-bold text-dark">{{ $warehouse->inventories->count() }}</span>
+                            <span class="fw-bold text-main">{{ $warehouse->inventories->count() }}</span>
                         </div>
                     </div>
 
@@ -115,4 +115,8 @@
         </div>
     </div>
 </div>
+<style>
+    .themed-summary { background: rgba(99, 102, 241, 0.05); border: 1px solid var(--border-color); }
+    .text-main { color: var(--text-main); }
+</style>
 @endsection
