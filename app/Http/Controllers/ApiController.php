@@ -19,14 +19,28 @@ class ApiController extends Controller
     {
         try {
             $transactionId = 'QC-' . strtoupper(Str::random(8)) . '-' . time();
-
+            
             $outlet = DB::table('outlets')->first();
+            $outletId = $outlet ? $outlet->id : DB::table('outlets')->insertGetId([
+                'name' => 'QC Outlet',
+                'code' => 'QC-' . rand(10, 99),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             $user = DB::table('users')->first();
+            $userId = $user ? $user->id : DB::table('users')->insertGetId([
+                'name' => 'QC User',
+                'email' => 'qc' . rand(10, 99) . '@example.com',
+                'password' => bcrypt('password'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
             // Query nyata ke TiDB — ini yang bikin grafik bergerak
             DB::table('transactions')->insert([
-                'outlet_id'      => $outlet ? $outlet->id : 1,
-                'user_id'        => $user ? $user->id : 1,
+                'outlet_id'      => $outletId,
+                'user_id'        => $userId,
                 'invoice_number' => $transactionId,
                 'subtotal'       => rand(10000, 500000),
                 'total'          => rand(10000, 500000),
@@ -140,9 +154,21 @@ class ApiController extends Controller
             $items = $request->items ?? [];
 
             $outlet = DB::table('outlets')->first();
+            $outletId = $outlet ? $outlet->id : DB::table('outlets')->insertGetId([
+                'name' => 'QC Outlet',
+                'code' => 'QC-' . rand(100, 999),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
             $user = DB::table('users')->first();
-            $outletId = $outlet ? $outlet->id : 1;
-            $userId = $user ? $user->id : 1;
+            $userId = $user ? $user->id : DB::table('users')->insertGetId([
+                'name' => 'QC User',
+                'email' => 'qc' . rand(100, 999) . '@example.com',
+                'password' => bcrypt('password'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
             // INSERT batch ke DB agar TiDB dashboard bergerak
             $rows = array_map(fn($item) => [
