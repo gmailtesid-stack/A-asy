@@ -41,43 +41,56 @@ const AUTH_TOKEN = 'BRUTAL_TEST_TOKEN_001';
 
 // --- BACKEND & LOGIC TESTING ---
 export async function apiBrutalTesting() {
+  // 80% trafik normal, 20% trafik sampah/invalid
+  const isInvalid = Math.random() < 0.2;
+  const token = isInvalid ? 'WRONG_TOKEN' : AUTH_TOKEN;
+
+  const checkoutPayload = JSON.stringify({
+    product_id: 'PROD-001', // Sesuaikan ID produk stok tipis
+    qty: 1,
+    is_frozen: true, // Menguji logika locking TiDB
+  });
+
+  const syncHppPayload = JSON.stringify({
+    items: Array(100).fill({ id: 'P1', qty: 1, price: 15000 }), // Transaksi 100 baris
+    timestamp: new Date().toISOString(),
+  });
+
+  // Gunakan http.batch() agar lebih hemat socket di Windows
+  // Semua request dikirim sekaligus dalam 1 koneksi yang efisien
+  const responses = http.batch([
+    [
+      'POST',
+      `${BASE_URL}/api/pos/checkout`,
+      checkoutPayload,
+      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` } },
+    ],
+    [
+      'POST',
+      `${BASE_URL}/api/pos/sync-hpp`,
+      syncHppPayload,
+      { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } },
+    ],
+  ]);
+
+  const [checkoutRes, syncHppRes] = responses;
+
   group('Race Condition: Stok Perebutan', () => {
-    const payload = JSON.stringify({
-      product_id: 'PROD-001', // Sesuaikan ID produk stok tipis
-      qty: 1,
-      is_frozen: true // Menguji logika locking TiDB
-    });
-
-    const res = http.post(`${BASE_URL}/api/pos/checkout`, payload, {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` },
-    });
-
-    check(res, {
-      'Logika TiDB: Stok Tidak Minus': (r) => r.status === 200 || r.status === 409 || r.status === 201, // 409 jika stok habis duluan, 201 for creation
+    check(checkoutRes, {
+      'Logika TiDB: Stok Tidak Minus': (r) => r.status === 200 || r.status === 409 || r.status === 201,
     });
   });
 
   group('Stress Test: Payload Besar & Invalid Token', () => {
-    // 80% trafik normal, 20% trafik sampah/invalid
-    const isInvalid = Math.random() < 0.2;
-    const token = isInvalid ? 'WRONG_TOKEN' : AUTH_TOKEN;
-    
-    const bigPayload = JSON.stringify({
-      items: Array(100).fill({ id: 'P1', qty: 1, price: 15000 }), // Transaksi 100 baris
-      timestamp: new Date().toISOString(),
-    });
-
-    const res = http.post(`${BASE_URL}/api/pos/sync-hpp`, bigPayload, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
     if (isInvalid) {
-      check(res, { 'Security: Block Invalid Token': (r) => r.status === 401 });
+      check(syncHppRes, { 'Security: Block Invalid Token': (r) => r.status === 401 });
     } else {
-      check(res, { 'Performance: Large Payload Success': (r) => r.status === 200 });
+      check(syncHppRes, { 'Performance: Large Payload Success': (r) => r.status === 200 });
     }
   });
 
+  // Jeda 0.1 detik agar Windows sempat menutup koneksi lama sebelum membuka yang baru
+  sleep(0.1);
   sleep(1);
 }
 
