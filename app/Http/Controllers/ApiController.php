@@ -106,11 +106,15 @@ class ApiController extends Controller
                 'server_status'    => 'HEALTHY',
                 'total_tx'         => $txCount,
                 'total_products'   => $prodCount,
+                'debug_ca_path'    => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem'),
+                'debug_ca_exists'  => file_exists(env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem')),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Database connection failed: ' . $e->getMessage(),
+                'debug_ca_path'    => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem'),
+                'debug_ca_exists'  => file_exists(env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem')),
             ], 500);
         }
     }
