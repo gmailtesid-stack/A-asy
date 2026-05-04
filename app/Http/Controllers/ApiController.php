@@ -39,13 +39,10 @@ class ApiController extends Controller
                 'product_pool'      => $productCount,
             ]);
         } catch (\Exception $e) {
-            // Fallback jika tabel belum ready
             return response()->json([
-                'success'        => true,
-                'accounting_synced' => true,
-                'transaction_id' => 'QC-MOCK-' . time(),
-                'note'           => 'fallback-mock',
-            ]);
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -65,7 +62,10 @@ class ApiController extends Controller
                 'stock_pool'  => $inventoryCount,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => true, 'status' => 'IN_TRANSIT', 'mutation_id' => 'MUT-MOCK-' . time()]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -84,7 +84,10 @@ class ApiController extends Controller
                 'low_stock'    => $auditCount,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => true, 'stock_locked' => true, 'audit_id' => 'AUD-MOCK-' . time()]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -105,7 +108,10 @@ class ApiController extends Controller
                 'total_products'   => $prodCount,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['vips_online' => rand(10, 50), 'tidb_latency_ms' => rand(5, 20), 'server_status' => 'HEALTHY']);
+            return response()->json([
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -144,12 +150,9 @@ class ApiController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'success'            => true,
-                'processed_items'    => count($request->items ?? []),
-                'tidb_affected_rows' => rand(100, 1000),
-                'processing_time_ms' => rand(50, 500),
-                'note'               => 'fallback-mock',
-            ]);
+                'success' => false,
+                'error' => 'Database connection failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

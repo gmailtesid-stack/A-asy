@@ -37,8 +37,8 @@ export const options = {
   },
 };
 
-const BASE_URL = 'https://nusa-cyber.vercel.app/api';
-const FRONTEND_URL = 'https://nusa-cyber.vercel.app/pos';
+const BASE_URL = 'https://e-asy.vercel.app/api';
+const FRONTEND_URL = 'https://e-asy.vercel.app/pos';
 
 // ====================================================================
 // FUNGSI 1: PENGUJIAN LOGIKA BACK-END & DATABASE (TiDB)
