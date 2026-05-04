@@ -21,7 +21,7 @@ export const options = {
     },
   },
   thresholds: {
-    http_req_failed: ['rate<0.05'], // Toleransi error naik ke 5% karena tes brutal
+    http_req_failed: ['rate<0.15'], // 15% toleransi: 20% req sengaja pakai invalid token (security test)
     http_req_duration: ['p(95)<2000'], // Respon di bawah 2 detik
   },
 };
