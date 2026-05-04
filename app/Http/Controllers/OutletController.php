@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Outlet;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class OutletController extends Controller
 {
@@ -32,9 +33,16 @@ class OutletController extends Controller
             'phone'   => 'nullable|string|max:20',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'photo'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        Outlet::create($request->all());
+        $data = $request->except('photo');
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('outlets', 'public');
+            $data['photo'] = Storage::url($path);
+        }
+
+        Outlet::create($data);
 
         return redirect()->route('outlets.index')->with('success', 'Outlet berhasil ditambahkan.');
     }
@@ -56,9 +64,19 @@ class OutletController extends Controller
             'phone'   => 'nullable|string|max:20',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'photo'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $outlet->update($request->all());
+        $data = $request->except('photo');
+        if ($request->hasFile('photo')) {
+            if ($outlet->photo && file_exists(public_path($outlet->photo))) {
+                @unlink(public_path($outlet->photo));
+            }
+            $path = $request->file('photo')->store('outlets', 'public');
+            $data['photo'] = Storage::url($path);
+        }
+
+        $outlet->update($data);
 
         return redirect()->route('outlets.index')->with('success', 'Outlet berhasil diperbarui.');
     }
@@ -69,6 +87,10 @@ class OutletController extends Controller
         
         if ($outlet->users()->exists()) {
             return back()->with('error', 'Outlet tidak bisa dihapus karena masih memiliki user.');
+        }
+
+        if ($outlet->photo && file_exists(public_path($outlet->photo))) {
+            @unlink(public_path($outlet->photo));
         }
 
         $outlet->delete();

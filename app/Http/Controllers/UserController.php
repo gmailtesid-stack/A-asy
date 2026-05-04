@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Outlet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -38,15 +39,23 @@ class UserController extends Controller
             'role_id'   => 'required|exists:roles,id',
             'outlet_id' => 'nullable|exists:outlets,id',
             'is_active' => 'boolean',
+            'photo'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $user = User::create([
+        $data = [
             'name'      => $request->name,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
             'outlet_id' => $request->outlet_id,
             'is_active' => $request->boolean('is_active', true),
-        ]);
+        ];
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('users', 'public');
+            $data['photo'] = Storage::url($path);
+        }
+
+        $user = User::create($data);
 
         $user->roles()->sync([$request->role_id]);
 
@@ -69,6 +78,7 @@ class UserController extends Controller
             'role_id'   => 'required|exists:roles,id',
             'outlet_id' => 'nullable|exists:outlets,id',
             'is_active' => 'boolean',
+            'photo'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $data = [
@@ -80,6 +90,14 @@ class UserController extends Controller
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('photo')) {
+            if ($user->photo && file_exists(public_path($user->photo))) {
+                @unlink(public_path($user->photo));
+            }
+            $path = $request->file('photo')->store('users', 'public');
+            $data['photo'] = Storage::url($path);
         }
 
         $user->update($data);
@@ -94,6 +112,10 @@ class UserController extends Controller
 
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
+        }
+
+        if ($user->photo && file_exists(public_path($user->photo))) {
+            @unlink(public_path($user->photo));
         }
 
         $user->delete();

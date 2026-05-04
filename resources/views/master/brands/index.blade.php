@@ -30,7 +30,18 @@
                     <tbody>
                         @forelse($brands as $brand)
                         <tr>
-                            <td class="ps-4 fw-bold">{{ $brand->name }}</td>
+                            <td class="ps-4 fw-bold">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="brand-logo bg-light d-flex align-items-center justify-content-center overflow-hidden" style="width: 40px; height: 40px; border-radius: 8px;">
+                                        @if($brand->photo)
+                                        <img src="{{ $brand->photo }}" alt="Brand Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @else
+                                        <i class="bi bi-tag text-muted"></i>
+                                        @endif
+                                    </div>
+                                    <span>{{ $brand->name }}</span>
+                                </div>
+                            </td>
                             <td>{{ $brand->description ?? '-' }}</td>
                             <td class="text-end pe-4">
                                 @if(auth()->user()->hasPermission('manage-master-data'))
@@ -57,9 +68,13 @@
                                         <h5 class="fw-bold">Edit Brand</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
-                                    <form action="{{ route('brands.update', $brand) }}" method="POST">
+                                    <form action="{{ route('brands.update', $brand) }}" method="POST" enctype="multipart/form-data">
                                         @csrf @method('PUT')
                                         <div class="modal-body p-4">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold small">Foto Brand</label>
+                                                <input type="file" name="photo" class="form-control rounded-3" accept="image/*">
+                                            </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-semibold small">Nama Brand</label>
                                                 <input type="text" name="name" class="form-control rounded-3" value="{{ $brand->name }}" required>
@@ -97,9 +112,13 @@
                 <h5 class="fw-bold">Tambah Brand Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('brands.store') }}" method="POST">
+            <form action="{{ route('brands.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Foto Brand (Opsional)</label>
+                        <input type="file" name="photo" class="form-control rounded-3" accept="image/*">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold small">Nama Brand</label>
                         <input type="text" name="name" class="form-control rounded-3" placeholder="Contoh: Nike, Samsung" required>

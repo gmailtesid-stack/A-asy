@@ -15,13 +15,18 @@
                 <h5 class="mb-0 fw-bold">Edit Pengguna: {{ $user->name }}</h5>
             </div>
             <div class="card-body p-4">
-                <form action="{{ route('users.update', $user) }}" method="POST">
+                <form action="{{ route('users.update', $user) }}" method="POST" enctype="multipart/form-data">
                     @csrf @method('PUT')
                     
                     <div class="mb-3">
                         <label class="form-label fw-600">Nama Lengkap</label>
                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required>
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600">Foto Profil (Biarkan kosong jika tidak diubah)</label>
+                        <input type="file" name="photo" class="form-control" accept="image/*">
                     </div>
 
                     <div class="mb-3">

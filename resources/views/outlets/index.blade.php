@@ -31,7 +31,16 @@
                     @forelse($outlets as $outlet)
                     <tr>
                         <td class="ps-4">
-                            <div class="fw-bold text-dark">{{ $outlet->name }}</div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="outlet-logo bg-light shadow-sm d-flex align-items-center justify-content-center overflow-hidden" style="width: 40px; height: 40px; border-radius: 8px;">
+                                    @if($outlet->photo)
+                                    <img src="{{ $outlet->photo }}" alt="Outlet Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                    <i class="bi bi-shop text-muted"></i>
+                                    @endif
+                                </div>
+                                <div class="fw-bold text-dark">{{ $outlet->name }}</div>
+                            </div>
                         </td>
                         <td><span class="badge bg-dark">{{ $outlet->code }}</span></td>
                         <td>{{ $outlet->phone ?? '-' }}</td>

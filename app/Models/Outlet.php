@@ -10,7 +10,7 @@ class Outlet extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'code', 'address', 'phone', 'city', 'is_active', 'latitude', 'longitude',
+        'name', 'code', 'address', 'phone', 'city', 'is_active', 'latitude', 'longitude', 'photo'
     ];
 
     protected $casts = [

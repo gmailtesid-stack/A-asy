@@ -33,8 +33,12 @@
                     <tr>
                         <td class="ps-4">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="avatar shadow-sm" style="width:36px; height:36px; background:#e2e8f0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                                <div class="avatar shadow-sm overflow-hidden" style="width:36px; height:36px; background:#e2e8f0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                                    @if($user->photo)
+                                    <img src="{{ $user->photo }}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
+                                    @else
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    @endif
                                 </div>
                                 <div class="fw-bold text-dark">{{ $user->name }}</div>
                             </div>
