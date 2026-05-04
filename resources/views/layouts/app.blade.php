@@ -379,7 +379,7 @@
 
         <p class="nav-section-label">WMS (Warehouse Management)</p>
         @if(auth()->user()->hasPermission('create-po') || auth()->user()->hasPermission('create-grn') || auth()->user()->isSuperAdmin())
-        <a href="{{ route('inbound.index') }}" class="{{ request()->routeIs('inbound.*') ? 'active' : '' }}">
+        <a href="{{ route('inbound.index') }}" id="nav-wms" class="{{ request()->routeIs('inbound.*') ? 'active' : '' }}">
             <i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)
         </a>
         @endif
@@ -395,14 +395,14 @@
         <a href="{{ route('stock_transfers.index') }}" class="{{ request()->routeIs('stock_transfers.*') ? 'active' : '' }}">
             <i class="bi bi-arrow-left-right"></i> Stock Transfer
         </a>
-        <a href="{{ route('inventories.logs') }}" class="{{ request()->routeIs('inventories.logs') ? 'active' : '' }}">
+        <a href="{{ route('inventories.logs') }}" id="nav-audit" class="{{ request()->routeIs('inventories.logs') ? 'active' : '' }}">
             <i class="bi bi-clock-history"></i> Movement Log
         </a>
         @endif
 
         <p class="nav-section-label">Retail & Offline</p>
         @if(auth()->user()->hasPermission('create-so') || auth()->user()->isSuperAdmin())
-        <a href="{{ route('pos.index') }}" class="{{ request()->routeIs('pos.*') ? 'active' : '' }}">
+        <a href="{{ route('pos.index') }}" id="nav-pos" class="{{ request()->routeIs('pos.*') ? 'active' : '' }}">
             <i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline
         </a>
         @endif
@@ -425,7 +425,7 @@
         <a href="{{ route('reports.wms') }}" class="{{ request()->routeIs('reports.wms') ? 'active' : '' }}">
             <i class="bi bi-bar-chart-steps"></i> Metrik Operasional WMS
         </a>
-        <a href="{{ route('reports.analytics') }}" class="{{ request()->routeIs('reports.analytics') ? 'active' : '' }}">
+        <a href="{{ route('reports.analytics') }}" id="nav-report" class="{{ request()->routeIs('reports.analytics') ? 'active' : '' }}">
             <i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics
         </a>
         <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">

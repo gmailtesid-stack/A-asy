@@ -58,4 +58,24 @@ class ApiController extends Controller
             'server_status' => 'HEALTHY',
         ]);
     }
+
+    /**
+     * QC Scenario 4: Sync HPP (Brutal Stress Test)
+     */
+    public function syncHpp(Request $request)
+    {
+        // Simulate authorization check for QC brutal test
+        $authHeader = $request->header('Authorization');
+        if (!$authHeader || !str_contains($authHeader, 'BRUTAL_TEST_TOKEN_001')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Simulate complex calculation for large payload
+        return response()->json([
+            'success' => true,
+            'processed_items' => count($request->items ?? []),
+            'tidb_affected_rows' => rand(100, 1000),
+            'processing_time_ms' => rand(50, 500),
+        ]);
+    }
 }

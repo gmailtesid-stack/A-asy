@@ -266,7 +266,7 @@
                 </div>
             </div>
 
-            <button class="btn-checkout" id="btnCheckout" onclick="processCheckout()" disabled>
+            <button class="btn-checkout" id="btn-checkout-fast" onclick="processCheckout()" disabled>
                 BAYAR SEKARANG
             </button>
         </div>

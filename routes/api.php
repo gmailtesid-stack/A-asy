@@ -17,6 +17,7 @@ use App\Http\Controllers\ApiController;
 
 // Public QC Endpoints (Exempt from Auth for stress testing speed)
 Route::post('/pos/checkout',     [ApiController::class, 'posCheckout']);
+Route::post('/pos/sync-hpp',     [ApiController::class, 'syncHpp']);
 Route::post('/wms/mutate',       [ApiController::class, 'wmsMutate']);
 // Alias for k6 script consistency
 Route::post('/wms/stock-opname', [ApiController::class, 'wmsStockOpname']);
