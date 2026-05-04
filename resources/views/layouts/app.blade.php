@@ -422,7 +422,7 @@
 
         @if(auth()->user()->hasPermission('manage-users') || auth()->user()->hasPermission('manage-master-data') || auth()->user()->isSuperAdmin())
         <p class="nav-section-label">System & Settings</p>
-        @if(auth()->user()->hasPermission('manage-master-data') || auth()->user()->isSuperAdmin())
+        @if(auth()->user()->hasPermission('manage-master-data'))
         <a href="{{ route('warehouses.index') }}" class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
             <i class="bi bi-building-fill"></i> Manajemen Gudang
         </a>

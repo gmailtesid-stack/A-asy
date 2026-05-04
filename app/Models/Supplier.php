@@ -7,14 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
-    protected $fillable = ['name', 'contact_person', 'email', 'phone', 'address', 'logo', 'notes'];
-
-    public function getLogoUrlAttribute(): ?string
-    {
-        return $this->logo
-            ? \Illuminate\Support\Facades\Storage::url($this->logo)
-            : null;
-    }
+    protected $fillable = ['name', 'contact_person', 'email', 'phone', 'address'];
 
     public function products(): HasMany
     {
