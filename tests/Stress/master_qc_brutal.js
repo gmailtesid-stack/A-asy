@@ -119,6 +119,6 @@ export async function visualMonkeyTesting() {
     });
 
   } finally {
-    await page.close(); 
+    // await page.close(); is not supported in some k6 versions and context is cleaned up automatically
   }
 }

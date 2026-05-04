@@ -145,6 +145,6 @@ export async function visualTesting() {
     });
 
   } finally {
-    page.close();
+    // page.close() is not supported in some k6 versions and context is cleaned up automatically
   }
 }

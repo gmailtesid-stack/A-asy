@@ -145,6 +145,6 @@ export async function visualTesting() {
     await page.screenshot({ path: 'qc-artifacts/e-asy-403-rigid-server.png' });
 
   } finally {
-    await page.close();
+    // page.close() is not supported in some k6 versions and context is cleaned up automatically
   }
 }

@@ -69,6 +69,11 @@ try {
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
+        
+        // AUTO-FIX: Vercel defaults DB_DATABASE to 'sys' which causes TiDB 'Table sys.transactions doesn't exist' error.
+        if (env('DB_DATABASE') === 'sys' || $app['config']->get('database.connections.mysql.database') === 'sys') {
+            $app['config']->set('database.connections.mysql.database', 'test'); // Ganti 'test' dengan nama DB aslinya jika berbeda
+        }
     }
 
     // Cek APP_KEY
