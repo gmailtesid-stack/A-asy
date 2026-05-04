@@ -2,20 +2,33 @@
 
 @section('title', 'Lokasi Gudang - E-ASY WMS')
 
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('warehouses.index') }}" class="text-decoration-none">Gudang</a></li>
+    <li class="breadcrumb-item active">{{ $warehouse?->name ?? 'Semua Lokasi' }}</li>
+@endsection
+
 @section('content')
 <div class="animate__animated animate__fadeIn">
     <div class="mb-4">
         <a href="{{ route('warehouses.index') }}" class="text-decoration-none small text-muted">
             <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Gudang
         </a>
-        <div class="d-flex align-items-center justify-content-between mt-2">
+        <div class="d-flex align-items-center justify-content-between mt-3">
             <div>
-                <h2 class="fw-bold mb-1">Lokasi di {{ $warehouse->name }}</h2>
-                <p class="text-muted">Kelola Rak, Bin, atau Section spesifik di gudang ini.</p>
+                <h2 class="fw-bold mb-1">
+                    @if($warehouse)
+                        Lokasi di {{ $warehouse->name }}
+                    @else
+                        Semua Lokasi Gudang
+                    @endif
+                </h2>
+                <p class="text-muted">Kelola Rak, Bin, atau Section di gudang Anda.</p>
             </div>
+            @if(auth()->user()->hasPermission('manage-master-data'))
             <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addLocationModal">
                 <i class="bi bi-plus-lg me-2"></i> Tambah Lokasi
             </button>
+            @endif
         </div>
     </div>
 
@@ -62,7 +75,20 @@
             </div>
             <form action="{{ route('locations.store') }}" method="POST">
                 @csrf
+                {{-- Jika dari halaman gudang spesifik, pre-fill warehouse_id --}}
+                @if($warehouse)
                 <input type="hidden" name="warehouse_id" value="{{ $warehouse->id }}">
+                @else
+                <div class="px-4 pt-3">
+                    <label class="form-label fw-semibold small">Gudang <span class="text-danger">*</span></label>
+                    <select name="warehouse_id" class="form-select rounded-3" required>
+                        <option value="">Pilih Gudang...</option>
+                        @foreach($warehouses as $wh)
+                        <option value="{{ $wh->id }}">{{ $wh->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold small">Nama Lokasi (Rak/Bin)</label>

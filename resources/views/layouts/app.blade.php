@@ -422,17 +422,19 @@
 
         @if(auth()->user()->hasPermission('manage-users') || auth()->user()->hasPermission('manage-master-data') || auth()->user()->isSuperAdmin())
         <p class="nav-section-label">System & Settings</p>
-        @if(auth()->user()->hasPermission('manage-master-data'))
+        @if(auth()->user()->hasPermission('manage-master-data') || auth()->user()->isSuperAdmin())
         <a href="{{ route('warehouses.index') }}" class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
             <i class="bi bi-building-fill"></i> Manajemen Gudang
         </a>
         @endif
+        @if(auth()->user()->isSuperAdmin())
         <a href="{{ route('outlets.index') }}" class="{{ request()->routeIs('outlets.*') ? 'active' : '' }}">
             <i class="bi bi-shop"></i> Cabang / Outlet
         </a>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
             <i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC
         </a>
+        @endif
         @endif
 
     </div>

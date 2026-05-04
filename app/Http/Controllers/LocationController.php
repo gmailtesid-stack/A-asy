@@ -10,9 +10,11 @@ class LocationController extends Controller
 {
     public function index()
     {
+        // Standalone route: tampilkan semua lokasi, warehouse = null (view check dengan isset)
         $locations = Location::with('warehouse')->get();
         $warehouses = Warehouse::all();
-        return view('master.locations.index', compact('locations', 'warehouses'));
+        $warehouse = null; // Diperlukan agar view tidak crash saat akses standalone
+        return view('master.locations.index', compact('locations', 'warehouses', 'warehouse'));
     }
 
     public function store(Request $request)
