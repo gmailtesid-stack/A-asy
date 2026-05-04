@@ -1,6 +1,6 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
-import { browser } from 'k6/experimental/browser';
+import { browser } from 'k6/browser';
 
 // ====================================================================
 // 1. KONFIGURASI QC (API Load + Browser UI)
