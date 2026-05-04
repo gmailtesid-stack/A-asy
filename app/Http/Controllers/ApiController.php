@@ -20,13 +20,19 @@ class ApiController extends Controller
         try {
             $transactionId = 'QC-' . strtoupper(Str::random(8)) . '-' . time();
 
+            $outlet = DB::table('outlets')->first();
+            $user = DB::table('users')->first();
+
             // Query nyata ke TiDB — ini yang bikin grafik bergerak
             DB::table('transactions')->insert([
-                'code'         => $transactionId,
-                'total_price'  => rand(10000, 500000),
-                'status'       => 'completed',
-                'created_at'   => now(),
-                'updated_at'   => now(),
+                'outlet_id'      => $outlet ? $outlet->id : 1,
+                'user_id'        => $user ? $user->id : 1,
+                'invoice_number' => $transactionId,
+                'subtotal'       => rand(10000, 500000),
+                'total'          => rand(10000, 500000),
+                'status'         => 'completed',
+                'created_at'     => now(),
+                'updated_at'     => now(),
             ]);
 
             // Cek stok (SELECT nyata)
@@ -133,13 +139,21 @@ class ApiController extends Controller
         try {
             $items = $request->items ?? [];
 
+            $outlet = DB::table('outlets')->first();
+            $user = DB::table('users')->first();
+            $outletId = $outlet ? $outlet->id : 1;
+            $userId = $user ? $user->id : 1;
+
             // INSERT batch ke DB agar TiDB dashboard bergerak
             $rows = array_map(fn($item) => [
-                'code'        => 'HPP-' . strtoupper(Str::random(6)),
-                'total_price' => ($item['price'] ?? 15000) * ($item['qty'] ?? 1),
-                'status'      => 'hpp_sync',
-                'created_at'  => now(),
-                'updated_at'  => now(),
+                'outlet_id'      => $outletId,
+                'user_id'        => $userId,
+                'invoice_number' => 'HPP-' . strtoupper(Str::random(6)),
+                'subtotal'       => ($item['price'] ?? 15000) * ($item['qty'] ?? 1),
+                'total'          => ($item['price'] ?? 15000) * ($item['qty'] ?? 1),
+                'status'         => 'completed', // hpp_sync is not a valid enum value
+                'created_at'     => now(),
+                'updated_at'     => now(),
             ], array_slice($items, 0, 10)); // batasi 10 row per request
 
             if (!empty($rows)) {
