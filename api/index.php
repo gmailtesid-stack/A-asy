@@ -33,7 +33,7 @@ putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 // 4. Alihkan Log & Debug
 putenv('LOG_CHANNEL=stderr');
 // APP_DEBUG otomatis mengikuti env, default false untuk keamanan
-if (!env('APP_DEBUG')) {
+if (!getenv('APP_DEBUG')) {
     putenv('APP_DEBUG=false');
 }
 
