@@ -2,6 +2,9 @@ import { browser } from 'k6/browser';
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 
+// Konfigurasi dinamis berdasarkan Environment Variable
+const browserEnabled = __ENV.K6_BROWSER_ENABLED !== 'false';
+
 export const options = {
   scenarios: {
     // Skenario 1: Brutal API & Logic Stress (Backend/TiDB)
@@ -16,19 +19,22 @@ export const options = {
       ],
       exec: 'apiBrutalTesting',
     },
-    // Skenario 2: Deep UI & Monkey Testing (Frontend/Vercel)
-    ui_monkey_testing: {
-      executor: 'constant-vus',
-      vus: 10, // Browser cukup 10 VUs karena sangat berat di RAM lokal
-      duration: '10m',
-      exec: 'visualMonkeyTesting',
-    },
   },
   thresholds: {
     http_req_failed: ['rate<0.05'], // Toleransi error naik ke 5% karena tes brutal
     http_req_duration: ['p(95)<2000'], // Respon di bawah 2 detik
   },
 };
+
+// Aktifkan UI Testing hanya jika K6_BROWSER_ENABLED tidak diset 'false'
+if (browserEnabled) {
+  options.scenarios.ui_monkey_testing = {
+    executor: 'constant-vus',
+    vus: 10,
+    duration: '10m',
+    exec: 'visualMonkeyTesting',
+  };
+}
 
 const BASE_URL = 'https://e-asy.vercel.app';
 const AUTH_TOKEN = 'BRUTAL_TEST_TOKEN_001';
