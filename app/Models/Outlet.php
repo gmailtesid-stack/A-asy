@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Outlet extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, \App\Traits\Multitenantable;
+    use \App\Traits\Auditable;
 
     protected $fillable = [
-        'name', 'code', 'address', 'phone', 'city', 'is_active', 'latitude', 'longitude', 'photo'
+        'company_id', 'branch_id', 'name', 'code', 'address', 'phone', 'city', 'is_active', 'latitude', 'longitude', 'photo'
     ];
 
     protected $casts = [

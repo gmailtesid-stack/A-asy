@@ -29,6 +29,9 @@ class RbacSeeder extends Seeder
             'process-shipping',
             'view-reports',
             'manage-users',
+            'view-opname',
+            'create-opname',
+            'approve-opname',
         ];
 
         foreach ($permissionsList as $p) {

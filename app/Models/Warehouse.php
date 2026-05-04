@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Warehouse extends Model
 {
-    protected $fillable = ['outlet_id', 'name', 'address', 'latitude', 'longitude', 'photo'];
+    use \App\Traits\Multitenantable, \App\Traits\Auditable;
+
+    protected $fillable = ['company_id', 'branch_id', 'outlet_id', 'name', 'address', 'latitude', 'longitude', 'photo', 'type'];
 
     public function outlet(): BelongsTo
     {

@@ -32,7 +32,10 @@ putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 
 // 4. Alihkan Log & Debug
 putenv('LOG_CHANNEL=stderr');
-putenv('APP_DEBUG=true');
+// APP_DEBUG otomatis mengikuti env, default false untuk keamanan
+if (!env('APP_DEBUG')) {
+    putenv('APP_DEBUG=false');
+}
 
 // Supresi khusus untuk tempnam() warning di Vercel
 set_error_handler(function ($errno, $errstr) {
@@ -60,13 +63,13 @@ try {
     // Pastikan view compiled path juga mengarah ke /tmp
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
 
-    // PAKSA DATABASE & SSL UNTUK TIDB CLOUD (PENTING)
-    putenv('DB_URL='); 
-    $app['config']->set('database.connections.mysql.database', 'test');
-    $app['config']->set('database.connections.mysql.options', [
-        \PDO::MYSQL_ATTR_SSL_CA => '', 
-        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-    ]);
+    // KONFIGURASI SSL UNTUK TIDB CLOUD (Dinamis via ENV)
+    if (env('DB_CONNECTION') === 'mysql') {
+        $app['config']->set('database.connections.mysql.options', array_filter([
+            \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+        ]));
+    }
 
     // Cek APP_KEY
     if (!env('APP_KEY')) {

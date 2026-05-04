@@ -58,25 +58,24 @@
                             <td class="text-center">
                                 @php
                                     $statusConfig = [
-                                        'draft' => ['color' => 'secondary', 'icon' => 'bi-pencil'],
-                                        'ordered' => ['color' => 'warning', 'icon' => 'bi-clock'],
-                                        'partially_received' => ['color' => 'info', 'icon' => 'bi-inboxes'],
+                                        'pending' => ['color' => 'warning', 'icon' => 'bi-clock'],
+                                        'confirmed' => ['color' => 'primary', 'icon' => 'bi-check-all'],
                                         'received' => ['color' => 'success', 'icon' => 'bi-check-circle'],
                                         'cancelled' => ['color' => 'danger', 'icon' => 'bi-x-circle']
                                     ][$po->status] ?? ['color' => 'secondary', 'icon' => 'bi-circle'];
                                 @endphp
                                 <span class="badge bg-{{ $statusConfig['color'] }}-subtle text-{{ $statusConfig['color'] }} border border-{{ $statusConfig['color'] }}-subtle rounded-pill px-3 py-2 fw-bold">
-                                    <i class="bi {{ $statusConfig['icon'] }} me-1"></i> {{ ucfirst(str_replace('_', ' ', $po->status)) }}
+                                    <i class="bi {{ $statusConfig['icon'] }} me-1"></i> {{ strtoupper($po->status) }}
                                 </span>
                             </td>
                             <td class="text-end pe-4">
                                 <div class="d-flex justify-content-end gap-2">
                                     <button class="btn btn-sm btn-light border px-3 rounded-pill">Detail</button>
                                     
-                                    @if($po->status == 'pending' && auth()->user()->hasPermission('confirm-po'))
-                                    <form action="{{ route('inbound.confirm', $po) }}" method="POST" class="d-inline">
+                                    @if($po->status == 'pending' && auth()->user()->hasPermission('approve-po'))
+                                    <form action="{{ route('inbound.approve', $po) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button class="btn btn-sm btn-warning rounded-pill px-3 shadow-sm text-dark fw-bold border-0">Konfirmasi</button>
+                                        <button class="btn btn-sm btn-info rounded-pill px-3 shadow-sm text-white fw-bold border-0">Approve PO</button>
                                     </form>
                                     @endif
 

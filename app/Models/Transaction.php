@@ -4,14 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\Auditable;
+use App\Traits\HasUlidSync;
+use App\Traits\Multitenantable;
+
 class Transaction extends Model
 {
+    use Auditable, HasUlidSync, Multitenantable;
     protected $fillable = [
-        'outlet_id', 'user_id', 'invoice_number',
+        'ulid', 'company_id', 'branch_id', 'outlet_id', 'user_id', 'customer_id', 'invoice_number',
         'subtotal', 'discount', 'tax', 'total',
         'cash_amount', 'change_amount',
         'payment_method', 'status', 'notes',
+        'currency', 'exchange_rate', 'tax_included', 'tax_rate', 'tax_amount'
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 
     protected $casts = [
         'subtotal'      => 'decimal:2',

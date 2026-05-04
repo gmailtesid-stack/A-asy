@@ -9,7 +9,19 @@ class ReportController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:view-reports')->only(['index', 'wms', 'assetMap', 'allOutlets']);
+        $this->middleware('permission:view-reports')->only(['index', 'wms', 'assetMap', 'allOutlets', 'analytics']);
+    }
+
+    public function analytics()
+    {
+        $user     = auth()->user();
+        $outletId = $user->isSuperAdmin() ? null : $user->outlet_id;
+
+        $dailyRevenue = $this->getDailyRevenue($outletId, 14); // 2 weeks
+        $topProducts  = $this->getTopSellingProducts($outletId, 10);
+        $predictions  = $this->getPredictiveStock($outletId);
+
+        return view('reports.analytics', compact('dailyRevenue', 'topProducts', 'predictions'));
     }
 
     public function dashboard()
@@ -48,7 +60,7 @@ class ReportController extends Controller
         });
 
         // Fail-safe: Ensure it's a collection to avoid "property on string" error in view
-        if (!($recentActivity instanceof \Illuminate\Support\Collection)) {
+        if (!($recentActivity instanceof \Illuminate\Collection)) {
             $recentActivity = collect([]);
         }
 
@@ -93,7 +105,11 @@ class ReportController extends Controller
             ->take(20)
             ->get();
 
-        return view('reports.wms', compact('poStatus', 'soStatus', 'topMovement', 'pickingFailures'));
+        $transitStockCount = \App\Models\StockTransferItem::whereHas('transfer', function($q) {
+            $q->where('status', 'transit');
+        })->sum('quantity_requested');
+
+        return view('reports.wms', compact('poStatus', 'soStatus', 'topMovement', 'pickingFailures', 'transitStockCount'));
     }
 
     public function assetMap()
@@ -231,5 +247,92 @@ class ReportController extends Controller
             'month_revenue' => $month->sum('total'),
             'month_trx'     => $month->count(),
         ];
+    }
+
+    public function getPredictiveStock(?int $outletId = null)
+    {
+        // 1. Calculate Average Daily Sales for each product in last 7 days
+        $sales = DB::table('transaction_details as td')
+            ->join('transactions as t', 'td.transaction_id', '=', 't.id')
+            ->selectRaw('td.product_id, SUM(td.quantity) / 7 as avg_daily_sales')
+            ->where('t.status', 'completed')
+            ->where('t.created_at', '>=', now()->subDays(7))
+            ->groupBy('td.product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        // 2. Compare with current inventory
+        $inventoryQuery = \App\Models\Inventory::with('product');
+        if ($outletId) $inventoryQuery->where('outlet_id', $outletId);
+        
+        $inventory = $inventoryQuery->get();
+
+        $predictions = [];
+        foreach ($inventory as $item) {
+            $avgSales = $sales[$item->product_id]->avg_daily_sales ?? 0;
+            $daysLeft = $avgSales > 0 ? floor($item->quantity / $avgSales) : 999;
+
+            if ($daysLeft < 7) { // Only care if < 7 days
+                $predictions[] = [
+                    'product_name' => $item->product->name,
+                    'stock'        => $item->quantity,
+                    'avg_sales'    => round($avgSales, 2),
+                    'days_left'    => $daysLeft,
+                    'status'       => $daysLeft < 3 ? 'critical' : 'warning'
+                ];
+            }
+        }
+
+        return collect($predictions)->sortBy('days_left')->values();
+    }
+
+    // ─── PHASE 3: Business Intelligence ───────────────────────────────────
+
+    public function deadStock(Request $request)
+    {
+        $outletId = auth()->user()->isSuperAdmin() ? null : auth()->user()->outlet_id;
+        $days     = (int) $request->get('days', 90);
+        $bi       = app(\App\Services\BusinessIntelligenceService::class);
+        $items    = $bi->getDeadStock($days, $outletId);
+
+        return view('reports.dead_stock', compact('items', 'days'));
+    }
+
+    public function channelProfitability(Request $request)
+    {
+        $outletId = auth()->user()->isSuperAdmin() ? null : auth()->user()->outlet_id;
+        $period   = $request->get('period', 'month');
+        $bi       = app(\App\Services\BusinessIntelligenceService::class);
+        $data     = $bi->getChannelProfitability($outletId, $period);
+
+        return view('reports.channel_profitability', compact('data', 'period'));
+    }
+
+    public function netProfit(Request $request)
+    {
+        $outletId = auth()->user()->isSuperAdmin() ? null : auth()->user()->outlet_id;
+        $period   = $request->get('period', 'month');
+        $bi       = app(\App\Services\BusinessIntelligenceService::class);
+        $data     = $bi->getChannelProfitability($outletId, $period);
+
+        return view('reports.net_profit', compact('data', 'period'));
+    }
+
+    public function reorderAlerts()
+    {
+        $outletId = auth()->user()->isSuperAdmin() ? null : auth()->user()->outlet_id;
+        $bi       = app(\App\Services\BusinessIntelligenceService::class);
+        $alerts   = $bi->getReorderAlerts($outletId);
+
+        return view('reports.reorder_alerts', compact('alerts'));
+    }
+
+    public function cashFlow()
+    {
+        $outletId = auth()->user()->isSuperAdmin() ? null : auth()->user()->outlet_id;
+        $bi       = app(\App\Services\BusinessIntelligenceService::class);
+        $data     = $bi->getCashFlowProjection($outletId);
+
+        return view('reports.cash_flow', compact('data'));
     }
 }

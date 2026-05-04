@@ -196,12 +196,23 @@
     </div>
 
     {{-- Cart Section --}}
-    <div class="cart-panel">
-        <div class="cart-header d-flex justify-content-between align-items-center">
-            <h5 class="fw-800 mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Detail Pesanan</h5>
-            <button class="btn btn-sm btn-outline-danger border-0 rounded-pill" onclick="clearCart()">
-                <i class="bi bi-trash3-fill"></i> Reset
-            </button>
+        <div class="cart-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-800 mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Detail Pesanan</h5>
+                <button class="btn btn-sm btn-outline-danger border-0 rounded-pill" onclick="clearCart()">
+                    <i class="bi bi-trash3-fill"></i> Reset
+                </button>
+            </div>
+            {{-- Customer Selector (CRM Integration) --}}
+            <div class="customer-selector position-relative">
+                <i class="bi bi-person-heart position-absolute text-primary" style="left: 1rem; top: 50%; transform: translateY(-50%); z-index: 5;"></i>
+                <select id="customerId" class="form-select border-0 shadow-none ps-5 py-2 rounded-3 small" style="background: var(--card-bg); font-size: .85rem;">
+                    <option value="">-- Pilih Pelanggan (Umum) --</option>
+                    @foreach($customers as $customer)
+                    <option value="{{ $customer->id }}">{{ $customer->name }} ({{ number_format($customer->loyalty_points) }} pts)</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
         <div class="cart-items" id="cartItems">
@@ -398,7 +409,7 @@ document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     });
 });
 
-// ── Proses checkout ───────────────────────────────────────────────
+// ── Offline-First & Proses Checkout ─────────────────────────────────
 async function processCheckout() {
     const items = Object.values(cart).filter(i => i.qty > 0);
     if (!items.length) return;
@@ -408,19 +419,43 @@ async function processCheckout() {
     const originalText = btn.innerHTML;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>MEMPROSES...';
 
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const customerId    = document.getElementById('customerId').value;
+    const cashAmount    = parseFloat(document.getElementById('cashAmount').value) || null;
+    
+    const payload = {
+        items: items.map(i => ({ product_id: i.id, quantity: i.qty })),
+        payment_method: paymentMethod,
+        customer_id: customerId || null,
+        cash_amount: cashAmount,
+        offline_id: 'OFF-' + Date.now()
+    };
+
     try {
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        if (!navigator.onLine) {
+            // OFFLINE MODE: Save to LocalStorage
+            let pending = JSON.parse(localStorage.getItem('easy_pending_tx') || '[]');
+            pending.push(payload);
+            localStorage.setItem('easy_pending_tx', JSON.stringify(pending));
+            
+            Swal.fire({
+                title: 'Tersimpan Offline',
+                text: 'Koneksi terputus. Transaksi disimpan secara lokal dan akan disinkronisasi saat internet kembali.',
+                icon: 'info'
+            });
+            
+            resetCartUI();
+            return;
+        }
+
+        // ONLINE MODE: Direct Fetch
         const res = await fetch('{{ route("pos.checkout") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             },
-            body: JSON.stringify({
-                items: items.map(i => ({ product_id: i.id, quantity: i.qty })),
-                payment_method: paymentMethod,
-                cash_amount: parseFloat(document.getElementById('cashAmount').value) || null,
-            }),
+            body: JSON.stringify(payload),
         });
 
         const data = await res.json();
@@ -439,9 +474,7 @@ async function processCheckout() {
                     window.open(`/pos/receipt/${data.data.id}`, '_blank');
                 }
             });
-            cart = {};
-            renderCart();
-            document.getElementById('cashAmount').value = '';
+            resetCartUI();
         } else {
             Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
         }
@@ -452,6 +485,52 @@ async function processCheckout() {
         btn.innerHTML = originalText;
     }
 }
+
+function resetCartUI() {
+    cart = {};
+    renderCart();
+    document.getElementById('cashAmount').value = '';
+}
+
+// ── Auto Sync Background ──────────────────────────────────────────
+window.addEventListener('online', async () => {
+    let pending = JSON.parse(localStorage.getItem('easy_pending_tx') || '[]');
+    if (pending.length === 0) return;
+
+    console.log('Online detected. Syncing ' + pending.length + ' transactions...');
+    
+    // Optional UI Notification
+    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+    Toast.fire({ icon: 'info', title: 'Menyinkronkan transaksi offline...' });
+
+    let failed = [];
+
+    for (const tx of pending) {
+        try {
+            const res = await fetch('{{ route("pos.checkout") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify(tx),
+            });
+            
+            if (!res.ok) {
+                console.error('Sync failed for TX:', tx.offline_id);
+                failed.push(tx);
+            }
+        } catch (e) {
+            failed.push(tx);
+        }
+    }
+
+    localStorage.setItem('easy_pending_tx', JSON.stringify(failed));
+    
+    if (failed.length === 0) {
+        Toast.fire({ icon: 'success', title: 'Semua data offline berhasil disinkronisasi!' });
+    }
+});
 
 // ── Search produk ─────────────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', e => {

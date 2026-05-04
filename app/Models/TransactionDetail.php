@@ -8,7 +8,7 @@ class TransactionDetail extends Model
 {
     protected $fillable = [
         'transaction_id', 'product_id', 'product_name',
-        'unit_price', 'quantity', 'discount', 'subtotal',
+        'unit_price', 'cost_price', 'quantity', 'discount', 'subtotal',
     ];
 
     protected $casts = [

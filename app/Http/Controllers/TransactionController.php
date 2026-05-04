@@ -29,12 +29,14 @@ class TransactionController extends Controller
             ->get();
 
         $recentTransactions = Transaction::where('outlet_id', $outletId)
-            ->with('cashier')
+            ->with(['cashier', 'customer'])
             ->latest()
             ->limit(5)
             ->get();
 
-        return view('pos.index', compact('products', 'recentTransactions'));
+        $customers = \App\Models\Customer::all();
+
+        return view('pos.index', compact('products', 'recentTransactions', 'customers'));
     }
 
     /**
@@ -47,10 +49,14 @@ class TransactionController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
             'items.*.discount'   => 'nullable|numeric|min:0',
+            'customer_id'        => 'nullable|exists:customers,id',
             'payment_method'     => 'required|in:cash,transfer,qris,card',
             'cash_amount'        => 'nullable|numeric|min:0',
             'discount'           => 'nullable|numeric|min:0',
             'notes'              => 'nullable|string|max:500',
+            'currency'           => 'nullable|string|max:3',
+            'exchange_rate'      => 'nullable|numeric|min:0',
+            'tax_included'       => 'nullable|boolean',
         ]);
 
         /** @var \App\Models\User $cashier */
@@ -58,15 +64,13 @@ class TransactionController extends Controller
         $outletId = $cashier->outlet_id;
 
         $transaction = DB::transaction(function () use ($request, $cashier, $outletId) {
-            $inventoryItems = [];
             $subtotal       = 0;
             $details        = [];
 
-            // 1. Pre-check stok & load inventory objects (lockForUpdate)
+            // 1. Pre-check stok (Read-only check for validation)
             foreach ($request->items as $item) {
                 $inventory = Inventory::where('outlet_id', $outletId)
                     ->where('product_id', $item['product_id'])
-                    ->lockForUpdate()
                     ->firstOrFail();
 
                 if ($inventory->quantity < $item['quantity']) {
@@ -75,21 +79,39 @@ class TransactionController extends Controller
                         "Tersedia: {$inventory->quantity}, Diminta: {$item['quantity']}"
                     );
                 }
-                
-                // Simpan inventory object untuk diproses nanti
-                $inventoryItems[$item['product_id']] = $inventory;
             }
 
-            // 2. Hitung total & siapkan detail
+            $inventoryService = app(\App\Services\InventoryService::class);
+            $customer = $request->customer_id ? \App\Models\Customer::find($request->customer_id) : null;
+
             foreach ($request->items as $item) {
                 $product      = Product::findOrFail($item['product_id']);
+                $inventory    = Inventory::where('outlet_id', $outletId)
+                    ->where('product_id', $product->id)
+                    ->first();
+                
+                // Determine selling price based on MDM Multi-price & Customer Tier
+                $sellingPrice = $product->price;
+                if ($customer) {
+                    if ($customer->tier === 'wholesale' && $product->wholesale_price) {
+                        $sellingPrice = $product->wholesale_price;
+                    } elseif ($customer->tier === 'member' && $product->member_price) {
+                        $sellingPrice = $product->member_price;
+                    }
+                }
+
+                // Calculate real-time FIFO COGS
+                $totalCost = $inventoryService->calculateCogsAndDeduct($inventory, $item['quantity']);
+                $fifoCostPrice = $item['quantity'] > 0 ? ($totalCost / $item['quantity']) : 0;
+
                 $lineDiscount = $item['discount'] ?? 0;
-                $lineSubtotal = ($product->price * $item['quantity']) - $lineDiscount;
+                $lineSubtotal = ($sellingPrice * $item['quantity']) - $lineDiscount;
 
                 $details[] = [
                     'product_id'   => $product->id,
                     'product_name' => $product->name,
                     'unit_price'   => $product->price,
+                    'cost_price'   => $fifoCostPrice, // Use final FIFO cost
                     'quantity'     => $item['quantity'],
                     'discount'     => $lineDiscount,
                     'subtotal'     => $lineSubtotal,
@@ -99,8 +121,20 @@ class TransactionController extends Controller
 
             $discount     = $request->discount ?? 0;
             $taxRate      = config('pos.tax_rate', 0.11);
-            $tax          = round(($subtotal - $discount) * $taxRate, 2);
-            $total        = $subtotal - $discount + $tax;
+            $taxIncluded  = $request->boolean('tax_included', true);
+            
+            if ($taxIncluded) {
+                // Total is already inclusive of tax. Calculate how much of the subtotal was tax.
+                // Formula: Tax = (Subtotal - Discount) - ((Subtotal - Discount) / (1 + TaxRate))
+                $netSales = ($subtotal - $discount) / (1 + $taxRate);
+                $tax = ($subtotal - $discount) - $netSales;
+                $total = $subtotal - $discount; 
+            } else {
+                // Total does not include tax. Add it on top.
+                $tax = round(($subtotal - $discount) * $taxRate, 2);
+                $total = $subtotal - $discount + $tax;
+            }
+
             $cashAmount   = $request->cash_amount ?? $total;
             $changeAmount = max(0, $cashAmount - $total);
 
@@ -108,50 +142,36 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'outlet_id'      => $outletId,
                 'user_id'        => $cashier->id,
+                'customer_id'    => $request->customer_id,
                 'invoice_number' => $this->generateInvoiceNumber($outletId),
                 'subtotal'       => $subtotal,
                 'discount'       => $discount,
-                'tax'            => $tax,
+                'tax'            => $tax, // Total Tax calculated
                 'total'          => $total,
                 'cash_amount'    => $cashAmount,
                 'change_amount'  => $changeAmount,
                 'payment_method' => $request->payment_method,
                 'status'         => 'completed',
                 'notes'          => $request->notes,
+                'currency'       => $request->currency ?? 'IDR',
+                'exchange_rate'  => $request->exchange_rate ?? 1,
+                'tax_included'   => $taxIncluded,
+                'tax_rate'       => $taxRate * 100, // Store as percentage e.g. 11.00
+                'tax_amount'     => $tax,
             ]);
 
-            // 4. Simpan detail + potong stok + log
+            // 4. Simpan detail
             foreach ($details as $detail) {
                 TransactionDetail::create(
                     array_merge(['transaction_id' => $transaction->id], $detail)
                 );
-
-                // Gunakan inventory object yang sudah di-lock sebelumnya
-                $inventory = $inventoryItems[$detail['product_id']];
-                $before    = $inventory->quantity;
-                
-                $inventory->decrement('quantity', $detail['quantity']);
-                $inventory->refresh();
-
-                InventoryLog::create([
-                    'inventory_id'    => $inventory->id,
-                    'user_id'         => $cashier->id,
-                    'type'            => 'out',
-                    'quantity_before' => $before,
-                    'quantity_change' => -$detail['quantity'],
-                    'quantity_after'  => $inventory->quantity,
-                    'reference'       => $transaction->invoice_number,
-                    'notes'           => 'Penjualan POS',
-                ]);
-
-                // 5. Alert stok menipis
-                if ($inventory->isLowStock()) {
-                    $this->sendLowStockAlert($inventory, $detail['product_name']);
-                }
             }
 
             return $transaction;
         });
+
+        // 5. Fire Event (Async processing will handle Inventory, Accounting, etc.)
+        event(new \App\Events\TransactionCreated($transaction));
 
         return response()->json([
             'success'  => true,
@@ -159,7 +179,7 @@ class TransactionController extends Controller
             'invoice'  => $transaction->invoice_number,
             'total'    => $transaction->total,
             'change'   => $transaction->change_amount,
-            'data'     => $transaction->load('details'),
+            'data'     => $transaction->load(['details', 'customer']),
         ], 201);
     }
 

@@ -6,9 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use App\Traits\Auditable;
+
 class PurchaseOrder extends Model
 {
-    protected $fillable = ['supplier_id', 'user_id', 'warehouse_id', 'po_number', 'status', 'total_amount', 'notes'];
+    use Auditable;
+    protected $fillable = [
+        'supplier_id', 'user_id', 'warehouse_id', 'po_number', 
+        'status', 'total_amount', 'notes', 'approved_by', 'approved_at',
+        'freight_cost', 'insurance_cost', 'estimated_landed_cost'
+    ];
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 
     public function supplier(): BelongsTo
     {

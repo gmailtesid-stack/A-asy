@@ -21,14 +21,21 @@ Dokumen ini mencatat setiap komponen dalam repositori E-ASY dan fungsinya secara
 
 | Controller | Tanggung Jawab Utama |
 | :--- | :--- |
-| `TransactionController` | Otak POS. Menangani checkout atomik, potong stok, & cetak struk. |
+| `TransactionController` | Otak POS. Menangani checkout atomik, potong stok FIFO, & cetak struk. |
 | `InboundController` | Manajemen pengadaan barang (PO) dan penerimaan fisik (GRN). |
 | `OutboundController` | Siklus pesanan keluar: Picking, Packing, & Shipping. |
 | `InventoryController` | Audit stok, penyesuaian manual, dan log mutasi barang. |
-| `ReportController` | Dashboard analitik, laporan keuangan, & peta aset GPS. |
-| `AuthController` | Sistem login, logout, dan manajemen sesi user. |
-| `SyncMarketplaceJob` | Job background untuk sinkronisasi stok ke kanal eksternal. |
+| `ExpenseController` | **Fase 3**: Manajemen biaya operasional (OPEX) terintegrasi jurnal akuntansi. |
+| `ApprovalController` | **Fase 3**: Gatekeeper sistem. Menahan aksi sensitif hingga disetujui manajer. |
+| `ReportController` | Dashboard analitik, Laba Bersih, Dead Stock, dan peta aset GPS. |
+| `InventoryService` | **Level 10 FIFO Logic**. Kalkulasi COGS atomik & deduplikasi batch stok. |
+| `BusinessIntelligenceService`| **Fase 3**: Mesin analitik untuk P&L, Dead Stock, & prediksi Reorder Point. |
+| `PaymentGatewayInterface`| **Fase 3**: Kontrak standar untuk integrasi API Midtrans/QRIS. |
+| `ShippingGatewayInterface`| **Fase 3**: Kontrak standar untuk integrasi API JNE/SiCepat. |
+| `RecordAccountingJournal`| Automasi buku besar: Mencatat penjualan, HPP, & pajak ke Jurnal. |
+| `ArchiveAuditLogs` | Housekeeping: Pengarsipan otomatis log lama untuk skalabilitas DB. |
 | `CloudinaryService` | Integrasi CDN untuk optimasi dan pengiriman gambar produk. |
+
 
 ---
 

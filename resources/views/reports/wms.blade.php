@@ -17,6 +17,21 @@
                 <i class="bi bi-printer me-2"></i> Cetak Laporan
             </button>
         </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h4 class="fw-bold mb-0">Stok Dalam Perjalanan (In-Transit)</h4>
+                        <p class="mb-0 opacity-75">Jumlah unit barang yang telah dikirim antar cabang namun belum diterima di tujuan.</p>
+                    </div>
+                    <div class="text-end">
+                        <h1 class="fw-bold mb-0">{{ number_format($transitStockCount) }}</h1>
+                        <small>Unit Terdeteksi</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row g-4">

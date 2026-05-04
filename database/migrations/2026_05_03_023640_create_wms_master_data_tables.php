@@ -31,8 +31,9 @@ return new class extends Migration
 
         Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('outlet_id')->constrained()->onDelete('cascade');
+            $table->foreignId('outlet_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->string('type')->default('physical'); // physical, virtual
             $table->text('address')->nullable();
             $table->timestamps();
         });

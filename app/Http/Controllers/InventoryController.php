@@ -59,24 +59,13 @@ class InventoryController extends Controller
         ]);
 
         DB::transaction(function() use ($request, $inventory) {
-            $before = $inventory->quantity;
             $change = $request->quantity_change;
 
             if ($request->type === 'out' && $change > 0) $change = -$change;
             if ($request->type === 'in' && $change < 0) $change = abs($change);
 
-            $inventory->increment('quantity', $change);
-            $inventory->refresh();
-
-            InventoryLog::create([
-                'inventory_id'    => $inventory->id,
-                'user_id'         => auth()->id(),
-                'type'            => $request->type,
-                'quantity_before' => $before,
-                'quantity_change' => $change,
-                'quantity_after'  => $inventory->quantity,
-                'notes'           => $request->notes ?? 'Penyesuaian manual',
-            ]);
+            // Fire InventoryMoved Event (Async will handle increment & logging)
+            event(new \App\Events\InventoryMoved($inventory, $change, $request->type, 'ADJ-' . strtoupper(uniqid())));
         });
 
         return redirect()->route('inventories.index')->with('success', 'Stok berhasil diperbarui.');

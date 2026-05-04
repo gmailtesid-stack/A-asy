@@ -106,7 +106,7 @@ class OutboundController extends Controller
                     ]
                 );
 
-                // Update Inventory (Decrease)
+                // 2. Fire InventoryMoved Event (Async will handle decrement & logging)
                 if ($item['quantity_found'] > 0) {
                     $inventory = \App\Models\Inventory::where([
                         'warehouse_id' => $so->warehouse_id,
@@ -114,27 +114,7 @@ class OutboundController extends Controller
                     ])->first();
 
                     if ($inventory) {
-                        // Guard: pastikan stok tidak jadi negatif
-                        if ($inventory->quantity < $item['quantity_found']) {
-                            throw new \Exception(
-                                "Stok produk ID {$item['product_id']} tidak cukup untuk picking. " .
-                                "Tersedia: {$inventory->quantity}, Diminta: {$item['quantity_found']}"
-                            );
-                        }
-
-                        $quantityBefore = $inventory->quantity;
-                        $inventory->decrement('quantity', $item['quantity_found']);
-
-                        \App\Models\InventoryLog::create([
-                            'inventory_id'    => $inventory->id,
-                            'user_id'         => auth()->id(),
-                            'type'            => 'out',
-                            'quantity_before' => $quantityBefore,
-                            'quantity_change' => -$item['quantity_found'],
-                            'quantity_after'  => $inventory->quantity,
-                            'reference'       => $so->so_number,
-                            'notes'           => 'Picking SO ' . $so->so_number,
-                        ]);
+                        event(new \App\Events\InventoryMoved($inventory, -$item['quantity_found'], 'out', $so->so_number));
                     }
                 }
             }

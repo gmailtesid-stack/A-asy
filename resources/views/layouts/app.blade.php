@@ -407,10 +407,26 @@
         </a>
         @endif
 
+        <p class="nav-section-label">ERP Core Modules</p>
+        @if(auth()->user()->isSuperAdmin() || auth()->user()->hasRole('supervisor'))
+        <a href="{{ route('finance.index') }}" class="{{ request()->routeIs('finance.*') ? 'active' : '' }}">
+            <i class="bi bi-bank2"></i> Finance & Accounting
+        </a>
+        <a href="{{ route('employees.index') }}" class="{{ request()->routeIs('employees.*') ? 'active' : '' }}">
+            <i class="bi bi-people-fill"></i> HR & Payroll
+        </a>
+        <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
+            <i class="bi bi-person-badge-fill"></i> CRM & Loyalty
+        </a>
+        @endif
+
         @if(auth()->user()->hasPermission('view-reports') || auth()->user()->isSuperAdmin())
         <p class="nav-section-label">Analytics</p>
         <a href="{{ route('reports.wms') }}" class="{{ request()->routeIs('reports.wms') ? 'active' : '' }}">
             <i class="bi bi-bar-chart-steps"></i> Metrik Operasional WMS
+        </a>
+        <a href="{{ route('reports.analytics') }}" class="{{ request()->routeIs('reports.analytics') ? 'active' : '' }}">
+            <i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics
         </a>
         <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.index') ? 'active' : '' }}">
             <i class="bi bi-pie-chart-fill"></i> Analisa Penjualan (POS)
@@ -433,6 +449,9 @@
         </a>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
             <i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC
+        </a>
+        <a href="{{ route('audit_logs.index') }}" class="{{ request()->routeIs('audit_logs.*') ? 'active' : '' }}">
+            <i class="bi bi-eye-fill"></i> System Audit Trails
         </a>
         @endif
         @endif

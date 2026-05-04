@@ -9,7 +9,7 @@ class InventoryLog extends Model
     protected $fillable = [
         'inventory_id', 'user_id', 'type',
         'quantity_before', 'quantity_change', 'quantity_after',
-        'reference', 'notes',
+        'reference', 'notes', 'cost_price', 'remaining_quantity',
     ];
 
     public function inventory()
