@@ -3,6 +3,30 @@
 
 use Illuminate\Http\Request;
 
+// 🔥 Resilience Patch: Suntikkan ENV secara manual untuk Vercel agar tidak 500
+$fallbacks = [
+    'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
+    'APP_DEBUG'      => 'true',
+    'DB_CONNECTION'  => 'mysql',
+    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    'DB_PORT'        => '4000',
+    'DB_DATABASE'    => 'test',
+    'DB_USERNAME'    => 'jm7ETdoFCLactTB.root',
+    'DB_PASSWORD'    => 'kwRci29We1dRiVVW',
+    'SESSION_DRIVER' => 'database',
+    'CACHE_STORE'    => 'database',
+    'QUEUE_CONNECTION' => 'database',
+    'MYSQL_ATTR_SSL_CA' => 'database/isrgrootx1.pem',
+];
+
+foreach ($fallbacks as $key => $value) {
+    if (!getenv($key)) {
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+    }
+}
+
 // 1. BERSIHKAN CACHE LAMA (HANYA JIKA BISA DITULIS)
 $cachePath = __DIR__ . '/../bootstrap/cache';
 foreach (['config.php', 'services.php', 'packages.php', 'routes.php'] as $file) {
