@@ -7,10 +7,17 @@ use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use App\Jobs\ProcessSyncHpp;
 
 class ApiController extends Controller
 {
+    public function __construct()
+    {
+        // Pertajam: Matikan query log untuk menghemat CPU & RAM saat beban tinggi
+        DB::disableQueryLog();
+    }
     /**
      * QC Scenario 1: POS Checkout
      * Hit TiDB dengan INSERT transaksi nyata agar grafik bergerak
@@ -20,44 +27,79 @@ class ApiController extends Controller
         try {
             $transactionId = 'QC-' . strtoupper(Str::random(8)) . '-' . time();
             
-            $outlet = DB::table('outlets')->first();
-            $outletId = $outlet ? $outlet->id : DB::table('outlets')->insertGetId([
-                'name' => 'QC Outlet',
-                'code' => 'QC-' . rand(10, 99),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            // 1. CACHING: Ambil Outlet & User ID dari Cache (1 Jam)
+            $outletId = Cache::remember('qc_outlet_id', 3600, function () {
+                $outlet = DB::table('outlets')->first();
+                $id = $outlet ? $outlet->id : DB::table('outlets')->insertGetId([
+                    'name' => 'QC Outlet',
+                    'code' => 'QC-' . rand(10, 99),
+                    'created_at' => now(), 'updated_at' => now()
+                ]);
 
-            $user = DB::table('users')->first();
-            $userId = $user ? $user->id : DB::table('users')->insertGetId([
-                'name' => 'QC User',
-                'email' => 'qc' . rand(10, 99) . '@example.com',
-                'password' => bcrypt('password'),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+                // Pastikan ada stok awal untuk pengetesan race condition
+                DB::table('inventories')->updateOrInsert(
+                    ['outlet_id' => $id, 'product_id' => 1],
+                    ['quantity' => 1000, 'updated_at' => now()]
+                );
+                
+                return $id;
+            });
 
-            // Query nyata ke TiDB — ini yang bikin grafik bergerak
-            DB::table('transactions')->insert([
-                'outlet_id'      => $outletId,
-                'user_id'        => $userId,
-                'invoice_number' => $transactionId,
-                'subtotal'       => rand(10000, 500000),
-                'total'          => rand(10000, 500000),
-                'status'         => 'completed',
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ]);
+            $userId = Cache::remember('qc_user_id', 3600, function () {
+                $user = DB::table('users')->first();
+                return $user ? $user->id : DB::table('users')->insertGetId([
+                    'name' => 'QC User',
+                    'email' => 'qc' . rand(10, 99) . '@example.com',
+                    'password' => bcrypt('password'),
+                    'created_at' => now(), 'updated_at' => now()
+                ]);
+            });
 
-            // Cek stok (SELECT nyata)
-            $productCount = DB::table('products')->count();
+            // 2. TRANSACTION & PESSIMISTIC LOCKING: Solusi Stok Minus
+            $result = DB::transaction(function () use ($transactionId, $outletId, $userId) {
+                // Kunci baris data di tabel inventories agar user lain antri
+                $inventory = DB::table('inventories')
+                    ->where('outlet_id', $outletId)
+                    ->lockForUpdate()
+                    ->first();
+
+                // Simulasi pengecekan stok (Wajib untuk test 'Stok Tidak Minus')
+                if (!$inventory || $inventory->quantity <= 0) {
+                    throw new \Exception('Stok Habis atau Tidak Tersedia');
+                }
+
+                // Kurangi stok
+                DB::table('inventories')
+                    ->where('id', $inventory->id)
+                    ->decrement('quantity', 1);
+
+                // Insert transaksi
+                DB::table('transactions')->insert([
+                    'outlet_id'      => $outletId,
+                    'user_id'        => $userId,
+                    'invoice_number' => $transactionId,
+                    'subtotal'       => rand(10000, 50000),
+                    'total'          => rand(10000, 50000),
+                    'status'         => 'completed',
+                    'created_at'     => now(), 'updated_at' => now(),
+                ]);
+
+                return ['transaction_id' => $transactionId, 'remaining_stock' => $inventory->quantity - 1];
+            });
 
             return response()->json([
                 'success'           => true,
                 'accounting_synced' => true,
-                'transaction_id'    => $transactionId,
-                'product_pool'      => $productCount,
+                'transaction_id'    => $result['transaction_id'],
+                'remaining_stock'   => $result['remaining_stock'],
             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Checkout Failed: ' . $e->getMessage(),
+            ], 409); // Conflict / Logic Error
+        }
+    }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -117,8 +159,8 @@ class ApiController extends Controller
     public function liveStats()
     {
         try {
-            $txCount  = DB::table('transactions')->count();
-            $prodCount = DB::table('products')->count();
+            $txCount  = Cache::remember('total_tx_stats', 60, fn() => DB::table('transactions')->count());
+            $prodCount = Cache::remember('total_prod_stats', 3600, fn() => DB::table('products')->count());
 
             return response()->json([
                 'vips_online'      => rand(10, 50),
@@ -126,15 +168,11 @@ class ApiController extends Controller
                 'server_status'    => 'HEALTHY',
                 'total_tx'         => $txCount,
                 'total_products'   => $prodCount,
-                'debug_ca_path'    => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem'),
-                'debug_ca_exists'  => file_exists(env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem')),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Database connection failed: ' . $e->getMessage(),
-                'debug_ca_path'    => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem'),
-                'debug_ca_exists'  => file_exists(env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : base_path('database/isrgrootx1.pem')),
+                'error' => 'Stats unavailable',
             ], 500);
         }
     }
@@ -153,45 +191,27 @@ class ApiController extends Controller
         try {
             $items = $request->items ?? [];
 
-            $outlet = DB::table('outlets')->first();
-            $outletId = $outlet ? $outlet->id : DB::table('outlets')->insertGetId([
-                'name' => 'QC Outlet',
-                'code' => 'QC-' . rand(100, 999),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            // Caching ID
+            $outletId = Cache::remember('qc_outlet_id', 3600, fn() => DB::table('outlets')->value('id') ?? 1);
+            $userId   = Cache::remember('qc_user_id', 3600, fn() => DB::table('users')->value('id') ?? 1);
 
-            $user = DB::table('users')->first();
-            $userId = $user ? $user->id : DB::table('users')->insertGetId([
-                'name' => 'QC User',
-                'email' => 'qc' . rand(100, 999) . '@example.com',
-                'password' => bcrypt('password'),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            // INSERT batch ke DB agar TiDB dashboard bergerak
-            $rows = array_map(fn($item) => [
-                'outlet_id'      => $outletId,
-                'user_id'        => $userId,
-                'invoice_number' => 'HPP-' . strtoupper(Str::random(6)),
-                'subtotal'       => ($item['price'] ?? 15000) * ($item['qty'] ?? 1),
-                'total'          => ($item['price'] ?? 15000) * ($item['qty'] ?? 1),
-                'status'         => 'completed', // hpp_sync is not a valid enum value
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ], array_slice($items, 0, 10)); // batasi 10 row per request
-
-            if (!empty($rows)) {
-                DB::table('transactions')->insert($rows);
-            }
+            // 3. JOB & QUEUE: Solusi Timeout & Large Payload
+            // Kirim ke background process (Job), controller langsung kembalikan respon 202
+            ProcessSyncHpp::dispatch($items, $outletId, $userId);
 
             return response()->json([
                 'success'          => true,
+                'message'          => 'Sync HPP sedang diproses di background queue',
                 'processed_items'  => count($items),
-                'tidb_affected_rows' => count($rows),
-                'processing_time_ms' => rand(50, 500),
-            ]);
+                'status'           => 'ACCEPTED',
+            ], 202);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Sync Failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

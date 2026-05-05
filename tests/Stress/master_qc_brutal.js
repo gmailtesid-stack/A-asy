@@ -33,6 +33,11 @@ if (browserEnabled) {
     vus: 10,
     duration: '10m',
     exec: 'visualMonkeyTesting',
+    options: {
+      browser: {
+        type: 'chromium',
+      },
+    },
   };
 }
 
@@ -85,7 +90,7 @@ export function apiBrutalTesting() {
     if (isInvalid) {
       check(syncHppRes, { 'Security: Block Invalid Token': (r) => r.status === 401 });
     } else {
-      check(syncHppRes, { 'Performance: Large Payload Success': (r) => r.status === 200 || r.status === 422 });
+      check(syncHppRes, { 'Performance: Large Payload Success': (r) => r.status === 200 || r.status === 202 || r.status === 422 });
     }
   });
 
@@ -102,7 +107,7 @@ export async function visualMonkeyTesting() {
   try {
     await page.goto(BASE_URL + '/login'); // Start from login for UI check
 
-    group('Deep Navigation & Interaction', async () => {
+    group('Deep Navigation & Interaction', () => {
       // Elements that are expected in the E-ASY ERP Sidebar/POS
       const menus = ['#nav-pos', '#nav-wms', '#nav-audit', '#nav-report'];
       // Pilih menu acak (Monkey Testing)
