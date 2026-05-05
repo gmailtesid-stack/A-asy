@@ -23,6 +23,7 @@ Route::post('/wms/mutate',       [ApiController::class, 'wmsMutate']);
 Route::post('/wms/stock-opname', [ApiController::class, 'wmsStockOpname']);
 
 Route::get('/live-stats',        [ApiController::class, 'liveStats']);
+Route::get('/process-queue',     [ApiController::class, 'processQueue']);
 
 // Protected User Route
 Route::middleware(['auth:sanctum', 'localization'])->get('/user', function (Request $request) {
