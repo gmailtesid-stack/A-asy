@@ -21,7 +21,10 @@ jobs:
       - name: Force Create Vercel Project Config
         run: |
           mkdir -p .vercel
-          echo "{\"projectId\":\"${{ secrets.VERCEL_PROJECT_ID }}\",\"orgId\":\"${{ secrets.VERCEL_ORG_ID }}\"}" > .vercel/project.json
+          printf '{"projectId":"%s","orgId":"%s"}' "${{ secrets.VERCEL_PROJECT_ID }}" "${{ secrets.VERCEL_ORG_ID }}" > .vercel/project.json
+          echo "File .vercel/project.json created:"
+          ls -la .vercel
+          cat .vercel/project.json | sed 's/./*/g' # Debug safe version
 
       - name: Deploy to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
