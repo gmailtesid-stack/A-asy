@@ -18,12 +18,10 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel
 
-      - name: Force Clean Vercel Cache
-        run: rm -rf .vercel
+      - name: Force Create Vercel Project Config
+        run: |
+          mkdir -p .vercel
+          echo "{\"projectId\":\"${{ secrets.VERCEL_PROJECT_ID }}\",\"orgId\":\"${{ secrets.VERCEL_ORG_ID }}\"}" > .vercel/project.json
 
       - name: Deploy to Vercel
-        run: |
-          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
