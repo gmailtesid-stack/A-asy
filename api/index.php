@@ -60,6 +60,12 @@ try {
 
     $app->useStoragePath($storagePath);
 
+    // Paksa session ke database untuk Vercel (karena /tmp tidak shared)
+    $app['config']->set('session.driver', 'database');
+
+    // Trust Proxies untuk Vercel HTTPS agar session cookie aman
+    $app['config']->set('trustedproxy.proxies', ['*']);
+
     // Pastikan view compiled path juga mengarah ke /tmp
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
 
