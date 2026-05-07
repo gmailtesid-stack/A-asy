@@ -85,8 +85,9 @@ try {
 
     $app->useStoragePath($storagePath);
 
-    // Paksa session ke database untuk Vercel (karena /tmp tidak shared)
-    $app['config']->set('session.driver', 'database');
+    // Paksa session ke cookie untuk Vercel agar lebih ringan dan menghindari DB hang di awal
+    $app['config']->set('session.driver', 'cookie');
+    $app['config']->set('cache.default', 'array');
 
     // Trust Proxies untuk Vercel HTTPS agar session cookie aman
     $app['config']->set('trustedproxy.proxies', ['*']);
