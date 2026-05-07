@@ -1,5 +1,14 @@
 {
     "version": 2,
+    "env": {
+        "DB_CONNECTION": "mysql",
+        "DB_HOST": "gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com",
+        "DB_PORT": "4000",
+        "DB_DATABASE": "easy_pos",
+        "DB_USERNAME": "2a8pPc78jTqTKYA.root",
+        "DB_PASSWORD": "bmQD3Hzj4umm52vV",
+        "MYSQL_ATTR_SSL_CA": "database/isrgrootx1.pem"
+    },
     "outputDirectory": "public",
     "crons": [
         {
