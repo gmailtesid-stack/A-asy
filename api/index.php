@@ -13,6 +13,11 @@ if (!is_dir($storagePath)) {
 
 // 2. Load Application
 require __DIR__ . '/../vendor/autoload.php';
+
+if (!env('APP_KEY')) {
+    die("FATAL: APP_KEY is not set in environment variables!");
+}
+
 $app = require __DIR__ . '/../bootstrap/app.php';
 
 // 3. Configure Storage
