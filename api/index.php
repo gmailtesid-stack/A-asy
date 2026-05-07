@@ -115,7 +115,63 @@ try {
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['HTTPS'] = 'on'; 
 
-    // 7. Handle Request
+    // ─── 7. Step-by-Step Initialization (To avoid 504 Timeout) ───
+    if (isset($_GET['migrate']) || isset($_GET['seed']) || isset($_GET['wipe'])) {
+        $app['config']->set('session.driver', 'array'); // Paksa pakai memori saja, jangan cari tabel
+    }
+
+    if (isset($_GET['wipe'])) {
+        echo "<pre>🧹 Super Wiping Database (Unlocking Constraints)...\n";
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+        foreach($tables as $table) {
+            $name = array_values((array)$table)[0];
+            echo "Dropping $name...\n";
+            \Illuminate\Support\Facades\Schema::dropIfExists($name);
+        }
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+        echo "✅ Database is truly EMPTY now. Run ?migrate=1\n</pre>";
+        exit;
+    }
+
+    if (isset($_GET['migrate'])) {
+        echo "<pre>🛠 Step 1: Running Migration Batch (To avoid timeout)...\n";
+        $migrator = $app->make('migrator');
+        
+        // Pastikan tabel "Buku Catatan" migrations ada dulu
+        if (!$migrator->repositoryExists()) {
+            echo "Creating migrations table...\n";
+            $migrator->getRepository()->createRepository();
+        }
+
+        $files = $migrator->getMigrationFiles($migrator->paths());
+        $ran = $migrator->getRepository()->getRan();
+        $pending = array_diff(array_keys($files), $ran);
+        
+        if (empty($pending)) {
+            echo "✅ All Migrations Completed! Now run ?seed=1\n";
+        } else {
+            $batchSize = 5; // Kita cicil 5 tabel saja sekali jalan
+            $toRun = array_slice($pending, 0, $batchSize);
+            foreach ($toRun as $file) {
+                echo "Running: $file...\n";
+                $migrator->runUp($files[$file], $migrator->getRepository()->getNextBatchNumber(), false);
+            }
+            echo "\n⏳ Batch Done! Refresh this page to run the next " . $batchSize . " migrations.\n";
+            echo "Remaining: " . (count($pending) - count($toRun)) . " tables.\n";
+        }
+        exit;
+    }
+    if (isset($_GET['seed'])) {
+        echo "<pre>🌱 Step 2: Running Seeders...\n";
+        \Illuminate\Database\Eloquent\Model::unguard();
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        echo \Illuminate\Support\Facades\Artisan::output();
+        echo "\n✅ Seeding Done! You can now LOGIN.</pre>";
+        exit;
+    }
+
+    // 8. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle($request = Request::capture());
     $response->send();
