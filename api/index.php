@@ -16,7 +16,12 @@ $app = require __DIR__ . '/../bootstrap/app.php';
 // 3. Configure Storage
 $app->useStoragePath($storagePath);
 
-// 4. Handle Request
+// 4. Force register essential ServiceProviders
+$app->register(\Illuminate\View\ViewServiceProvider::class);
+$app->register(\Illuminate\Session\SessionServiceProvider::class);
+$app->register(\Illuminate\Cookie\CookieServiceProvider::class);
+
+// 5. Handle Request
 try {
     $app->handleRequest(Request::capture());
 } catch (\Throwable $e) {
