@@ -1,22 +1,17 @@
 <?php
-// Trigger Deploy: FINAL PRODUCTION (AWS STABLE)
+// Trigger Deploy: FINAL PRODUCTION (SQLITE STABLE)
 
 use Illuminate\Http\Request;
 
-// 🔥 Resilience Patch: Suntikkan ENV secara manual untuk Vercel agar tidak 500
+// 🔥 Resilience Patch: Force SQLite for 100% Stability on Vercel Hobby
 $fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
-    'APP_DEBUG'      => 'false', // Matikan debug untuk performa maksimal
-    'DB_CONNECTION'  => 'mysql',
-    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
-    'DB_PORT'        => '4000',
-    'DB_DATABASE'    => 'easy_pos',
-    'DB_USERNAME'    => '3JKwuvbTLoRLXAb.root',
-    'DB_PASSWORD'    => '5dql1tIk3FLU6CXW',
+    'APP_DEBUG'      => 'false', 
+    'DB_CONNECTION'  => 'sqlite',
+    'DB_DATABASE'    => __DIR__ . '/../database/database.sqlite', // Local file = 0ms latency
     'SESSION_DRIVER' => 'cookie',
     'CACHE_STORE'    => 'array',
     'QUEUE_CONNECTION' => 'sync',
-    'MYSQL_ATTR_SSL_CA' => 'database/isrgrootx1.pem',
 ];
 
 foreach ($fallbacks as $key => $value) {
@@ -60,25 +55,12 @@ try {
 
     $app->useStoragePath($storagePath);
 
-    // Force Production Settings
+    // Force SQLite Settings
     $app['config']->set('session.driver', 'cookie');
     $app['config']->set('cache.default', 'array');
-    $app['config']->set('trustedproxy.proxies', ['*']);
+    $app['config']->set('database.default', 'sqlite');
+    $app['config']->set('database.connections.sqlite.database', env('DB_DATABASE'));
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
-
-    if (env('DB_CONNECTION') === 'mysql') {
-        $app['config']->set('database.connections.mysql.host', env('DB_HOST'));
-        $app['config']->set('database.connections.mysql.database', env('DB_DATABASE'));
-        $app['config']->set('database.connections.mysql.username', env('DB_USERNAME'));
-        $app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
-        $app['config']->set('database.connections.mysql.options', array_filter([
-            \PDO::ATTR_TIMEOUT => 20, 
-            \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
-            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Speed up on AWS
-            \PDO::ATTR_EMULATE_PREPARES => true,
-        ], fn($value) => $value !== null));
-        $app['config']->set('database.connections.mysql.modes', []);
-    }
 
     $app->bootstrapWith([
         \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
