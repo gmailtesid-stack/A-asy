@@ -2,8 +2,9 @@
     "version": 2,
     "regions": ["sin1"],
     "env": {
-        "APP_ENV": "production",
+        "APP_ENV": "local",
         "APP_DEBUG": "true",
+        "VERCEL": "1",
         "DB_CONNECTION": "sqlite",
         "DB_DATABASE": "database/database.sqlite"
     },
