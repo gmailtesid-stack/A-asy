@@ -85,6 +85,10 @@ try {
 
     $app->useStoragePath($storagePath);
 
+    if (isset($_GET['check_boot'])) {
+        die("✅ Laravel Bootstrapped Successfully at " . date('H:i:s'));
+    }
+
     // Paksa session ke cookie untuk Vercel agar lebih ringan dan menghindari DB hang di awal
     $app['config']->set('session.driver', 'cookie');
     $app['config']->set('cache.default', 'array');
