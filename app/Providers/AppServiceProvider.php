@@ -79,11 +79,13 @@ class AppServiceProvider extends ServiceProvider
         );
 
         // Share low stock count to app layout only (Performance Optimization)
+        /*
         \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
             if (auth()->check()) {
                 // HARDCODE FOR DEMO PERFORMANCE
                 $view->with('globalLowStockCount', 5);
             }
         });
+        */
     }
 }

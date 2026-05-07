@@ -25,15 +25,21 @@ $app = require __DIR__ . '/../bootstrap/app.php';
 // 3. Configure Storage
 $app->useStoragePath($storagePath);
 
-// 4. Handle Request with Debugging
+// 4. Handle Request with Brute-Force Debugging
 try {
-    $app->handleRequest(Request::capture());
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    
+    // Catch early bootstrap errors before they go to Laravel's handler
+    $response = $kernel->handle($request = Request::capture());
+    $response->send();
+    $kernel->terminate($request, $response);
 } catch (\Throwable $e) {
     header('Content-Type: text/plain');
-    echo "BOOTSTRAP ERROR: " . $e->getMessage() . "\n";
+    echo "CAPTURED BOOT ERROR: " . $e->getMessage() . "\n";
     echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
     echo $e->getTraceAsString();
 }
+
 
 
 
