@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 
 // 1. Force Essential Env
 putenv('APP_ENV=production');
-putenv('APP_DEBUG=false');
+putenv('APP_DEBUG=true');
 putenv('DB_CONNECTION=sqlite');
 putenv('DB_DATABASE=' . __DIR__ . '/../database/database.sqlite');
 putenv('SESSION_DRIVER=cookie');
