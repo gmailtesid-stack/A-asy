@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+/bootstrap/cache/*.php
+!.gitignore
 .env
 .env.backup
 .env.production
