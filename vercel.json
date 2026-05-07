@@ -5,33 +5,21 @@
         "APP_ENV": "production",
         "APP_DEBUG": "true",
         "VERCEL": "1",
-        "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
-        "APP_CONFIG_CACHE": "/tmp/config.php",
-        "APP_ROUTES_CACHE": "/tmp/routes.php",
+        "VIEW_COMPILED_PATH": "/tmp",
         "CACHE_STORE": "array",
         "SESSION_DRIVER": "cookie",
-        "DB_CONNECTION": "sqlite",
-        "DB_DATABASE": "database/database.sqlite",
-        "MYSQL_ATTR_SSL_CA": "/etc/pki/tls/certs/ca-bundle.crt"
+        "LOG_CHANNEL": "stderr"
     },
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.2",
             "memory": 1024,
-            "maxDuration": 10
+            "maxDuration": 30
         }
     },
     "routes": [
         {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
-        },
-        {
-            "src": "/assets/(.*)",
-            "dest": "/public/assets/$1"
-        },
-        {
-            "src": "/(css|js|images|fonts|vendor)/(.*)",
+            "src": "/(css|js|images|fonts|vendor|build|assets)/(.*)",
             "dest": "/public/$1/$2"
         },
         {
