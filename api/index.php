@@ -4,9 +4,8 @@
 use Illuminate\Http\Request;
 
 // 🔥 Resilience Patch: Suntikkan ENV secara manual untuk Vercel agar tidak 500
-$fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
-    'APP_DEBUG'      => 'true',
+    'APP_DEBUG'      => 'false',
     'DB_CONNECTION'  => 'mysql',
     'DB_HOST'        => 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
     'DB_PORT'        => '4000',
@@ -103,8 +102,12 @@ try {
         $app['config']->set('database.connections.mysql.options', array_filter([
             \PDO::ATTR_TIMEOUT => 30, 
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
-            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Set to false to speed up handshake
+            \PDO::ATTR_EMULATE_PREPARES => true, // Speed up queries
         ], fn($value) => $value !== null));
+        
+        $app['config']->set('database.connections.mysql.modes', []); // Turn off strict modes for speed
+        $app['config']->set('database.connections.mysql.charset', 'utf8'); // Simpler charset for faster handshake
     }
 
     // Lanjutkan Bootstrap sisanya
