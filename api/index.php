@@ -115,6 +115,39 @@ try {
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['HTTPS'] = 'on'; 
 
+    if (isset($_GET['test_db'])) {
+        echo "<pre>Testing direct PDO connection to TiDB...\n";
+        $host = env('DB_HOST');
+        $port = env('DB_PORT');
+        $db = env('DB_DATABASE');
+        $user = env('DB_USERNAME');
+        $pass = env('DB_PASSWORD');
+        $ca = base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem'));
+        
+        echo "Host: $host\nDB: $db\nUser: $user\nCA Path: $ca\nCA Exists: " . (file_exists($ca) ? 'YES' : 'NO') . "\n\n";
+        
+        try {
+            $options = [
+                \PDO::ATTR_TIMEOUT => 3, // 3 seconds timeout to avoid 504
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_SSL_CA => file_exists($ca) ? $ca : null,
+                \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+            ];
+            
+            $pdo = new \PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass, $options);
+            echo "✅ CONNECTION SUCCESSFUL!\n";
+            $stmt = $pdo->query('SHOW TABLES');
+            echo "Tables:\n";
+            foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $table) {
+                echo "- $table\n";
+            }
+        } catch (\PDOException $e) {
+            echo "❌ CONNECTION FAILED:\n";
+            echo $e->getMessage() . "\n";
+        }
+        exit;
+    }
+
     // ─── 7. Step-by-Step Initialization (To avoid 504 Timeout) ───
     if (isset($_GET['migrate']) || isset($_GET['seed']) || isset($_GET['wipe'])) {
         $app['config']->set('session.driver', 'array'); // Paksa pakai memori saja, jangan cari tabel
