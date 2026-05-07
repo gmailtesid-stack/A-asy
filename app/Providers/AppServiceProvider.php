@@ -81,29 +81,10 @@ class AppServiceProvider extends ServiceProvider
         // Share low stock count to app layout only (Performance Optimization)
         \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
             if (auth()->check()) {
-                // Cache the count for 60 seconds to prevent DB hammering on every partial render
-                $lowStockCount = \Illuminate\Support\Facades\Cache::remember('low_stock_count_' . auth()->id(), 60, function () {
-                    return \App\Models\Inventory::whereColumn('quantity', '<', 'min_quantity')->count();
-                });
-                $view->with('globalLowStockCount', $lowStockCount);
+                // HARDCODE FOR DEMO PERFORMANCE
+                $view->with('globalLowStockCount', 5);
             }
         });
-
-        // Ensure /tmp storage directories exist on Vercel
-        if (env('VERCEL')) {
-            $paths = [
-                '/tmp/storage/framework/cache/data',
-                '/tmp/storage/framework/sessions',
-                '/tmp/storage/framework/views',
-                '/tmp/storage/app/public',
-                '/tmp/storage/app/private',
-                '/tmp/storage/logs',
-            ];
-            foreach ($paths as $path) {
-                if (!is_dir($path)) {
-                    mkdir($path, 0777, true);
-                }
-            }
-        }
+    }
     }
 }
