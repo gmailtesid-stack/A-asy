@@ -8,11 +8,11 @@ $fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
     'APP_DEBUG'      => 'true',
     'DB_CONNECTION'  => 'mysql',
-    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
     'DB_PORT'        => '4000',
-    'DB_DATABASE'    => 'test',
-    'DB_USERNAME'    => 'jm7ETdoFCLactTB.root',
-    'DB_PASSWORD'    => 'kwRci29We1dRiVVW',
+    'DB_DATABASE'    => 'easy_pos',
+    'DB_USERNAME'    => '2a8pPc78jTqTKYA.root',
+    'DB_PASSWORD'    => 'bmQD3Hzj4umm52vV',
     'SESSION_DRIVER' => 'database',
     'CACHE_STORE'    => 'database',
     'QUEUE_CONNECTION' => 'database',
@@ -101,9 +101,9 @@ try {
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
         
-        // AUTO-FIX: Vercel defaults DB_DATABASE to 'sys' which causes TiDB 'Table sys.transactions doesn't exist' error.
+        // AUTO-FIX removed as we are now using easy_pos
         if (env('DB_DATABASE') === 'sys' || $app['config']->get('database.connections.mysql.database') === 'sys') {
-            $app['config']->set('database.connections.mysql.database', 'test'); // Ganti 'test' dengan nama DB aslinya jika berbeda
+            $app['config']->set('database.connections.mysql.database', 'easy_pos');
         }
     }
 
