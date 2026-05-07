@@ -1,5 +1,5 @@
 <?php
-// Trigger Deploy: Optimization & Fix Login 500
+// Trigger Deploy: SWITCH TO AWS (穩定性優先)
 
 use Illuminate\Http\Request;
 
@@ -8,11 +8,11 @@ $fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
     'APP_DEBUG'      => 'true',
     'DB_CONNECTION'  => 'mysql',
-    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
+    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
     'DB_PORT'        => '4000',
-    'DB_DATABASE'    => 'easy_pos',
-    'DB_USERNAME'    => '2a8pPc78jTqTKYA.root',
-    'DB_PASSWORD'    => 'bmQD3Hzj4umm52vV',
+    'DB_DATABASE'    => 'easy_pos', // Kita pakai easy_pos agar tidak tercampur dengan sys
+    'DB_USERNAME'    => '3JKwuvbTLoRLXAb.root',
+    'DB_PASSWORD'    => '5dql1tIk3FLU6CXW',
     'SESSION_DRIVER' => 'cookie',
     'CACHE_STORE'    => 'array',
     'QUEUE_CONNECTION' => 'sync',
@@ -27,7 +27,7 @@ foreach ($fallbacks as $key => $value) {
     }
 }
 
-// 1. BERSIHKAN CACHE LAMA (HANYA JIKA BISA DITULIS)
+// 1. BERSIHKAN CACHE LAMA
 $cachePath = __DIR__ . '/../bootstrap/cache';
 foreach (['config.php', 'services.php', 'packages.php', 'routes.php'] as $file) {
     $fullPath = "$cachePath/$file";
@@ -47,7 +47,7 @@ foreach (['/framework/views', '/framework/cache/data', '/framework/sessions', '/
     }
 }
 
-// 3. Alihkan Cache Laravel ke /tmp (PENTING UNTUK VERCEL)
+// 3. Alihkan Cache Laravel ke /tmp
 putenv('TMPDIR=/tmp');
 putenv('APP_PACKAGES_CACHE=' . $storagePath . '/framework/packages.php');
 putenv('APP_SERVICES_CACHE=' . $storagePath . '/framework/services.php');
@@ -57,15 +57,6 @@ putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 
 // 4. Alihkan Log & Debug
 putenv('LOG_CHANNEL=stderr');
-// APP_DEBUG otomatis mengikuti env, default false untuk keamanan
-if (!getenv('APP_DEBUG')) {
-    putenv('APP_DEBUG=true');
-}
-
-// Supresi khusus untuk tempnam() warning di Vercel
-set_error_handler(function ($errno, $errstr) {
-    return (strpos($errstr, 'tempnam()') !== false);
-}, E_WARNING | E_NOTICE);
 
 try {
     // 5. Load Autoloader & Bootstrap
@@ -73,7 +64,7 @@ try {
     
     $app = require __DIR__ . '/../bootstrap/app.php';
 
-    // 6. Step-by-Step Bootstrap (PENTING: Split agar config bisa di-override sebelum BootProviders)
+    // 6. Step-by-Step Bootstrap
     $app->bootstrapWith([
         \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
         \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
@@ -89,25 +80,19 @@ try {
     // Pastikan view compiled path juga mengarah ke /tmp
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
 
-    // KONFIGURASI SSL UNTUK TIDB CLOUD (Dinamis via ENV)
+    // KONFIGURASI SSL UNTUK TIDB AWS
     if (env('DB_CONNECTION') === 'mysql') {
         $app['config']->set('database.connections.mysql.host', env('DB_HOST'));
-        $app['config']->set('database.connections.mysql.read.host', [env('DB_HOST')]);
-        $app['config']->set('database.connections.mysql.write.host', [env('DB_HOST')]);
         $app['config']->set('database.connections.mysql.port', env('DB_PORT'));
         $app['config']->set('database.connections.mysql.database', env('DB_DATABASE'));
         $app['config']->set('database.connections.mysql.username', env('DB_USERNAME'));
         $app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
 
         $app['config']->set('database.connections.mysql.options', array_filter([
-            \PDO::ATTR_TIMEOUT => 30, 
+            \PDO::ATTR_TIMEOUT => 15, 
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
-            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Set to false to speed up handshake
-            \PDO::ATTR_EMULATE_PREPARES => true, // Speed up queries
+            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
-        
-        $app['config']->set('database.connections.mysql.modes', []); // Turn off strict modes for speed
-        $app['config']->set('database.connections.mysql.charset', 'utf8'); // Simpler charset for faster handshake
     }
 
     // Lanjutkan Bootstrap sisanya
@@ -118,13 +103,30 @@ try {
         \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ]);
 
-    // Cek APP_KEY
-    if (!env('APP_KEY')) {
-        die("🚨 ERROR: APP_KEY belum diset di Vercel Environment Variables!");
-    }
-
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['HTTPS'] = 'on'; 
+
+    // ─── 7. Quick Setup Routes ───
+    if (isset($_GET['migrate'])) {
+        echo "<pre>🛠 Migrating AWS Database...\n";
+        // Cek jika database easy_pos ada
+        try {
+            \Illuminate\Support\Facades\DB::statement('CREATE DATABASE IF NOT EXISTS easy_pos');
+            \Illuminate\Support\Facades\DB::statement('USE easy_pos');
+        } catch (\Exception $e) { echo "Warning: " . $e->getMessage() . "\n"; }
+
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        echo \Illuminate\Support\Facades\Artisan::output();
+        echo "\n✅ Migration Done. Run ?seed=1</pre>";
+        exit;
+    }
+    if (isset($_GET['seed'])) {
+        echo "<pre>🌱 Seeding AWS Database...\n";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        echo \Illuminate\Support\Facades\Artisan::output();
+        echo "\n✅ Seeding Done! Ready to LOGIN.</pre>";
+        exit;
+    }
 
     // 8. Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
@@ -134,7 +136,7 @@ try {
 
 } catch (\Throwable $e) {
     echo "<div style='background:#000;color:#0f0;padding:20px;border:5px solid red;font-family:monospace;'>";
-    echo "<h1>🚨 SYSTEM CRITICAL ERROR</h1>";
+    echo "<h1>🚨 SYSTEM CRITICAL ERROR (AWS)</h1>";
     echo "<h3>" . htmlspecialchars($e->getMessage()) . "</h3>";
     echo "<p>File: " . $e->getFile() . " (Line: " . $e->getLine() . ")</p>";
     echo "<hr><pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
