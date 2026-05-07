@@ -3,7 +3,7 @@
     "regions": ["sin1"],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "DB_CONNECTION": "sqlite",
         "DB_DATABASE": "database/database.sqlite"
     },
