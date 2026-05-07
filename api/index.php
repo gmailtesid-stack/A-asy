@@ -13,20 +13,18 @@ if (!env('APP_KEY')) {
 
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-// 3. Configure Storage & Config Overrides (Immediate)
+// 3. Configure Storage Path
 $app->useStoragePath('/tmp');
-$app['config']->set('view.compiled', '/tmp');
-$app['config']->set('session.driver', 'cookie');
-$app['config']->set('logging.default', 'stderr');
 
 // 4. Handle Request with Raw Debug
 try {
     $app->handleRequest(Request::capture());
 } catch (\Throwable $e) {
     header('Content-Type: text/plain');
-    echo "CRITICAL BOOT ERROR: " . $e->getMessage() . "\n";
+    echo "VERCEL BOOT ERROR: " . $e->getMessage() . "\n";
     echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
     echo $e->getTraceAsString();
 }
+
 
 

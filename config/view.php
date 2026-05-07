@@ -28,9 +28,7 @@ return [
     |
     */
 
-    'compiled' => env('VERCEL') ? '/tmp/storage/framework/views' : env(
-        'VIEW_COMPILED_PATH',
-        realpath(storage_path('framework/views'))
-    ),
+    'compiled' => env('VIEW_COMPILED_PATH', realpath(storage_path('framework/views'))),
+
 
 ];
