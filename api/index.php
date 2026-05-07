@@ -13,15 +13,20 @@ if (!env('APP_KEY')) {
 
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-// 3. Configure Storage for Vercel
-$storagePath = '/tmp';
-$app->useStoragePath($storagePath);
+// 3. Configure Storage & Config Overrides (Immediate)
+$app->useStoragePath('/tmp');
+$app['config']->set('view.compiled', '/tmp');
+$app['config']->set('session.driver', 'cookie');
+$app['config']->set('logging.default', 'stderr');
 
-// 4. Force View Compilation Path
-$app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\LoadConfiguration::class, function($app) use ($storagePath) {
-    $app['config']->set('view.compiled', $storagePath);
-});
+// 4. Handle Request with Raw Debug
+try {
+    $app->handleRequest(Request::capture());
+} catch (\Throwable $e) {
+    header('Content-Type: text/plain');
+    echo "CRITICAL BOOT ERROR: " . $e->getMessage() . "\n";
+    echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
+    echo $e->getTraceAsString();
+}
 
-// 5. Handle Request
-$app->handleRequest(Illuminate\Http\Request::capture());
 
