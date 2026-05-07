@@ -56,6 +56,22 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Outlet::class,      OutletPolicy::class);
         Gate::policy(User::class,        UserPolicy::class);
 
+        // ── VERCEL STORAGE BOOTSTRAP ─────────────────────────────────────
+        if (env('VERCEL')) {
+            $storagePaths = [
+                '/tmp/storage/framework/views',
+                '/tmp/storage/framework/sessions',
+                '/tmp/storage/framework/cache',
+            ];
+            foreach ($storagePaths as $path) {
+                if (!is_dir($path)) {
+                    @mkdir($path, 0755, true);
+                }
+            }
+        }
+
+        // ── RELATIONS & OBSERVERS ────────────────────────────────────────
+
         // ── ERP Event Listeners ─────────────────────────────────────
         Event::listen(
             TransactionCreated::class,

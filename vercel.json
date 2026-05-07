@@ -2,9 +2,12 @@
     "version": 2,
     "regions": ["sin1"],
     "env": {
-        "APP_ENV": "local",
+        "APP_ENV": "production",
         "APP_DEBUG": "true",
         "VERCEL": "1",
+        "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
+        "CACHE_STORE": "array",
+        "SESSION_DRIVER": "cookie",
         "DB_CONNECTION": "sqlite",
         "DB_DATABASE": "database/database.sqlite"
     },
