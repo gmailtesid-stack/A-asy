@@ -1,7 +1,5 @@
 <?php
 
-die("PHP is working on Vercel. Current Directory: " . __DIR__);
-
 use Illuminate\Http\Request;
 
 // 1. Storage Setup for Vercel
@@ -9,6 +7,8 @@ $storagePath = '/tmp/storage';
 if (!is_dir($storagePath)) {
     @mkdir($storagePath, 0777, true);
     @mkdir($storagePath . '/framework/views', 0777, true);
+    @mkdir($storagePath . '/framework/sessions', 0777, true);
+    @mkdir($storagePath . '/framework/cache', 0777, true);
 }
 
 // 2. Load Application
@@ -18,18 +18,15 @@ $app = require __DIR__ . '/../bootstrap/app.php';
 // 3. Configure Storage
 $app->useStoragePath($storagePath);
 
-// 4. Force register essential ServiceProviders
-$app->register(\Illuminate\View\ViewServiceProvider::class);
-$app->register(\Illuminate\Session\SessionServiceProvider::class);
-$app->register(\Illuminate\Cookie\CookieServiceProvider::class);
-
-// 5. Handle Request
+// 4. Handle Request with Debugging
 try {
     $app->handleRequest(Request::capture());
 } catch (\Throwable $e) {
     header('Content-Type: text/plain');
-    echo "Fatal Error during handleRequest: " . $e->getMessage() . "\n";
+    echo "BOOTSTRAP ERROR: " . $e->getMessage() . "\n";
+    echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
     echo $e->getTraceAsString();
 }
+
 
 
