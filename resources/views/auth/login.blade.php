@@ -226,19 +226,19 @@
         <div class="demo-accounts">
             <p>🔑 Akun Demo</p>
             <div class="demo-item">
-                <span>admin@easy-pos.app / password</span>
+                <span>admin@easy-pos.id / password</span>
                 <span class="badge badge-admin">Super Admin</span>
             </div>
             <div class="demo-item">
-                <span>manager.jkt@easy-pos.app / password</span>
+                <span>manager.jkt@easy-pos.id / password</span>
                 <span class="badge badge-manager">Manager</span>
             </div>
             <div class="demo-item">
-                <span>kasir.jkt@easy-pos.app / password</span>
+                <span>kasir.jkt@easy-pos.id / password</span>
                 <span class="badge badge-kasir">Kasir</span>
             </div>
             <div class="demo-item" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; padding-top: 5px;">
-                <span>test@easy-pos.app / password</span>
+                <span>test@easy-pos.id / password</span>
                 <span class="badge badge-admin" style="background: #38bdf8; color: #0f172a;">Test Admin</span>
             </div>
         </div>
