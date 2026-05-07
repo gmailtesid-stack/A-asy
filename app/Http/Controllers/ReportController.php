@@ -60,6 +60,23 @@ class ReportController extends Controller
             ]
         ]);
 
+        $lowStockItems = collect([
+            (object)[
+                'product' => (object)['name' => 'Produk Kritis A', 'sku' => 'SKU-001'],
+                'warehouse' => (object)['name' => 'Gudang Utama'],
+                'quantity' => 2,
+                'min_quantity' => 10,
+                'product_id' => 1
+            ],
+            (object)[
+                'product' => (object)['name' => 'Produk Kritis B', 'sku' => 'SKU-002'],
+                'warehouse' => (object)['name' => 'Outlet Jakarta'],
+                'quantity' => 1,
+                'min_quantity' => 5,
+                'product_id' => 2
+            ]
+        ]);
+
         // Fail-safe: Ensure it's a collection to avoid "property on string" error in view
         if (!($recentActivity instanceof \Illuminate\Collection)) {
             $recentActivity = collect([]);
@@ -69,7 +86,7 @@ class ReportController extends Controller
         $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
         $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
 
-        return view('dashboard_wms', compact('stats', 'recentActivity', 'outlets', 'warehouses'));
+        return view('dashboard_wms', compact('stats', 'recentActivity', 'outlets', 'warehouses', 'lowStockItems'));
     }
 
     public function index()

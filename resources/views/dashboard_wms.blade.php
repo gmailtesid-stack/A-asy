@@ -368,13 +368,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $lowStockItems = \App\Models\Inventory::with(['product', 'warehouse'])
-                                    ->whereColumn('quantity', '<', 'min_quantity')
-                                    ->latest()
-                                    ->take(6)
-                                    ->get();
-                            @endphp
                             @forelse($lowStockItems as $item)
                             <tr>
                                 <td>
