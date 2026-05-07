@@ -1,5 +1,5 @@
 <?php
-// FINAL STABLE: SINGAPORE + SQLITE + MINIMAL BOOT
+// FINAL STABLE: SINGAPORE + SQLITE + CORRECT BOOT SEQUENCE
 
 use Illuminate\Http\Request;
 
@@ -17,14 +17,20 @@ if (!is_dir($storagePath)) {
     @mkdir($storagePath, 0777, true);
     @mkdir($storagePath . '/framework/views', 0777, true);
 }
-putenv('APP_STORAGE=' . $storagePath);
 
 // 3. Load Application
 require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-// 4. Force Settings into App Instance
+// 4. Correct Boot Sequence for Vercel
 $app->useStoragePath($storagePath);
+
+// This is CRITICAL: Load the basic configuration services
+$app->bootstrapWith([
+    \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+    \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
+]);
+
 $app['config']->set('view.compiled', $storagePath . '/framework/views');
 $app['config']->set('database.default', 'sqlite');
 $app['config']->set('database.connections.sqlite.database', __DIR__ . '/../database/database.sqlite');
