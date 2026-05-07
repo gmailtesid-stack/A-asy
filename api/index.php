@@ -87,7 +87,7 @@ try {
 
     // Paksa session ke cookie untuk Vercel agar lebih ringan dan menghindari DB hang di awal
     $app['config']->set('session.driver', 'cookie');
-    $app['config']->set('cache.default', 'array');
+    $app['config']->set('cache.default', env('CACHE_STORE', 'database')); // Biarkan database cache jalan jika perlu
 
     // Trust Proxies untuk Vercel HTTPS agar session cookie aman
     $app['config']->set('trustedproxy.proxies', ['*']);
@@ -106,7 +106,7 @@ try {
         $app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
 
         $app['config']->set('database.connections.mysql.options', array_filter([
-            \PDO::ATTR_TIMEOUT => 10, // Increase timeout to 10s to allow TiDB to wake up
+            \PDO::ATTR_TIMEOUT => 30, // Increase timeout to 30s for Vercel stability
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
