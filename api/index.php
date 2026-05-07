@@ -1,38 +1,52 @@
 <?php
-// THE ULTIMATE STABLE DEPLOY: STANDARD BOOT + SINGAPORE + SQLITE
+// FINAL PRODUCTION STABLE (BACK TO AWS - SINGAPORE REGION)
 
 use Illuminate\Http\Request;
 
-// 1. Force Essential Env
-putenv('APP_ENV=production');
-putenv('APP_DEBUG=true');
-putenv('DB_CONNECTION=sqlite');
-putenv('DB_DATABASE=' . __DIR__ . '/../database/database.sqlite');
-putenv('SESSION_DRIVER=cookie');
-putenv('CACHE_STORE=array');
+// 1. Force Production Essentials
+$fallbacks = [
+    'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
+    'APP_DEBUG'      => 'false', 
+    'DB_CONNECTION'  => 'mysql',
+    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    'DB_PORT'        => '4000',
+    'DB_DATABASE'    => 'easy_pos',
+    'DB_USERNAME'    => '3JKwuvbTLoRLXAb.root',
+    'DB_PASSWORD'    => '5dql1tIk3FLU6CXW',
+    'SESSION_DRIVER' => 'cookie',
+    'CACHE_STORE'    => 'array',
+    'MYSQL_ATTR_SSL_CA' => 'database/isrgrootx1.pem',
+];
 
-// 2. Storage Fix for Vercel (/tmp is the only writable area)
+foreach ($fallbacks as $key => $value) {
+    putenv("$key=$value");
+    $_ENV[$key] = $value;
+}
+
+// 2. Storage Setup
 $storagePath = '/tmp/storage';
 if (!is_dir($storagePath)) {
     @mkdir($storagePath, 0777, true);
     @mkdir($storagePath . '/framework/views', 0777, true);
-    @mkdir($storagePath . '/framework/cache', 0777, true);
-    @mkdir($storagePath . '/framework/sessions', 0777, true);
 }
 
-// 3. Load Autoloader & App
+// 3. Load Application
 require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-// 4. Inject Vercel-Specific Configs
 $app->useStoragePath($storagePath);
+
+// 4. Force AWS Connections with low timeout to prevent 504
 $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\LoadConfiguration::class, function($app) use ($storagePath) {
     $app['config']->set('view.compiled', $storagePath . '/framework/views');
-    $app['config']->set('database.default', 'sqlite');
-    $app['config']->set('database.connections.sqlite.database', __DIR__ . '/../database/database.sqlite');
+    $app['config']->set('database.connections.mysql.options', [
+        \PDO::ATTR_TIMEOUT => 5, // STOP WAITING after 5s to prevent 504
+        \PDO::MYSQL_ATTR_SSL_CA => base_path('database/isrgrootx1.pem'),
+        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+    ]);
 });
 
-// 5. Standard Kernel Handle
+// 5. Handle Request
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle($request = Request::capture());
 $response->send();
