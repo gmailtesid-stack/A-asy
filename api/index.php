@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 // 1. Force Production Essentials
 $fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
-    'APP_DEBUG'      => 'false', 
+    'APP_DEBUG'      => 'true', 
     'DB_CONNECTION'  => 'mysql',
     'DB_HOST'        => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
     'DB_PORT'        => '4000',
