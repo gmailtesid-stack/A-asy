@@ -150,6 +150,12 @@ try {
             foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $table) {
                 echo "- $table\n";
             }
+            
+            echo "\nTesting write (creating temp table)...\n";
+            $pdo->exec("CREATE TEMPORARY TABLE test_write (id INT)");
+            $pdo->exec("INSERT INTO test_write VALUES (1)");
+            $res = $pdo->query("SELECT * FROM test_write")->fetch();
+            echo "Write success: " . ($res['id'] == 1 ? 'YES' : 'NO') . "\n";
         } catch (\PDOException $e) {
             echo "❌ CONNECTION FAILED:\n";
             echo $e->getMessage() . "\n";
