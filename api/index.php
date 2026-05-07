@@ -4,18 +4,17 @@
 use Illuminate\Http\Request;
 
 // 🔥 Resilience Patch: Suntikkan ENV secara manual untuk Vercel agar tidak 500
-$fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
     'APP_DEBUG'      => 'true',
-    'DB_CONNECTION'  => 'mysql',
-    'DB_HOST'        => 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
-    'DB_PORT'        => '4000',
-    'DB_DATABASE'    => 'easy_pos',
-    'DB_USERNAME'    => '2a8pPc78jTqTKYA.root',
-    'DB_PASSWORD'    => 'bmQD3Hzj4umm52vV',
-    'SESSION_DRIVER' => 'database',
-    'CACHE_STORE'    => 'database',
-    'QUEUE_CONNECTION' => 'database',
+    'DB_CONNECTION'  => 'sqlite',
+    'DB_HOST'        => '127.0.0.1',
+    'DB_PORT'        => '3306',
+    'DB_DATABASE'    => ':memory:',
+    'DB_USERNAME'    => 'root',
+    'DB_PASSWORD'    => '',
+    'SESSION_DRIVER' => 'cookie',
+    'CACHE_STORE'    => 'array',
+    'QUEUE_CONNECTION' => 'sync',
     'MYSQL_ATTR_SSL_CA' => 'database/isrgrootx1.pem',
 ];
 
