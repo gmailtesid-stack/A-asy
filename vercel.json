@@ -6,10 +6,13 @@
         "APP_DEBUG": "true",
         "VERCEL": "1",
         "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
+        "APP_CONFIG_CACHE": "/tmp/config.php",
+        "APP_ROUTES_CACHE": "/tmp/routes.php",
         "CACHE_STORE": "array",
         "SESSION_DRIVER": "cookie",
         "DB_CONNECTION": "sqlite",
-        "DB_DATABASE": "database/database.sqlite"
+        "DB_DATABASE": "database/database.sqlite",
+        "MYSQL_ATTR_SSL_CA": "/etc/pki/tls/certs/ca-bundle.crt"
     },
     "functions": {
         "api/index.php": {
