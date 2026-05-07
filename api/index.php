@@ -96,15 +96,24 @@ try {
 
     // KONFIGURASI SSL UNTUK TIDB CLOUD (Dinamis via ENV)
     if (env('DB_CONNECTION') === 'mysql') {
+        $app['config']->set('database.connections.mysql.host', env('DB_HOST'));
+        $app['config']->set('database.connections.mysql.read.host', [env('DB_HOST')]);
+        $app['config']->set('database.connections.mysql.write.host', [env('DB_HOST')]);
+        $app['config']->set('database.connections.mysql.port', env('DB_PORT'));
+        $app['config']->set('database.connections.mysql.database', env('DB_DATABASE'));
+        $app['config']->set('database.connections.mysql.username', env('DB_USERNAME'));
+        $app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
+
         $app['config']->set('database.connections.mysql.options', array_filter([
+            \PDO::ATTR_TIMEOUT => 3, // Force fail fast instead of 504 Timeout
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
         
         // AUTO-FIX removed as we are now using easy_pos
-        if (env('DB_DATABASE') === 'sys' || $app['config']->get('database.connections.mysql.database') === 'sys') {
-            $app['config']->set('database.connections.mysql.database', 'easy_pos');
-        }
+        // if (env('DB_DATABASE') === 'sys' || $app['config']->get('database.connections.mysql.database') === 'sys') {
+        //     $app['config']->set('database.connections.mysql.database', 'easy_pos');
+        // }
     }
 
     // Cek APP_KEY
@@ -205,9 +214,19 @@ try {
     }
 
     // 8. Handle Request
+    // echo "<!-- [DEBUG] Starting Kernel -->\n";
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-    $response = $kernel->handle($request = Request::capture());
+    
+    // echo "<!-- [DEBUG] Capturing Request -->\n";
+    $request = Request::capture();
+
+    // echo "<!-- [DEBUG] Handling Request -->\n";
+    $response = $kernel->handle($request);
+    
+    // echo "<!-- [DEBUG] Sending Response -->\n";
     $response->send();
+    
+    // echo "<!-- [DEBUG] Terminating Kernel -->\n";
     $kernel->terminate($request, $response);
 
 } catch (\Throwable $e) {
