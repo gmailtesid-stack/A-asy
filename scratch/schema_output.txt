@@ -1,0 +1,768 @@
+﻿=TABLE=accounts
+id|bigint unsigned|NO|PRI|NULL|
+code|varchar(255)|NO|UNI|NULL|
+name|varchar(255)|NO||NULL|
+type|enum('asset','liability','equity','revenue','expense')|NO||NULL|
+description|text|YES||NULL|
+is_active|tinyint(1)|NO||1|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=approvals
+id|bigint unsigned|NO|PRI|NULL|
+approvable_type|varchar(255)|NO|MUL|NULL|Model yang membutuhkan approval: StockOpname, Expense, PurchaseOrder
+approvable_id|bigint unsigned|NO||NULL|
+requested_by|bigint unsigned|NO|MUL|NULL|
+approved_by|bigint unsigned|YES|MUL|NULL|
+status|enum('pending','approved','rejected')|NO|MUL|pending|
+notes|text|YES||NULL|Catatan dari approver
+amount_before|decimal(15,2)|YES||NULL|Nilai/stok sebelum perubahan
+amount_after|decimal(15,2)|YES||NULL|Nilai/stok setelah perubahan jika disetujui
+decided_at|timestamp|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=attendances
+id|bigint unsigned|NO|PRI|NULL|
+employee_id|bigint unsigned|NO|MUL|NULL|
+date|date|NO||NULL|
+clock_in|time|YES||NULL|
+clock_out|time|YES||NULL|
+status|varchar(255)|NO||present|
+notes|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=audit_logs
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+user_id|bigint unsigned|YES|MUL|NULL|
+action|varchar(255)|NO||NULL|
+model_type|varchar(255)|NO||NULL|
+model_id|bigint unsigned|NO||NULL|
+description|text|YES||NULL|
+old_values|json|YES||NULL|
+new_values|json|YES||NULL|
+ip_address|varchar(255)|YES||NULL|
+user_agent|text|YES||NULL|
+url|varchar(255)|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=24
+
+=TABLE=audit_logs_archive
+id|bigint unsigned|NO|PRI|NULL|
+user_id|bigint unsigned|YES||NULL|
+action|varchar(255)|NO||NULL|
+model_type|varchar(255)|NO||NULL|
+model_id|bigint unsigned|NO||NULL|
+old_values|json|YES||NULL|
+new_values|json|YES||NULL|
+ip_address|varchar(255)|YES||NULL|
+user_agent|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=brands
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+name|varchar(255)|NO||NULL|
+slug|varchar(255)|NO|UNI|NULL|
+description|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+photo|varchar(255)|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=cache
+key|varchar(255)|NO|PRI|NULL|
+value|mediumtext|NO||NULL|
+expiration|bigint|NO|MUL|NULL|
+=ROWS=0
+
+=TABLE=cache_locks
+key|varchar(255)|NO|PRI|NULL|
+owner|varchar(255)|NO||NULL|
+expiration|bigint|NO|MUL|NULL|
+=ROWS=0
+
+=TABLE=categories
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+slug|varchar(255)|NO|UNI|NULL|
+description|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=3
+
+=TABLE=channels
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+platform|varchar(255)|NO||NULL|
+status|enum('connected','disconnected','error')|NO||connected|
+store_id|varchar(255)|YES||NULL|
+last_sync_at|timestamp|YES||NULL|
+sync_status|varchar(255)|NO||idle|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=companies
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+legal_entity|varchar(255)|NO||NULL|
+registration_number|varchar(255)|YES||NULL|
+plan_id|bigint unsigned|YES||NULL|
+subscription_plan|varchar(255)|NO||basic|
+max_products|int|NO||100|
+subscription_expires_at|timestamp|YES||NULL|
+currency|varchar(255)|NO||IDR|
+timezone|varchar(255)|NO||UTC|
+settings|json|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+deleted_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=customers
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+name|varchar(255)|NO||NULL|
+email|varchar(255)|YES|UNI|NULL|
+store_credit|decimal(15,2)|NO||0|
+phone|varchar(255)|YES||NULL|
+custom_attributes|json|YES||NULL|
+address|text|YES||NULL|
+outlet_id|bigint unsigned|YES|MUL|NULL|
+loyalty_points|int|NO||0|
+tier|varchar(255)|NO||bronze|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=employees
+id|bigint unsigned|NO|PRI|NULL|
+user_id|bigint unsigned|YES|MUL|NULL|
+employee_id|varchar(255)|NO|UNI|NULL|
+name|varchar(255)|NO||NULL|
+position|varchar(255)|YES||NULL|
+salary|decimal(15,2)|NO||0|
+joined_at|date|NO||NULL|
+status|enum('active','inactive','resigned')|NO||active|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=expenses
+id|bigint unsigned|NO|PRI|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+outlet_id|bigint unsigned|NO|MUL|NULL|
+category|varchar(255)|NO||NULL|
+amount|decimal(15,2)|NO||NULL|
+notes|text|YES||NULL|
+status|varchar(255)|NO||pending|
+receipt_url|varchar(255)|YES||NULL|Foto/scan bukti pengeluaran via Cloudinary
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+deleted_at|timestamp|YES||NULL|
+approved_by|bigint unsigned|YES|MUL|NULL|
+journal_entry_id|bigint unsigned|YES|MUL|NULL|
+=ROWS=0
+
+=TABLE=failed_jobs
+id|bigint unsigned|NO|PRI|NULL|
+uuid|varchar(255)|NO|UNI|NULL|
+connection|text|NO||NULL|
+queue|text|NO||NULL|
+payload|longtext|NO||NULL|
+exception|longtext|NO||NULL|
+failed_at|timestamp|NO||CURRENT_TIMESTAMP|
+=ROWS=0
+
+=TABLE=grn_items
+id|bigint unsigned|NO|PRI|NULL|
+grn_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+location_id|bigint unsigned|YES|MUL|NULL|
+quantity_received|int|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=grns
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+purchase_order_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+grn_number|varchar(255)|NO|UNI|NULL|
+actual_freight_cost|decimal(15,2)|NO||0|
+actual_insurance_cost|decimal(15,2)|NO||0|
+total_landed_cost|decimal(15,2)|NO||0|
+received_at|timestamp|NO||CURRENT_TIMESTAMP|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=inventories
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+outlet_id|bigint unsigned|NO|MUL|NULL|
+warehouse_id|bigint unsigned|YES|MUL|NULL|
+location_id|bigint unsigned|YES|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity|int|NO||0|
+is_frozen|tinyint(1)|NO||0|
+abc_category|char(1)|NO||C|
+reserved_quantity|int unsigned|NO||0|Stok yang sudah dipesan (OMS) tapi belum diambil
+min_quantity|int|NO||5|
+reorder_point|int unsigned|NO||0|Titik pemesanan ulang otomatis untuk trigger draf PO
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+bin_id|bigint unsigned|YES|MUL|NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+last_counted_at|timestamp|YES||NULL|
+=ROWS=12
+
+=TABLE=inventory_logs
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+inventory_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+type|enum('in','out','adjustment')|NO|MUL|NULL|
+quantity_before|int|NO||NULL|
+quantity_change|int|NO||NULL|
+cost_price|decimal(15,2)|YES||NULL|
+batch_number|varchar(255)|YES||NULL|Nomor batch/lot dari supplier
+expiry_date|date|YES||NULL|Tanggal kedaluwarsa produk dalam batch ini
+serial_number|varchar(255)|YES||NULL|Nomor seri unit spesifik untuk produk bergaransi
+remaining_quantity|int|NO||0|
+quantity_after|int|NO||NULL|
+reference|varchar(255)|YES|MUL|NULL|
+notes|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=job_batches
+id|varchar(255)|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+total_jobs|int|NO||NULL|
+pending_jobs|int|NO||NULL|
+failed_jobs|int|NO||NULL|
+failed_job_ids|longtext|NO||NULL|
+options|mediumtext|YES||NULL|
+cancelled_at|int|YES||NULL|
+created_at|int|NO||NULL|
+finished_at|int|YES||NULL|
+=ROWS=0
+
+=TABLE=jobs
+id|bigint unsigned|NO|PRI|NULL|
+queue|varchar(255)|NO|MUL|NULL|
+payload|longtext|NO||NULL|
+attempts|smallint unsigned|NO||NULL|
+reserved_at|int unsigned|YES||NULL|
+available_at|int unsigned|NO||NULL|
+created_at|int unsigned|NO||NULL|
+=ROWS=0
+
+=TABLE=journal_entries
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+entry_date|date|NO||NULL|
+reference|varchar(255)|YES||NULL|
+description|varchar(255)|NO||NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=journal_lines
+id|bigint unsigned|NO|PRI|NULL|
+journal_entry_id|bigint unsigned|NO|MUL|NULL|
+account_id|bigint unsigned|NO|MUL|NULL|
+debit|decimal(15,2)|NO||0|
+credit|decimal(15,2)|NO||0|
+notes|varchar(255)|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=locations
+id|bigint unsigned|NO|PRI|NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+name|varchar(255)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=marketplace_connections
+id|bigint unsigned|NO|PRI|NULL|
+company_id|bigint unsigned|NO||NULL|
+marketplace_name|varchar(255)|NO||NULL|
+connection_status|varchar(255)|NO||active|
+api_credentials|json|NO||NULL|
+last_sync_at|timestamp|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=migrations
+id|int unsigned|NO|PRI|NULL|
+migration|varchar(255)|NO||NULL|
+batch|int|NO||NULL|
+=ROWS=47
+
+=TABLE=model_has_roles
+role_id|bigint unsigned|NO|PRI|NULL|
+model_id|bigint unsigned|NO|PRI|NULL|
+model_type|varchar(255)|NO|PRI|NULL|
+=ROWS=0
+
+=TABLE=outlets
+id|bigint unsigned|NO|PRI|NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+name|varchar(255)|NO||NULL|
+code|varchar(10)|NO|UNI|NULL|
+address|text|YES||NULL|
+phone|varchar(20)|YES||NULL|
+city|varchar(255)|YES||NULL|
+latitude|decimal(10,8)|YES||NULL|
+longitude|decimal(11,8)|YES||NULL|
+is_active|tinyint(1)|NO||1|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+deleted_at|timestamp|YES||NULL|
+photo|varchar(255)|YES||NULL|
+=ROWS=2
+
+=TABLE=packings
+id|bigint unsigned|NO|PRI|NULL|
+sales_order_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+packed_at|timestamp|NO||CURRENT_TIMESTAMP|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=password_reset_tokens
+email|varchar(255)|NO|PRI|NULL|
+token|varchar(255)|NO||NULL|
+created_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=pending_stock_adjustments
+id|bigint unsigned|NO|PRI|NULL|
+inventory_id|bigint unsigned|NO||NULL|
+quantity_change|int|NO||NULL|
+reference_type|varchar(255)|NO||NULL|
+reference_id|bigint unsigned|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=permissions
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+slug|varchar(255)|NO|UNI|NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=picking_items
+id|bigint unsigned|NO|PRI|NULL|
+picking_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity_requested|int|NO||NULL|
+quantity_found|int|NO||0|
+status|enum('found','not_found','partial')|NO||found|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=pickings
+id|bigint unsigned|NO|PRI|NULL|
+sales_order_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+status|enum('pending','in_progress','completed')|NO||pending|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=products
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+category_id|bigint unsigned|NO|MUL|NULL|
+brand_id|bigint unsigned|YES|MUL|NULL|
+supplier_id|bigint unsigned|YES|MUL|NULL|
+name|varchar(255)|NO||NULL|
+sku|varchar(50)|NO|UNI|NULL|
+status|varchar(20)|NO|MUL|draft|live, draft, under_review, failed
+type|varchar(20)|NO||simple|simple, variant, kit
+csku|varchar(255)|YES||NULL|Channel SKU for marketplace mapping
+description|text|YES||NULL|
+custom_attributes|json|YES||NULL|
+price|decimal(12,2)|NO||NULL|
+wholesale_price|decimal(15,2)|YES||NULL|
+member_price|decimal(15,2)|YES||NULL|
+base_uom|varchar(255)|NO||Pcs|
+purchase_uom|varchar(255)|NO||Karton|
+conversion_rate|int|NO||1|
+cost_price|decimal(12,2)|NO||0|
+unit|varchar(20)|NO||pcs|
+image|varchar(255)|YES||NULL|
+is_active|tinyint(1)|NO||1|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+deleted_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=6
+
+=TABLE=purchase_order_items
+id|bigint unsigned|NO|PRI|NULL|
+purchase_order_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity|int|NO||NULL|
+price|decimal(12,2)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=purchase_orders
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+supplier_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+approved_by|bigint unsigned|YES|MUL|NULL|
+approved_at|timestamp|YES||NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+po_number|varchar(255)|NO|UNI|NULL|
+status|enum('draft','ordered','partially_received','received','cancelled')|NO|MUL|draft|
+total_amount|decimal(12,2)|NO||0|
+freight_cost|decimal(15,2)|NO||0|
+insurance_cost|decimal(15,2)|NO||0|
+estimated_landed_cost|decimal(15,2)|NO||0|
+notes|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=return_items
+id|bigint unsigned|NO|PRI|NULL|
+return_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity|int|NO||NULL|
+refund_amount|decimal(15,2)|NO||NULL|
+condition|enum('good','reject','service')|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=returns
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+return_number|varchar(255)|NO|UNI|NULL|
+transaction_id|bigint unsigned|YES|MUL|NULL|
+customer_id|bigint unsigned|YES|MUL|NULL|
+outlet_id|bigint unsigned|NO|MUL|NULL|
+processed_by|bigint unsigned|NO|MUL|NULL|
+refund_method|enum('cash','store_credit','exchange')|NO||cash|
+total_refund|decimal(15,2)|NO||0|
+reason|varchar(255)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=role_permission
+role_id|bigint unsigned|NO|PRI|NULL|
+permission_id|bigint unsigned|NO|PRI|NULL|
+=ROWS=0
+
+=TABLE=roles
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+slug|varchar(255)|NO|UNI|NULL|
+description|varchar(255)|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=sales_order_items
+id|bigint unsigned|NO|PRI|NULL|
+sales_order_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity|int|NO||NULL|
+price|decimal(12,2)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=sales_orders
+id|bigint unsigned|NO|PRI|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+so_number|varchar(255)|NO|UNI|NULL|
+status|enum('pending','picking','packing','shipping','completed','cancelled')|NO|MUL|pending|
+total_amount|decimal(12,2)|NO||0|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=sessions
+id|varchar(255)|NO|PRI|NULL|
+user_id|bigint unsigned|YES|MUL|NULL|
+ip_address|varchar(45)|YES||NULL|
+user_agent|text|YES||NULL|
+payload|longtext|NO||NULL|
+last_activity|int|NO|MUL|NULL|
+=ROWS=0
+
+=TABLE=shippings
+id|bigint unsigned|NO|PRI|NULL|
+sales_order_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+tracking_number|varchar(255)|YES||NULL|
+carrier|varchar(255)|YES||NULL|
+shipped_at|timestamp|NO||CURRENT_TIMESTAMP|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=stock_opname_items
+id|bigint unsigned|NO|PRI|NULL|
+stock_opname_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+recorded_quantity|int|NO||NULL|
+physical_quantity|int|NO||NULL|
+counter_1_qty|int unsigned|YES||NULL|
+counter_2_qty|int unsigned|YES||NULL|
+adjustment_quantity|int|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+counter_1_user_id|bigint unsigned|YES||NULL|
+counter_2_user_id|bigint unsigned|YES||NULL|
+verification_status|varchar(255)|NO||pending|
+=ROWS=0
+
+=TABLE=stock_opnames
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+approved_by|bigint unsigned|YES|MUL|NULL|
+opname_number|varchar(255)|NO|UNI|NULL|
+status|varchar(255)|NO||pending|
+notes|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+type|varchar(255)|NO||daily|
+is_blind|tinyint(1)|NO||1|
+=ROWS=0
+
+=TABLE=stock_transfer_items
+id|bigint unsigned|NO|PRI|NULL|
+stock_transfer_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+quantity_requested|int|NO||NULL|
+quantity_received|int|NO||0|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=stock_transfers
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+transfer_number|varchar(255)|NO|UNI|NULL|
+from_warehouse_id|bigint unsigned|NO|MUL|NULL|
+to_warehouse_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+status|enum('draft','pending','transit','received','cancelled')|NO|MUL|draft|
+note|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=subscription_plans
+id|bigint unsigned|NO|PRI|NULL|
+name|varchar(255)|NO||NULL|
+price|decimal(15,2)|NO||0|
+features|json|NO||NULL|
+max_outlets|int|NO||1|
+max_users|int|NO||3|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=suppliers
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+name|varchar(255)|NO||NULL|
+contact_person|varchar(255)|YES||NULL|
+email|varchar(255)|YES||NULL|
+phone|varchar(255)|YES||NULL|
+address|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=transaction_details
+id|bigint unsigned|NO|PRI|NULL|
+transaction_id|bigint unsigned|NO|MUL|NULL|
+product_id|bigint unsigned|NO|MUL|NULL|
+product_name|varchar(255)|NO||NULL|
+unit_price|decimal(12,2)|NO||NULL|
+cost_price|decimal(15,2)|NO||0|
+quantity|int|NO||NULL|
+discount|decimal(12,2)|NO||0|
+subtotal|decimal(14,2)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=transactions
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+outlet_id|bigint unsigned|NO|MUL|NULL|
+user_id|bigint unsigned|NO|MUL|NULL|
+customer_id|bigint unsigned|YES|MUL|NULL|
+invoice_number|varchar(50)|NO|UNI|NULL|
+subtotal|decimal(14,2)|NO||NULL|
+discount|decimal(14,2)|NO||0|
+tax|decimal(14,2)|NO||0|
+total|decimal(14,2)|NO||NULL|
+cash_amount|decimal(14,2)|NO||0|
+change_amount|decimal(14,2)|NO||0|
+payment_method|enum('cash','transfer','qris','card')|NO||cash|
+status|enum('pending','completed','cancelled','refunded')|NO|MUL|completed|
+currency|varchar(3)|NO||IDR|
+exchange_rate|decimal(15,4)|NO||1|
+tax_included|tinyint(1)|NO||1|
+tax_rate|decimal(5,2)|NO||0|Percentage, e.g. 11.00
+tax_amount|decimal(15,2)|NO||0|
+notes|text|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=users
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+outlet_id|bigint unsigned|YES|MUL|NULL|
+name|varchar(255)|NO||NULL|
+email|varchar(255)|NO|UNI|NULL|
+email_verified_at|timestamp|YES||NULL|
+password|varchar(255)|NO||NULL|
+commission_rate|decimal(5,2)|NO||0|
+role|enum('super_admin','manager','cashier')|NO||cashier|
+is_active|tinyint(1)|NO||1|
+timezone|varchar(255)|NO||UTC|
+locale|varchar(255)|NO||id|
+remember_token|varchar(100)|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+deleted_at|timestamp|YES||NULL|
+photo|varchar(255)|YES||NULL|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+branch_id|bigint unsigned|NO|MUL|1|
+company_id|bigint unsigned|NO|MUL|1|
+=ROWS=4
+
+=TABLE=warehouse_bins
+id|bigint unsigned|NO|PRI|NULL|
+zone_id|bigint unsigned|NO|MUL|NULL|
+rack|varchar(255)|NO||NULL|e.g. A, B
+level|varchar(255)|NO||NULL|e.g. 1, 2, 3
+bin|varchar(255)|NO||NULL|e.g. 01, 02
+full_code|varchar(255)|NO|UNI|NULL|e.g. Z-DRY-A-1-01
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=warehouse_zones
+id|bigint unsigned|NO|PRI|NULL|
+warehouse_id|bigint unsigned|NO|MUL|NULL|
+code|varchar(255)|NO||NULL|e.g. Z-COLD, Z-DRY
+name|varchar(255)|NO||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+=ROWS=0
+
+=TABLE=warehouses
+id|bigint unsigned|NO|PRI|NULL|
+ulid|char(26)|YES|UNI|NULL|
+outlet_id|bigint unsigned|YES|MUL|NULL|
+name|varchar(255)|NO||NULL|
+type|varchar(255)|NO||physical|
+address|text|YES||NULL|
+latitude|decimal(10,8)|YES||NULL|
+longitude|decimal(11,8)|YES||NULL|
+created_at|timestamp|YES||NULL|
+updated_at|timestamp|YES||NULL|
+photo|varchar(255)|YES||NULL|
+company_id|bigint unsigned|NO|MUL|1|
+branch_id|bigint unsigned|NO|MUL|1|
+version|int unsigned|NO||1|
+synced_at|timestamp|YES||NULL|
+=ROWS=0
+
