@@ -4,8 +4,9 @@
 use Illuminate\Http\Request;
 
 // 🔥 Resilience Patch: Suntikkan ENV secara manual untuk Vercel agar tidak 500
+$fallbacks = [
     'APP_KEY'        => 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=',
-    'APP_DEBUG'      => 'false',
+    'APP_DEBUG'      => 'true',
     'DB_CONNECTION'  => 'mysql',
     'DB_HOST'        => 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
     'DB_PORT'        => '4000',
@@ -58,7 +59,7 @@ putenv('APP_EVENTS_CACHE=' . $storagePath . '/framework/events.php');
 putenv('LOG_CHANNEL=stderr');
 // APP_DEBUG otomatis mengikuti env, default false untuk keamanan
 if (!getenv('APP_DEBUG')) {
-    putenv('APP_DEBUG=false');
+    putenv('APP_DEBUG=true');
 }
 
 // Supresi khusus untuk tempnam() warning di Vercel
@@ -83,7 +84,6 @@ try {
     // Paksa session ke cookie & cache ke array agar Laravel super ringan
     $app['config']->set('session.driver', 'cookie');
     $app['config']->set('cache.default', 'array');
-    $app['config']->set('database.connections.mysql.options.' . \PDO::ATTR_PERSISTENT, false);
     $app['config']->set('trustedproxy.proxies', ['*']);
 
     // Pastikan view compiled path juga mengarah ke /tmp
