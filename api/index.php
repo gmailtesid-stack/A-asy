@@ -33,5 +33,11 @@ $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\LoadConfiguration::cla
 });
 
 // 4. Handle Request
-$app->handleRequest(Request::capture());
+try {
+    $app->handleRequest(Request::capture());
+} catch (\Throwable $e) {
+    echo "<h1>Fatal Error</h1>";
+    echo "<p>" . $e->getMessage() . "</p>";
+    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+}
 
