@@ -73,21 +73,17 @@ try {
     
     $app = require __DIR__ . '/../bootstrap/app.php';
 
-    // 6. Force Bootstrap Laravel
+    // 6. Step-by-Step Bootstrap (PENTING: Split agar config bisa di-override sebelum BootProviders)
     $app->bootstrapWith([
         \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
         \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
-        \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
-        \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
-        \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
-        \Illuminate\Foundation\Bootstrap\BootProviders::class,
     ]);
 
     $app->useStoragePath($storagePath);
 
     // Paksa session ke cookie untuk Vercel agar lebih ringan dan menghindari DB hang di awal
     $app['config']->set('session.driver', 'cookie');
-    $app['config']->set('cache.default', env('CACHE_STORE', 'database')); // Biarkan database cache jalan jika perlu
+    $app['config']->set('cache.default', env('CACHE_STORE', 'database'));
 
     // Trust Proxies untuk Vercel HTTPS agar session cookie aman
     $app['config']->set('trustedproxy.proxies', ['*']);
@@ -106,11 +102,19 @@ try {
         $app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
 
         $app['config']->set('database.connections.mysql.options', array_filter([
-            \PDO::ATTR_TIMEOUT => 30, // Increase timeout to 30s for Vercel stability
+            \PDO::ATTR_TIMEOUT => 30, 
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
     }
+
+    // Lanjutkan Bootstrap sisanya
+    $app->bootstrapWith([
+        \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
+        \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
+        \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
+        \Illuminate\Foundation\Bootstrap\BootProviders::class,
+    ]);
 
     // Cek APP_KEY
     if (!env('APP_KEY')) {
