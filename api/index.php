@@ -85,10 +85,6 @@ try {
 
     $app->useStoragePath($storagePath);
 
-    if (isset($_GET['check_boot'])) {
-        die("✅ Laravel Bootstrapped Successfully at " . date('H:i:s'));
-    }
-
     // Paksa session ke cookie untuk Vercel agar lebih ringan dan menghindari DB hang di awal
     $app['config']->set('session.driver', 'cookie');
     $app['config']->set('cache.default', 'array');
@@ -114,11 +110,6 @@ try {
             \PDO::MYSQL_ATTR_SSL_CA => base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem')),
             \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
         ], fn($value) => $value !== null));
-        
-        // AUTO-FIX removed as we are now using easy_pos
-        // if (env('DB_DATABASE') === 'sys' || $app['config']->get('database.connections.mysql.database') === 'sys') {
-        //     $app['config']->set('database.connections.mysql.database', 'easy_pos');
-        // }
     }
 
     // Cek APP_KEY
@@ -128,45 +119,6 @@ try {
 
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['HTTPS'] = 'on'; 
-
-    if (isset($_GET['test_db'])) {
-        echo "<pre>Testing direct PDO connection to TiDB...\n";
-        $host = env('DB_HOST');
-        $port = env('DB_PORT');
-        $db = env('DB_DATABASE');
-        $user = env('DB_USERNAME');
-        $pass = env('DB_PASSWORD');
-        $ca = base_path(env('MYSQL_ATTR_SSL_CA', 'database/isrgrootx1.pem'));
-        
-        echo "Host: $host\nDB: $db\nUser: $user\nCA Path: $ca\nCA Exists: " . (file_exists($ca) ? 'YES' : 'NO') . "\n\n";
-        
-        try {
-            $options = [
-                \PDO::ATTR_TIMEOUT => 3, // 3 seconds timeout to avoid 504
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                \PDO::MYSQL_ATTR_SSL_CA => file_exists($ca) ? $ca : null,
-                \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
-            ];
-            
-            $pdo = new \PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass, $options);
-            echo "✅ CONNECTION SUCCESSFUL!\n";
-            $stmt = $pdo->query('SHOW TABLES');
-            echo "Tables:\n";
-            foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $table) {
-                echo "- $table\n";
-            }
-            
-            echo "\nTesting write (creating temp table)...\n";
-            $pdo->exec("CREATE TEMPORARY TABLE test_write (id INT)");
-            $pdo->exec("INSERT INTO test_write VALUES (1)");
-            $res = $pdo->query("SELECT * FROM test_write")->fetch();
-            echo "Write success: " . ($res['id'] == 1 ? 'YES' : 'NO') . "\n";
-        } catch (\PDOException $e) {
-            echo "❌ CONNECTION FAILED:\n";
-            echo $e->getMessage() . "\n";
-        }
-        exit;
-    }
 
     // ─── 7. Step-by-Step Initialization (To avoid 504 Timeout) ───
     if (isset($_GET['migrate']) || isset($_GET['seed']) || isset($_GET['wipe'])) {
@@ -225,19 +177,9 @@ try {
     }
 
     // 8. Handle Request
-    // echo "<!-- [DEBUG] Starting Kernel -->\n";
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-    
-    // echo "<!-- [DEBUG] Capturing Request -->\n";
-    $request = Request::capture();
-
-    // echo "<!-- [DEBUG] Handling Request -->\n";
-    $response = $kernel->handle($request);
-    
-    // echo "<!-- [DEBUG] Sending Response -->\n";
+    $response = $kernel->handle($request = Request::capture());
     $response->send();
-    
-    // echo "<!-- [DEBUG] Terminating Kernel -->\n";
     $kernel->terminate($request, $response);
 
 } catch (\Throwable $e) {
@@ -248,5 +190,3 @@ try {
     echo "<hr><pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
     echo "</div>";
 }
-
-
