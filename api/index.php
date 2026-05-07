@@ -20,6 +20,11 @@ if (!env('APP_KEY')) {
     $_ENV['APP_KEY'] = 'base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=';
 }
 
+putenv('APP_DEBUG=true');
+$_ENV['APP_DEBUG'] = 'true';
+putenv('APP_ENV=local');
+$_ENV['APP_ENV'] = 'local';
+
 $app = require __DIR__ . '/../bootstrap/app.php';
 
 // 3. Configure Storage
