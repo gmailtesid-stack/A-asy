@@ -14,18 +14,14 @@ if (!env('APP_KEY')) {
 $app = require __DIR__ . '/../bootstrap/app.php';
 
 // 3. Configure Storage for Vercel
-$storagePath = '/tmp/storage';
-if (!is_dir($storagePath)) {
-    @mkdir($storagePath, 0755, true);
-    @mkdir($storagePath . '/framework/views', 0755, true);
-    @mkdir($storagePath . '/framework/sessions', 0755, true);
-}
+$storagePath = '/tmp';
 $app->useStoragePath($storagePath);
 
 // 4. Force View Compilation Path
 $app->afterBootstrapping(\Illuminate\Foundation\Bootstrap\LoadConfiguration::class, function($app) use ($storagePath) {
-    $app['config']->set('view.compiled', $storagePath . '/framework/views');
+    $app['config']->set('view.compiled', $storagePath);
 });
 
 // 5. Handle Request
-$app->handleRequest(Request::capture());
+$app->handleRequest(Illuminate\Http\Request::capture());
+
