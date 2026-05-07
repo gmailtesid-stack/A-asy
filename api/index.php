@@ -1,5 +1,7 @@
 <?php
 
+die("PHP is working on Vercel. Current Directory: " . __DIR__);
+
 use Illuminate\Http\Request;
 
 // 1. Storage Setup for Vercel
