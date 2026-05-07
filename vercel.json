@@ -1,21 +1,12 @@
 {
     "version": 2,
+    "regions": ["sin1"],
     "env": {
-        "DB_CONNECTION": "mysql",
-        "DB_HOST": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
-        "DB_PORT": "4000",
-        "DB_DATABASE": "easy_pos",
-        "DB_USERNAME": "3JKwuvbTLoRLXAb.root",
-        "DB_PASSWORD": "5dql1tIk3FLU6CXW",
-        "MYSQL_ATTR_SSL_CA": "database/isrgrootx1.pem"
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "DB_CONNECTION": "sqlite",
+        "DB_DATABASE": "database/database.sqlite"
     },
-    "outputDirectory": "public",
-    "crons": [
-        {
-            "path": "/api/process-queue",
-            "schedule": "0 0 * * *"
-        }
-    ],
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.2",
@@ -29,16 +20,16 @@
             "dest": "/public/build/$1"
         },
         {
-            "src": "/(css|js|images|fonts)/(.*)",
+            "src": "/assets/(.*)",
+            "dest": "/public/assets/$1"
+        },
+        {
+            "src": "/(css|js|images|fonts|vendor)/(.*)",
             "dest": "/public/$1/$2"
         },
         {
             "src": "/favicon.ico",
             "dest": "/public/favicon.ico"
-        },
-        {
-            "src": "/robots.txt",
-            "dest": "/public/robots.txt"
         },
         {
             "src": "/(.*)",
