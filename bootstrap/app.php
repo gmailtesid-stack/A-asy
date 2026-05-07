@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '/api/cron/*',
         ]);
 
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        // $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         $middleware->alias([
             'role'        => \App\Http\Middleware\CheckRole::class,
