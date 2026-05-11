@@ -225,26 +225,26 @@
 
             <div class="sidebar-nav">
                 <p class="nav-section-label">Dashboard</p>
-                <a onclick="showView('dashboard')" id="nav-dashboard" class="active"><i class="bi bi-speedometer2"></i> Control Tower</a>
+                <a onclick="showView('dashboard')" data-view="dashboard" class="active"><i class="bi bi-speedometer2"></i> Control Tower</a>
 
                 <p class="nav-section-label">OMS (Order Management)</p>
-                <a onclick="showView('products')"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
-                <a onclick="showView('channels')"><i class="bi bi-intersect"></i> Marketplace Channels</a>
+                <a onclick="showView('products')" data-view="products"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
+                <a onclick="showView('channels')" data-view="channels"><i class="bi bi-intersect"></i> Marketplace Channels</a>
 
                 <p class="nav-section-label">WMS (Warehouse Management)</p>
-                <a onclick="showView('inbound')"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
-                <a onclick="showView('outbound')"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
-                <a onclick="showView('stock')"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
-                <a onclick="showView('transfer')"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
+                <a onclick="showView('inbound')" data-view="inbound"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
+                <a onclick="showView('outbound')" data-view="outbound"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
+                <a onclick="showView('stock')" data-view="stock"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
+                <a onclick="showView('transfer')" data-view="transfer"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
 
                 <p class="nav-section-label">Retail & Offline</p>
-                <a onclick="showView('pos')"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
+                <a onclick="showView('pos')" data-view="pos"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
 
                 <p class="nav-section-label">Analytics</p>
-                <a onclick="showView('analytics')"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
+                <a onclick="showView('analytics')" data-view="analytics"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
                 
                 <p class="nav-section-label">System</p>
-                <a onclick="showView('users')"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
+                <a onclick="showView('users')" data-view="users"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
             </div>
 
             <div class="mt-auto p-4 border-top border-secondary">
@@ -353,7 +353,9 @@
                                         <td><strong>PRO-001</strong></td>
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <div class="bg-light rounded p-1" style="width: 40px; height: 40px; border: 1px solid #eee;"></div>
+                                                <div class="bg-primary-subtle text-primary rounded p-1 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: 1px solid #eee;">
+                                                    <i class="bi bi-phone"></i>
+                                                </div>
                                                 <span>Samsung Galaxy S23 Ultra</span>
                                             </div>
                                         </td>
@@ -367,7 +369,9 @@
                                         <td><strong>PRO-002</strong></td>
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <div class="bg-light rounded p-1" style="width: 40px; height: 40px; border: 1px solid #eee;"></div>
+                                                <div class="bg-info-subtle text-info rounded p-1 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: 1px solid #eee;">
+                                                    <i class="bi bi-laptop"></i>
+                                                </div>
                                                 <span>MacBook Pro M2 14"</span>
                                             </div>
                                         </td>
@@ -381,7 +385,9 @@
                                         <td><strong>PRO-003</strong></td>
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <div class="bg-light rounded p-1" style="width: 40px; height: 40px; border: 1px solid #eee;"></div>
+                                                <div class="bg-warning-subtle text-warning rounded p-1 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: 1px solid #eee;">
+                                                    <i class="bi bi-mouse3"></i>
+                                                </div>
                                                 <span>Logitech MX Master 3S</span>
                                             </div>
                                         </td>
@@ -838,11 +844,25 @@
         function showView(viewName) {
             const content = views[viewName] || `<h4>${viewName.charAt(0).toUpperCase() + viewName.slice(1)}</h4><p class="text-muted">Halaman ini belum tersedia di versi demo.</p>`;
             document.getElementById('content-area').innerHTML = content;
-            document.getElementById('breadcrumb-active').innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
             
-            // Update active nav
+            // Precise breadcrumb mapping
+            const breadcrumbs = {
+                dashboard: 'Control Tower',
+                products: 'Master Katalog (SKU)',
+                channels: 'Marketplace Channels',
+                inbound: 'Inbound (Receiving)',
+                outbound: 'Outbound (Pick & Pack)',
+                stock: 'Stok Real-time',
+                transfer: 'Stock Transfer',
+                pos: 'Kasir / POS Offline',
+                analytics: 'Live Advanced Analytics',
+                users: 'Akun & Role RBAC'
+            };
+            document.getElementById('breadcrumb-active').innerText = breadcrumbs[viewName] || viewName;
+            
+            // Precise active nav selection via data-view attribute
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-            const activeNav = Array.from(document.querySelectorAll('.sidebar-nav a')).find(a => a.innerText.toLowerCase().includes(viewName.toLowerCase()));
+            const activeNav = document.querySelector(`.sidebar-nav a[data-view="${viewName}"]`);
             if (activeNav) activeNav.classList.add('active');
         }
 
