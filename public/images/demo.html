@@ -123,7 +123,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-width: 0; /* Prevent flex blowout */
+            min-width: 0; 
             background: var(--bg-main);
         }
 
@@ -204,12 +204,6 @@
         .badge-subtle-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
         .card:hover { transform: translateY(-8px); }
 
-        .btn-premium {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%);
-            color: #fff; border: none; padding: 0.8rem 1.5rem; border-radius: 14px; font-weight: 700;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-        }
-
         /* ── Responsive ──────────────────────────────────── */
         @media (max-width: 991.98px) {
             #sidebar { 
@@ -253,10 +247,6 @@
             </div>
             
             <button class="btn-login" onclick="loginDemo()">Masuk Demo</button>
-            
-            <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-                <p class="text-info small mb-0"><i class="bi bi-info-circle me-1"></i> Ini adalah halaman demo</p>
-            </div>
         </div>
     </div>
 
@@ -271,60 +261,45 @@
                 </div>
 
                 <div class="sidebar-nav">
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Dashboard</p>
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Dashboard</p>
                     <a onclick="showView('dashboard')" data-view="dashboard" class="active" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-speedometer2"></i> Control Tower</a>
 
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">OMS (Order Management)</p>
-                    <a onclick="showView('products')" data-view="products" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
-                    <a onclick="showView('channels')" data-view="channels" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-intersect"></i> Marketplace Channels</a>
-
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">WMS (Warehouse Management)</p>
-                    <a onclick="showView('inbound')" data-view="inbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
-                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">OMS & WMS</p>
+                    <a onclick="showView('products')" data-view="products" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-seam-fill"></i> Katalog SKU</a>
                     <a onclick="showView('stock')" data-view="stock" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
-                    <a onclick="showView('transfer')" data-view="transfer" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
-
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Retail & Offline</p>
-                    <a onclick="showView('pos')" data-view="pos" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
-
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Analytics</p>
-                    <a onclick="showView('analytics')" data-view="analytics" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
+                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Pick & Pack</a>
                     
-                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">System</p>
-                    <a onclick="showView('users')" data-view="users" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Retail</p>
+                    <a onclick="showView('pos')" data-view="pos" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-pc-display-horizontal"></i> Terminal Kasir</a>
+                    <a onclick="showView('analytics')" data-view="analytics" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-graph-up-arrow"></i> Advanced Analytics</a>
                 </div>
 
                 <div class="mt-auto p-4 border-top border-secondary">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">A</div>
-                        <span class="text-white small fw-bold">Admin Demo</span>
-                    </div>
-                    <button class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="location.reload()">Logout Demo</button>
+                    <button class="btn btn-sm btn-outline-danger w-100" onclick="location.reload()">Logout Demo</button>
                 </div>
             </nav>
 
             <!-- Main Content -->
             <main>
-            <div id="topbar">
-                <button class="btn btn-theme-aware d-lg-none me-3" onclick="toggleSidebar()" style="width:40px; height:40px;">
-                    <i class="bi bi-list fs-4"></i>
-                </button>
-                <div class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> <span id="breadcrumb-active">Control Tower</span></div>
-                <div class="ms-auto d-flex align-items-center gap-3">
-                    <div id="clock" class="text-end d-none d-md-block">
-                        <div class="fw-bold text-primary" id="time">00:00:00</div>
-                        <div class="text-muted-custom small" id="date" style="font-size: 10px;">Monday, 11 May 2026</div>
+                <div id="topbar">
+                    <button class="btn btn-theme-aware d-lg-none me-3" onclick="toggleSidebar()" style="width:40px; height:40px;">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <div class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> <span id="breadcrumb-active">Control Tower</span></div>
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <div id="clock" class="text-end d-none d-md-block">
+                            <div class="fw-bold text-primary" id="time">00:00:00</div>
+                            <div class="text-muted-custom small" id="date" style="font-size: 10px;">...</div>
+                        </div>
+                        <button onclick="toggleTheme()" class="btn btn-theme-aware rounded-circle" style="width:40px; height:40px;"><i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i></button>
                     </div>
-                    <button class="btn btn-theme-aware rounded-circle" style="width:40px; height:40px;"><i class="bi bi-bell-fill text-primary"></i></button>
-                    <button onclick="toggleTheme()" class="btn btn-theme-aware rounded-circle" style="width:40px; height:40px;"><i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i></button>
                 </div>
-            </div>
-            
-            <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+                
+                <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-            <div class="page-content" id="content-area">
-                <!-- Content will be injected here -->
-            </div>
+                <div class="page-content" id="content-area">
+                    <!-- Content injected here -->
+                </div>
             </main>
         </div>
     </div>
@@ -334,134 +309,68 @@
             dashboard: `
                 <div class="row g-4 animate__animated animate__fadeIn">
                     <div class="col-12">
-                        <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
-                            <div class="card-body p-5 text-white position-relative">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <h2 class="fw-bold mb-2">Selamat Datang di Demo E-ASY POS! 👋</h2>
-                                        <p class="opacity-75 mb-4">Pusat kendali operasional gudang dan retail Anda dalam satu platform terintegrasi.</p>
-                                        <div class="d-flex gap-2">
-                                            <button onclick="showView('pos')" class="btn btn-white fw-bold px-4 rounded-pill text-primary bg-white">Buka Kasir</button>
-                                            <button onclick="showView('analytics')" class="btn btn-outline-light fw-bold px-4 rounded-pill">Lihat Laporan</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 text-center d-none d-md-block">
-                                        <i class="bi bi-rocket-takeoff shadow-lg" style="font-size: 8rem; opacity: 0.2;"></i>
-                                    </div>
-                                </div>
+                        <div class="card border-0 overflow-hidden shadow-lg" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                            <div class="card-body p-5 text-white">
+                                <h2 class="fw-bold mb-2 text-white">Selamat Datang di Demo E-ASY POS! 👋</h2>
+                                <p class="opacity-75 mb-4 text-white">Pusat kendali operasional gudang dan retail terintegrasi.</p>
+                                <button onclick="showView('pos')" class="btn btn-white fw-bold px-4 rounded-pill text-primary bg-white">Buka Kasir</button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="card p-4 border-0 shadow-sm">
-                            <small class="text-muted-custom fw-bold">TOTAL OMZET (HARI INI)</small>
-                            <h3 class="fw-bold text-primary mt-1 mb-0">Rp 12.4M</h3>
-                            <small class="text-success fw-bold"><i class="bi bi-arrow-up"></i> 8.4%</small>
+                            <small class="text-muted-custom fw-bold d-block mb-1">OMZET HARI INI</small>
+                            <h4 class="fw-bold text-primary mb-0">Rp 12.4M</h4>
+                            <small class="text-success small fw-bold"><i class="bi bi-arrow-up"></i> 8.4%</small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="card p-4 border-0 shadow-sm">
-                            <small class="text-muted-custom fw-bold">ORDER MASUK</small>
-                            <h3 class="fw-bold text-success mt-1 mb-0">842</h3>
-                            <small class="text-success fw-bold"><i class="bi bi-arrow-up"></i> 12.1%</small>
+                            <small class="text-muted-custom fw-bold d-block mb-1">ORDER MASUK</small>
+                            <h4 class="fw-bold text-success mb-0">842</h4>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="card p-4 border-0 shadow-sm">
-                            <small class="text-muted-custom fw-bold">OUTBOUND PICKING</small>
-                            <h3 class="fw-bold text-warning mt-1 mb-0">124</h3>
-                            <small class="text-muted-custom fw-bold small">Items to process</small>
+                            <small class="text-muted-custom fw-bold d-block mb-1">PROSES PICKING</small>
+                            <h4 class="fw-bold text-warning mb-0">124</h4>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="card p-4 border-0 shadow-sm">
-                            <small class="text-muted-custom fw-bold">STOCK ALERTS</small>
-                            <h3 class="fw-bold text-danger mt-1 mb-0">15</h3>
-                            <small class="text-danger fw-bold"><i class="bi bi-exclamation-circle"></i> Needs attention</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('channels')" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="badge-subtle-primary p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-intersect fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Marketplace Channels</h6>
-                            </div>
-                            <p class="text-muted-custom small mb-0">Hubungkan dan kelola stok produk Anda di berbagai marketplace secara otomatis.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('stock')" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="badge-subtle-success p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-archive-fill fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Stok Real-time</h6>
-                            </div>
-                            <p class="text-muted-custom small mb-0">Pantau ketersediaan barang secara real-time antar gudang dan update stok secara instan.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('users')" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="badge-subtle-primary p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-shield-lock-fill fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Akun & Role RBAC</h6>
-                            </div>
-                            <p class="text-muted-custom small mb-0">Atur hak akses staf menggunakan sistem RBAC (Role-Based Access Control) yang sangat fleksibel.</p>
+                            <small class="text-muted-custom fw-bold d-block mb-1">STOK KRITIS</small>
+                            <h4 class="fw-bold text-danger mb-0">15</h4>
                         </div>
                     </div>
                 </div>
             `,
             products: `
                 <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
                         <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Master Katalog (SKU)</h4>
-                                <p class="mb-0 opacity-75">Kelola database produk dan informasi katalog terpusat.</p>
-                            </div>
-                            <button class="btn btn-theme-aware fw-bold rounded-pill px-4 border-white text-white bg-transparent">+ Tambah Produk</button>
+                            <h4 class="fw-bold mb-0 text-white">Master Katalog (SKU)</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-dark bg-white">+ SKU Baru</button>
                         </div>
                     </div>
                     <div class="card border-0 shadow-sm">
-                        <div class="table-responsive p-3">
+                        <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="ps-3">SKU</th>
+                                        <th class="ps-4">SKU</th>
                                         <th>Nama Produk</th>
-                                        <th>Kategori</th>
-                                        <th>Harga Jual</th>
+                                        <th>Harga</th>
                                         <th>Stok</th>
-                                        <th>Status</th>
-                                        <th class="text-end pe-3">Aksi</th>
+                                        <th class="pe-4 text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="ps-3"><strong>PRO-001</strong></td>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-3">
-                                                <div class="badge-subtle-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;"><i class="bi bi-phone"></i></div>
-                                                <span class="fw-bold">Samsung Galaxy S23 Ultra</span>
-                                            </div>
-                                        </td>
-                                        <td>Electronics</td>
-                                        <td>Rp 18.500.000</td>
-                                        <td><span class="badge badge-subtle-primary fw-bold">85 Unit</span></td>
-                                        <td><span class="badge bg-success">Ready Stock</span></td>
-                                        <td class="text-end pe-3"><button class="btn btn-sm btn-theme-aware"><i class="bi bi-three-dots"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-3"><strong>PRO-002</strong></td>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-3">
-                                                <div class="badge-subtle-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;"><i class="bi bi-laptop"></i></div>
-                                                <span class="fw-bold">MacBook Pro M2 14"</span>
-                                            </div>
-                                        </td>
-                                        <td>Electronics</td>
-                                        <td>Rp 28.250.000</td>
-                                        <td><span class="badge badge-subtle-primary fw-bold">12 Unit</span></td>
-                                        <td><span class="badge bg-success">Ready Stock</span></td>
-                                        <td class="text-end pe-3"><button class="btn btn-sm btn-theme-aware"><i class="bi bi-three-dots"></i></button></td>
+                                        <td class="ps-4"><strong>PRO-001</strong></td>
+                                        <td>Samsung Galaxy S23 Ultra</td>
+                                        <td class="text-main">Rp 18.5M</td>
+                                        <td><span class="badge badge-subtle-primary">85 Unit</span></td>
+                                        <td class="pe-4 text-end"><button class="btn btn-sm btn-theme-aware"><i class="bi bi-three-dots"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -471,99 +380,32 @@
             `,
             pos: `
                 <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
                         <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Terminal Kasir #01</h4>
-                                <p class="mb-0 opacity-75">Sistem Point of Sales offline-ready untuk transaksi cepat.</p>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-white text-primary py-2 px-3 rounded-pill fw-bold">SHIF-002</span>
-                                <span class="badge bg-success py-2 px-3 rounded-pill"><i class="bi bi-cloud-check me-1"></i> Terkoneksi</span>
-                            </div>
+                            <h4 class="fw-bold mb-0 text-white">Terminal Kasir #01</h4>
+                            <span class="badge bg-white text-primary py-2 px-3 rounded-pill fw-bold">SHIF-002</span>
                         </div>
                     </div>
                     <div class="row g-4">
                         <div class="col-lg-8">
-                            <div class="card p-4 border-0 shadow-sm h-100">
-                                <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden border-0" style="background: var(--bg-main);">
+                            <div class="card p-4 border-0 shadow-sm h-100 bg-subtle">
+                                <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden border-0 bg-main">
                                     <span class="input-group-text border-0 bg-transparent ps-4"><i class="bi bi-search text-muted-custom"></i></span>
-                                    <input type="text" class="form-control border-0 bg-transparent py-3 text-main" placeholder="Scan barcode atau cari nama produk...">
+                                    <input type="text" class="form-control border-0 bg-transparent py-3 text-main" placeholder="Scan barcode...">
                                 </div>
-                                <div class="row g-3">
-                                    <div class="col-md-4 col-6">
-                                        <div class="card p-3 text-center border-0 shadow-sm h-100 cursor-pointer hover-lift bg-subtle">
-                                            <div class="rounded-4 mb-2 p-3 shadow-sm" style="background: var(--card-bg);"><i class="bi bi-phone fs-2 text-primary"></i></div>
-                                            <div class="fw-bold small">Galaxy S23</div>
-                                            <div class="text-primary small fw-bold mt-1">Rp 18.5M</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-6">
-                                        <div class="card p-3 text-center border-0 shadow-sm h-100 cursor-pointer hover-lift bg-subtle">
-                                            <div class="rounded-4 mb-2 p-3 shadow-sm" style="background: var(--card-bg);"><i class="bi bi-laptop fs-2 text-primary"></i></div>
-                                            <div class="fw-bold small">MacBook Pro</div>
-                                            <div class="text-primary small fw-bold mt-1">Rp 28.2M</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-6">
-                                        <div class="card p-3 text-center border-0 shadow-sm h-100 cursor-pointer hover-lift bg-subtle">
-                                            <div class="rounded-4 mb-2 p-3 shadow-sm" style="background: var(--card-bg);"><i class="bi bi-mouse3 fs-2 text-primary"></i></div>
-                                            <div class="fw-bold small">MX Master 3S</div>
-                                            <div class="text-primary small fw-bold mt-1">Rp 1.4M</div>
-                                        </div>
-                                    </div>
+                                <div class="text-center py-5 opacity-25">
+                                    <i class="bi bi-grid-3x3-gap fs-1 text-muted-custom"></i>
+                                    <p class="mt-2 text-muted-custom">Siap Melayani</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="card p-4 h-100 border-0 shadow-sm">
-                                <h6 class="fw-bold mb-4 d-flex align-items-center"><i class="bi bi-cart3 me-2 text-primary"></i>Ringkasan Order</h6>
-                                <div class="order-items flex-grow-1 text-center py-5">
-                                    <i class="bi bi-upc-scan fs-1 text-muted-custom opacity-25"></i>
-                                    <p class="text-muted-custom mt-3 small px-4">Siap melayani transaksi. Silakan masukkan produk.</p>
-                                </div>
+                                <h6 class="fw-bold mb-4">Ringkasan Order</h6>
                                 <div class="border-top pt-4 mt-auto">
-                                    <div class="d-flex justify-content-between mb-2"><span class="text-muted-custom">Subtotal</span><span class="fw-bold">Rp 0</span></div>
-                                    <div class="d-flex justify-content-between mb-4 text-primary fs-4 fw-bold"><span>Total</span><span>Rp 0</span></div>
-                                    <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-lg" disabled>BAYAR SEKARANG</button>
+                                    <div class="d-flex justify-content-between mb-4 fs-4 fw-bold text-primary"><span>Total</span><span>Rp 0</span></div>
+                                    <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-lg" disabled>BAYAR</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `,
-            analytics: `
-                <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Live Advanced Analytics</h4>
-                                <p class="mb-0 opacity-75">Telemetri real-time performa bisnis Anda.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-4">
-                        <div class="col-md-3">
-                            <div class="card p-4 border-0 shadow-sm border-start border-success border-5">
-                                <small class="text-muted-custom fw-bold">TOTAL OMZET</small>
-                                <h3 class="fw-bold text-success mt-1 mb-0">Rp 48.2M</h3>
-                                <small class="text-success"><i class="bi bi-arrow-up"></i> 12%</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card p-4 border-0 shadow-sm border-start border-primary border-5">
-                                <small class="text-muted-custom fw-bold">TOTAL ORDER</small>
-                                <h3 class="fw-bold text-primary mt-1 mb-0">1,240</h3>
-                                <small class="text-success"><i class="bi bi-arrow-up"></i> 5%</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card p-4 border-0 shadow-sm h-100">
-                                <h6 class="fw-bold mb-3 text-muted-custom">Performa Target Penjualan</h6>
-                                <div class="progress rounded-pill mb-2" style="height: 12px; background: var(--bg-main);">
-                                    <div class="progress-bar bg-success" style="width: 75%"></div>
-                                </div>
-                                <div class="d-flex justify-content-between small"><span class="text-muted-custom">Tercapai: Rp 48.2M</span><span class="fw-bold">Target: Rp 60M</span></div>
                             </div>
                         </div>
                     </div>
@@ -571,44 +413,29 @@
             `,
             stock: `
                 <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);">
                         <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Stok Real-time (Inventory)</h4>
-                                <p class="mb-0 opacity-75">Status ketersediaan stok fisik di seluruh lokasi.</p>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-theme-aware rounded-pill px-3 fw-bold border-white text-white bg-transparent">Stock Opname</button>
-                            </div>
+                            <h4 class="fw-bold mb-0 text-white">Stok Real-time</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-primary bg-white">Opname</button>
                         </div>
                     </div>
                     <div class="card border-0 shadow-sm">
-                        <div class="p-4 border-bottom d-flex gap-2 align-items-center bg-subtle">
-                            <div class="input-group rounded-pill px-2 border-0" style="max-width: 300px; background: var(--bg-main);">
-                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted-custom"></i></span>
-                                <input type="text" class="form-control bg-transparent border-0 text-main" placeholder="Cari item atau SKU...">
-                            </div>
-                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
                                         <th class="ps-4">Produk</th>
                                         <th>Lokasi</th>
-                                        <th>On Hand</th>
-                                        <th>Available</th>
-                                        <th>Reserved</th>
-                                        <th class="pe-4">Status</th>
+                                        <th>Stok Tersedia</th>
+                                        <th class="pe-4 text-end">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="border-bottom">
-                                        <td class="ps-4 fw-bold">Samsung S23 Ultra</td>
-                                        <td>Gudang Pusat</td>
-                                        <td>100</td>
-                                        <td class="text-primary fw-bold">85</td>
-                                        <td>15</td>
-                                        <td><span class="badge badge-subtle-success rounded-pill px-3">Stable</span></td>
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-main">Samsung Galaxy S23</td>
+                                        <td class="text-main">Gudang Pusat</td>
+                                        <td class="text-primary fw-bold">85 Unit</td>
+                                        <td class="pe-4 text-end"><span class="badge badge-subtle-success rounded-pill">Stable</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -616,37 +443,42 @@
                     </div>
                 </div>
             `,
-            transfer: `
+            analytics: `
                 <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);">
-                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Stock Transfer</h4>
-                                <p class="mb-0 opacity-75">Manajemen pemindahan barang antar gudang.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-0 shadow-sm p-5 text-center bg-subtle rounded-5">
-                        <i class="bi bi-arrow-left-right fs-1 text-primary opacity-25 mb-3"></i>
-                        <h5 class="fw-bold">Belum ada transfer aktif</h5>
-                    </div>
-                </div>
-            `,
-            channels: `
-                <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
                         <div class="card-body p-4 text-white">
-                            <h4 class="fw-bold mb-1">Marketplace Channels</h4>
+                            <h4 class="fw-bold mb-0 text-white">Advanced Analytics</h4>
                         </div>
                     </div>
                     <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="card p-4 text-center border-0 shadow-sm bg-subtle">
-                                <div class="rounded-circle mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; background: var(--card-bg);">
-                                    <i class="bi bi-bag-check-fill fs-2 text-danger"></i>
+                        <div class="col-md-6">
+                            <div class="card p-4 border-0 shadow-sm">
+                                <h6 class="fw-bold mb-3 text-muted-custom small">Target Penjualan Bulan Ini</h6>
+                                <div class="progress rounded-pill mb-2" style="height: 12px; background: var(--bg-main);">
+                                    <div class="progress-bar bg-success" style="width: 75%"></div>
                                 </div>
-                                <h6 class="fw-bold mb-1">Shopee Indonesia</h6>
-                                <span class="badge badge-subtle-success py-2 px-3 rounded-pill">AKTIF</span>
+                                <div class="d-flex justify-content-between small text-muted-custom"><span>Rp 48.2M</span><span class="fw-bold">Target: Rp 60M</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            outbound: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white">Outbound (Pick & Pack)</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-danger bg-white">Proses Order</button>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <div class="card border-0 shadow-sm p-4 h-100">
+                                <h6 class="fw-bold mb-4 d-flex justify-content-between">Antrean Packing <span class="badge badge-subtle-primary rounded-pill px-3">24</span></h6>
+                                <div class="bg-subtle p-3 rounded-4 mb-2 d-flex justify-content-between align-items-center">
+                                    <div><small class="fw-bold d-block text-main">#ORD-5520</small><small class="text-muted-custom">Siap dikemas</small></div>
+                                    <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold">Pack</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -654,11 +486,9 @@
             `,
             users: `
                 <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
-                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Akun & Role RBAC</h4>
-                            </div>
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Akun & Role RBAC</h4>
                         </div>
                     </div>
                     <div class="card border-0 shadow-sm">
@@ -672,11 +502,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="border-bottom">
+                                    <tr>
                                         <td class="ps-4">
                                             <div class="d-flex align-items-center gap-3">
-                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px;">AD</div>
-                                                <div><div class="fw-bold">Admin Demo</div><small class="text-muted-custom">admin@easy-pos.id</small></div>
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">AD</div>
+                                                <div><div class="fw-bold text-main">Admin Demo</div><small class="text-muted-custom">admin@easy-pos.id</small></div>
                                             </div>
                                         </td>
                                         <td><span class="badge badge-subtle-primary px-3">Super Admin</span></td>
@@ -684,39 +514,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-            `,
-            inbound: `
-                <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);">
-                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Inbound (Receiving)</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-0 shadow-sm p-5 text-center bg-subtle rounded-5">
-                        <i class="bi bi-box-arrow-in-down-right fs-1 text-primary opacity-25 mb-3"></i>
-                        <h5 class="fw-bold">Manajemen Penerimaan Barang</h5>
-                    </div>
-                </div>
-            `,
-            outbound: `
-                <div class="animate__animated animate__fadeIn">
-                    <div class="card border-0 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
-                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="fw-bold mb-1">Outbound (Pick & Pack)</h4>
-                        <div class="col-md-6">
-                            <div class="card p-4 border-0 shadow-sm">
-                                <h6 class="fw-bold mb-3 d-flex justify-content-between">Antrean Packing <span class="badge bg-success rounded-pill">12</span></h6>
-                                <div class="bg-light p-3 rounded-4 mb-2 d-flex justify-content-between align-items-center">
-                                    <div><small class="fw-bold d-block">#ORD-5520</small><small class="text-muted">Siap dikemas</small></div>
-                                    <button class="btn btn-sm btn-success rounded-pill px-3">Pack</button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -734,47 +531,32 @@
         }
 
         function showView(viewName) {
-            const content = views[viewName] || `<h4>${viewName.charAt(0).toUpperCase() + viewName.slice(1)}</h4><p class="text-muted">Halaman ini belum tersedia di versi demo.</p>`;
+            const content = views[viewName] || `<h4>${viewName}</h4><p class="text-muted">Coming soon.</p>`;
             document.getElementById('content-area').innerHTML = content;
             
-            // Precise breadcrumb mapping
             const breadcrumbs = {
                 dashboard: 'Control Tower',
                 products: 'Master Katalog (SKU)',
-                channels: 'Marketplace Channels',
-                inbound: 'Inbound (Receiving)',
-                outbound: 'Outbound (Pick & Pack)',
                 stock: 'Stok Real-time',
-                transfer: 'Stock Transfer',
-                pos: 'Kasir / POS Offline',
-                analytics: 'Live Advanced Analytics',
-                users: 'Akun & Role RBAC'
+                pos: 'Terminal Kasir',
+                analytics: 'Advanced Analytics'
             };
             document.getElementById('breadcrumb-active').innerText = breadcrumbs[viewName] || viewName;
             
-            // Precise active nav selection via data-view attribute
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
             const activeNav = document.querySelector(`.sidebar-nav a[data-view="${viewName}"]`);
             if (activeNav) activeNav.classList.add('active');
 
-            // Close sidebar on mobile after clicking
             if (window.innerWidth < 992) {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebar-overlay');
-                if (sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    overlay.classList.remove('show');
-                }
+                document.getElementById('sidebar').classList.remove('show');
+                document.getElementById('sidebar-overlay').classList.remove('show');
             }
-            
             window.scrollTo(0, 0);
         }
 
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
         }
 
         function toggleTheme() {
@@ -791,8 +573,10 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('time').innerText = now.toLocaleTimeString();
-            document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const timeEl = document.getElementById('time');
+            const dateEl = document.getElementById('date');
+            if (timeEl) timeEl.innerText = now.toLocaleTimeString();
+            if (dateEl) dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         }
         setInterval(updateClock, 1000);
         updateClock();
