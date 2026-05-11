@@ -156,7 +156,14 @@
             transition: transform .4s, box-shadow .4s, background .3s;
         }
         
-        .table { color: var(--text-main); border-color: var(--border-color); }
+        .table { 
+            color: var(--text-main); 
+            border-color: var(--border-color);
+            --bs-table-bg: transparent !important;
+            --bs-table-accent-bg: transparent !important;
+            --bs-table-striped-bg: transparent !important;
+            --bs-table-hover-bg: var(--subtle-bg) !important;
+        }
         .table thead th { 
             background: var(--subtle-bg) !important; 
             color: var(--text-muted) !important; 
@@ -165,7 +172,11 @@
             font-size: 0.75rem;
             letter-spacing: 0.05em;
         }
-        .table td { border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+        .table td { 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-main) !important;
+            background: transparent !important;
+        }
         
         .btn-theme-aware {
             background: var(--card-bg);
@@ -173,6 +184,10 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             transition: all .3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         .btn-theme-aware:hover {
             background: var(--subtle-bg);
@@ -326,7 +341,7 @@
                                         <h2 class="fw-bold mb-2">Selamat Datang di Demo E-ASY POS! 👋</h2>
                                         <p class="opacity-75 mb-4">Pusat kendali operasional gudang dan retail Anda dalam satu platform terintegrasi.</p>
                                         <div class="d-flex gap-2">
-                                            <button onclick="showView('pos')" class="btn btn-theme-aware fw-bold px-4 rounded-pill border-white text-white bg-transparent">Buka Kasir</button>
+                                            <button onclick="showView('pos')" class="btn btn-white fw-bold px-4 rounded-pill text-primary bg-white">Buka Kasir</button>
                                             <button onclick="showView('analytics')" class="btn btn-outline-light fw-bold px-4 rounded-pill">Lihat Laporan</button>
                                         </div>
                                     </div>
@@ -337,13 +352,41 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold">TOTAL OMZET (HARI INI)</small>
+                            <h3 class="fw-bold text-primary mt-1 mb-0">Rp 12.4M</h3>
+                            <small class="text-success fw-bold"><i class="bi bi-arrow-up"></i> 8.4%</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold">ORDER MASUK</small>
+                            <h3 class="fw-bold text-success mt-1 mb-0">842</h3>
+                            <small class="text-success fw-bold"><i class="bi bi-arrow-up"></i> 12.1%</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold">OUTBOUND PICKING</small>
+                            <h3 class="fw-bold text-warning mt-1 mb-0">124</h3>
+                            <small class="text-muted-custom fw-bold small">Items to process</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold">STOCK ALERTS</small>
+                            <h3 class="fw-bold text-danger mt-1 mb-0">15</h3>
+                            <small class="text-danger fw-bold"><i class="bi bi-exclamation-circle"></i> Needs attention</small>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('channels')" style="cursor: pointer;">
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <div class="badge-subtle-primary p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-intersect fs-4"></i></div>
                                 <h6 class="fw-bold mb-0">Marketplace Channels</h6>
                             </div>
-                            <p class="text-muted-custom small">Hubungkan dan kelola stok produk Anda di berbagai marketplace secara otomatis.</p>
+                            <p class="text-muted-custom small mb-0">Hubungkan dan kelola stok produk Anda di berbagai marketplace secara otomatis.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -352,7 +395,7 @@
                                 <div class="badge-subtle-success p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-archive-fill fs-4"></i></div>
                                 <h6 class="fw-bold mb-0">Stok Real-time</h6>
                             </div>
-                            <p class="text-muted-custom small">Pantau ketersediaan barang secara real-time antar gudang dan update stok secara instan.</p>
+                            <p class="text-muted-custom small mb-0">Pantau ketersediaan barang secara real-time antar gudang dan update stok secara instan.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -361,7 +404,7 @@
                                 <div class="badge-subtle-primary p-3 rounded-4" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-shield-lock-fill fs-4"></i></div>
                                 <h6 class="fw-bold mb-0">Akun & Role RBAC</h6>
                             </div>
-                            <p class="text-muted-custom small">Atur hak akses staf menggunakan sistem RBAC (Role-Based Access Control) yang sangat fleksibel.</p>
+                            <p class="text-muted-custom small mb-0">Atur hak akses staf menggunakan sistem RBAC (Role-Based Access Control) yang sangat fleksibel.</p>
                         </div>
                     </div>
                 </div>
