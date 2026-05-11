@@ -1,7 +1,10 @@
 *.log
 .DS_Store
 /bootstrap/cache/*.php
+!bootstrap/cache/packages.php
 !.gitignore
+/storage/framework/views
+!storage/framework/views/*.php
 .env
 .env.backup
 .env.production

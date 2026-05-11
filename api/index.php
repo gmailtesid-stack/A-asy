@@ -1,5 +1,7 @@
 <?php
 
+$projectRoot = dirname(__DIR__);
+
 // ─── Tmp dirs ────────────────────────────────────────────────────────────────
 foreach ([
     '/tmp/bootstrap/cache',
@@ -10,6 +12,28 @@ foreach ([
     '/tmp/database',
 ] as $dir) {
     if (!is_dir($dir)) mkdir($dir, 0755, true);
+}
+
+// ─── Cold-start speedup: Copy pre-compiled assets from repo to /tmp ──────────
+// Pre-compiled views (via `php artisan view:cache`) ship in git.
+// Copying them eliminates Blade compilation overhead on every cold start.
+$srcViews = $projectRoot . '/storage/framework/views';
+$tmpViews = '/tmp/storage/framework/views';
+if (is_dir($srcViews)) {
+    foreach (glob($srcViews . '/*.php') as $compiled) {
+        $dest = $tmpViews . '/' . basename($compiled);
+        if (!file_exists($dest)) {
+            copy($compiled, $dest);
+        }
+    }
+}
+
+// Pre-generated packages.php (via `php artisan package:discover`) ships in git.
+// Copying it eliminates auto-discovery scan overhead on every cold start.
+$srcPkg = $projectRoot . '/bootstrap/cache/packages.php';
+$tmpPkg = '/tmp/bootstrap/cache/packages.php';
+if (!file_exists($tmpPkg) && file_exists($srcPkg)) {
+    copy($srcPkg, $tmpPkg);
 }
 
 // ─── SQLite: Copy to /tmp (writable) ─────────────────────────────────────────
