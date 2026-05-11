@@ -1,14 +1,23 @@
 <?php
+
+// ── Vercel Laravel 13 Ultra-Bootloader ──
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 $root = __DIR__ . '/..';
 require $root . '/vendor/autoload.php';
+
+// Create storage structure in /tmp immediately
+$tmp = '/tmp/storage';
+foreach (['/framework/views', '/framework/sessions', '/framework/cache', '/logs'] as $d) {
+    if (!is_dir($tmp . $d)) @mkdir($tmp . $d, 0755, true);
+}
+
+// Boot the application
 $app = require_once $root . '/bootstrap/app.php';
 
-// Path Overrides
-$app->useStoragePath('/tmp/storage');
-if (!is_dir('/tmp/storage/framework/views')) @mkdir('/tmp/storage/framework/views', 0755, true);
+// Force overrides
+$app->useStoragePath($tmp);
 
 try {
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
@@ -16,9 +25,8 @@ try {
     $response->send();
     $kernel->terminate($request, $response);
 } catch (\Throwable $e) {
-    http_response_code(500);
-    echo "<h1>Kernel Execution Error</h1>";
-    echo "<p><strong>Message:</strong> " . $e->getMessage() . "</p>";
+    echo "<h1>Critical failure during request handling</h1>";
+    echo "<p><strong>Error:</strong> " . $e->getMessage() . "</p>";
     echo "<p><strong>File:</strong> " . $e->getFile() . ":" . $e->getLine() . "</p>";
     echo "<pre>" . $e->getTraceAsString() . "</pre>";
 }
