@@ -1,52 +1,29 @@
 <?php
+// Minimal test - step by step debug
+echo "<pre>\n";
+echo "Step 1: PHP " . PHP_VERSION . " OK\n";
 
-// ─── Debug: Show raw PHP errors (remove after fixing) ────────────────────────
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
+// Step 2: Check if vendor exists
+$vendorPath = __DIR__ . '/../vendor/autoload.php';
+echo "Step 2: vendor/autoload.php " . (file_exists($vendorPath) ? "EXISTS" : "MISSING") . "\n";
 
-// ─── Serverless: Create required writable directories in /tmp ───────────────
-$tmpDirs = [
-    '/tmp/storage/framework/views',
-    '/tmp/storage/framework/cache/data',
-    '/tmp/storage/framework/sessions',
-    '/tmp/storage/logs',
-    '/tmp/bootstrap/cache',
-    '/tmp/database',
-];
-foreach ($tmpDirs as $dir) {
-    if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
-    }
-}
+// Step 3: Check SQLite
+$dbSrc = dirname(__DIR__) . '/database/database.sqlite';
+echo "Step 3: database.sqlite " . (file_exists($dbSrc) ? "EXISTS (" . filesize($dbSrc) . " bytes)" : "MISSING") . "\n";
 
-// ─── SQLite: Copy DB to /tmp (writable) on cold start ────────────────────────
-// Vercel project filesystem is read-only; SQLite needs write access for WAL/journal.
-$projectRoot = dirname(__DIR__);
-$srcDb       = $projectRoot . '/database/database.sqlite';
-$tmpDb       = '/tmp/database/database.sqlite';
+// Step 4: Check /tmp writable
+$testFile = '/tmp/write_test_' . time() . '.txt';
+$written = @file_put_contents($testFile, 'test');
+echo "Step 4: /tmp writable: " . ($written !== false ? "YES" : "NO") . "\n";
+if ($written !== false) @unlink($testFile);
 
-if (!file_exists($tmpDb) && file_exists($srcDb)) {
-    copy($srcDb, $tmpDb);
-}
+// Step 5: Check extensions
+echo "Step 5: PDO loaded: " . (extension_loaded('pdo') ? "YES" : "NO") . "\n";
+echo "Step 5: pdo_sqlite loaded: " . (extension_loaded('pdo_sqlite') ? "YES" : "NO") . "\n";
 
-// Override DB path to the writable /tmp copy
-if (file_exists($tmpDb)) {
-    putenv('DB_DATABASE=' . $tmpDb);
-    $_ENV['DB_DATABASE']    = $tmpDb;
-    $_SERVER['DB_DATABASE'] = $tmpDb;
-}
+// Step 6: Check APP_KEY env
+$appKey = getenv('APP_KEY');
+echo "Step 6: APP_KEY set: " . ($appKey ? "YES (len=" . strlen($appKey) . ")" : "NO - MISSING!") . "\n";
 
-require __DIR__ . '/../vendor/autoload.php';
-
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
-$response = $kernel->handle(
-    $request = Illuminate\Http\Request::capture()
-);
-
-$response->send();
-
-$kernel->terminate($request, $response);
+echo "\nAll steps done. If you see this, PHP runtime works.\n";
+echo "</pre>\n";
