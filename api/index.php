@@ -3,33 +3,25 @@
 $projectRoot = dirname(__DIR__);
 
 // ─── Tmp dirs ────────────────────────────────────────────────────────────────
-// Minimize directory creation. Only create what's absolutely necessary.
-// /tmp is shared across warm invocations on Vercel.
-if (!is_dir('/tmp/storage/framework/views')) {
-    mkdir('/tmp/storage/framework/views', 0755, true);
-    mkdir('/tmp/storage/framework/cache/data', 0755, true);
-    mkdir('/tmp/storage/framework/sessions', 0755, true);
-    mkdir('/tmp/bootstrap/cache', 0755, true);
-    mkdir('/tmp/storage/logs', 0755, true);
-}
+// Create all necessary directories in /tmp. @ hides errors if they already exist.
+@mkdir('/tmp/storage/framework/views', 0755, true);
+@mkdir('/tmp/storage/framework/cache/data', 0755, true);
+@mkdir('/tmp/storage/framework/sessions', 0755, true);
+@mkdir('/tmp/bootstrap/cache', 0755, true);
+@mkdir('/tmp/storage/logs', 0755, true);
+@mkdir('/tmp/database', 0755, true);
 
-// ─── Pre-compiled packages & services speedup ──────────────────────────────
-// Pre-generated files (via `php artisan package:discover` and `services:cache`)
-// ship in git. Copying them eliminates scan overhead on every cold start.
-foreach (['packages.php', 'services.php'] as $file) {
-    $src = $projectRoot . '/bootstrap/cache/' . $file;
-    $tmp = '/tmp/bootstrap/cache/' . $file;
-    if (!file_exists($tmp) && file_exists($src)) {
-        if (!is_dir('/tmp/bootstrap/cache')) mkdir('/tmp/bootstrap/cache', 0755, true);
-        copy($src, $tmp);
-    }
+// ─── Pre-compiled packages speedup ──────────────────────────────────────────
+$srcPkg = $projectRoot . '/bootstrap/cache/packages.php';
+$tmpPkg = '/tmp/bootstrap/cache/packages.php';
+if (!file_exists($tmpPkg) && file_exists($srcPkg)) {
+    copy($srcPkg, $tmpPkg);
 }
 
 // ─── SQLite: Copy to /tmp (writable) ─────────────────────────────────────────
 $srcDb = $projectRoot . '/database/database.sqlite';
 $tmpDb = '/tmp/database/database.sqlite';
 if (!file_exists($tmpDb) && file_exists($srcDb)) {
-    if (!is_dir('/tmp/database')) mkdir('/tmp/database', 0755, true);
     copy($srcDb, $tmpDb);
 }
 
