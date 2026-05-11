@@ -14,6 +14,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
+        [data-theme='dark'] {
+            --bg-main:    #0a0a0a;
+            --card-bg:    #0f172a;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --glass:      rgba(15, 23, 42, 0.8);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            --input-bg:   #1e293b;
+            --subtle-bg:  rgba(255, 255, 255, 0.03);
+        }
+
         :root {
             --primary:    #6366f1;
             --primary-dk: #4f46e5;
@@ -29,17 +41,7 @@
             --text-muted: #64748b;
             --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 8px 15px -6px rgba(0, 0, 0, 0.04);
             --border-color: rgba(226, 232, 240, 0.5);
-        }
-
-        [data-theme='dark'] {
-            --bg-main:    #0a0a0a;
-            --card-bg:    #0f172a;
-            --text-main:  #f8fafc;
-            --text-muted: #94a3b8;
-            --glass:      rgba(15, 23, 42, 0.8);
-            --border-color: rgba(255, 255, 255, 0.05);
-            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
-            --input-bg:   #1e293b;
+            --subtle-bg:  rgba(0, 0, 0, 0.03);
         }
 
         body { 
@@ -142,6 +144,7 @@
             padding: 2.5rem; 
             flex: 1;
             width: 100%;
+            background: var(--bg-main);
         }
 
         .card { 
@@ -149,8 +152,24 @@
             border-radius: 24px; 
             box-shadow: var(--card-shadow);
             background: var(--card-bg);
-            transition: transform .4s, box-shadow .4s;
+            color: var(--text-main);
+            transition: transform .4s, box-shadow .4s, background .3s;
         }
+        
+        .table { color: var(--text-main); }
+        .table thead th { 
+            background: var(--subtle-bg); 
+            color: var(--text-muted); 
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .table td { border-bottom: 1px solid var(--border-color); }
+        
+        .bg-subtle { background: var(--subtle-bg); }
+        .text-main { color: var(--text-main); }
+        .text-muted-custom { color: var(--text-muted); }
         .card:hover { transform: translateY(-8px); }
 
         .btn-premium {
@@ -552,16 +571,16 @@
                         </div>
                     </div>
                     <div class="card border-0 shadow-sm">
-                        <div class="p-4 border-bottom d-flex gap-2 align-items-center">
-                            <div class="input-group bg-light rounded-pill px-2 border-0" style="max-width: 300px;">
-                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                                <input type="text" class="form-control bg-transparent border-0" placeholder="Cari item atau SKU...">
+                        <div class="p-4 border-bottom d-flex gap-2 align-items-center bg-subtle">
+                            <div class="input-group rounded-pill px-2 border-0" style="max-width: 300px; background: var(--bg-main);">
+                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted-custom"></i></span>
+                                <input type="text" class="form-control bg-transparent border-0 text-main" placeholder="Cari item atau SKU...">
                             </div>
-                            <select class="form-select border-0 bg-light rounded-pill px-4" style="max-width: 200px;"><option>Semua Gudang</option></select>
+                            <select class="form-select border-0 rounded-pill px-4 text-main" style="max-width: 200px; background: var(--bg-main);"><option>Semua Gudang</option></select>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th class="ps-4">Produk</th>
                                         <th>Lokasi</th>
