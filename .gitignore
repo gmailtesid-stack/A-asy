@@ -2,9 +2,13 @@
 .DS_Store
 /bootstrap/cache/*.php
 !bootstrap/cache/packages.php
+!bootstrap/cache/config.php
+!bootstrap/cache/services.php
+!bootstrap/cache/events.php
+!bootstrap/cache/routes-v7.php
 !.gitignore
-/storage/framework/views
-!storage/framework/views/*.php
+/storage/framework/views/*.php
+!/storage/framework/views/*.php
 .env
 .env.backup
 .env.production

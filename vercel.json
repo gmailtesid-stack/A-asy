@@ -5,7 +5,7 @@
         "APP_NAME": "E-ASY POS",
         "APP_ENV": "production",
         "APP_KEY": "base64:cT3wN1uicXKYsFj04rvpanIYMkb8uQ4YJXThCFE0iIE=",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
         "APP_URL": "https://a-asy.vercel.app",
         "VERCEL": "1",
         "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
@@ -17,7 +17,7 @@
         "SESSION_ENCRYPT": "false",
         "SESSION_LIFETIME": "120",
         "LOG_CHANNEL": "stderr",
-        "LOG_LEVEL": "debug",
+        "LOG_LEVEL": "error",
         "DB_CONNECTION": "sqlite",
         "FILESYSTEM_DISK": "local",
         "QUEUE_CONNECTION": "sync",
@@ -27,17 +27,27 @@
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.3",
-            "maxDuration": 30
+            "maxDuration": 60
         }
     },
     "routes": [
         {
             "src": "/(css|js|images|fonts|vendor|build|assets)/(.*)",
-            "dest": "/public/$1/$2"
+            "dest": "/public/$1/$2",
+            "headers": {
+                "Cache-Control": "public, max-age=31536000, immutable"
+            }
         },
         {
             "src": "/favicon.ico",
-            "dest": "/public/favicon.ico"
+            "dest": "/public/favicon.ico",
+            "headers": {
+                "Cache-Control": "public, max-age=86400"
+            }
+        },
+        {
+            "src": "/ping",
+            "dest": "/public/ping.php"
         },
         {
             "src": "/(.*)",
