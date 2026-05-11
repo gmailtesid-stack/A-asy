@@ -54,6 +54,14 @@
             "dest": "/api/ping.php"
         },
         {
+            "src": "/demo.html",
+            "dest": "/public/demo.html"
+        },
+        {
+            "src": "/demo",
+            "dest": "/public/demo.html"
+        },
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
