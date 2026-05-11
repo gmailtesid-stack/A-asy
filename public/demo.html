@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Mode — E-ASY POS</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    
+    <!-- Fonts & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary:    #6366f1;
+            --primary-dk: #4f46e5;
+            --secondary:  #64748b;
+            --sidebar-w:  280px;
+            --sidebar-bg: #0f172a;
+            --topbar-h:   72px;
+            --accent:     #818cf8;
+            --glass:      rgba(255, 255, 255, 0.75);
+            --bg-main:    #f8fafc;
+            --card-bg:    #ffffff;
+            --text-main:  #1e293b;
+            --text-muted: #64748b;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 8px 15px -6px rgba(0, 0, 0, 0.04);
+            --border-color: rgba(226, 232, 240, 0.5);
+            --subtle-bg:  rgba(0, 0, 0, 0.03);
+        }
+
+        [data-theme='dark'] {
+            --bg-main:    #0a0a0a;
+            --card-bg:    #0f172a;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --glass:      rgba(15, 23, 42, 0.8);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            --input-bg:   #1e293b;
+            --subtle-bg:  rgba(255, 255, 255, 0.03);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0;
+            transition: background .3s, color .3s;
+            overflow-x: hidden;
+        }
+
+        /* ── Login Styles ────────────────────────────────── */
+        #login-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: .85rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(37,99,235,.4);
+            transition: all .2s;
+        }
+
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(37,99,235,.5); }
+
+        /* ── Main Layout ───────────────────────────── */
+        #main-app {
+            display: none; /* Shown after login */
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        #sidebar {
+            width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
+            height: 100vh;
+            background: #0f172a;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            overflow-y: auto;
+            transition: transform .3s ease-in-out;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; 
+            background: var(--bg-main);
+        }
+
+        #topbar {
+            height: var(--topbar-h);
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 2.5rem;
+            position: sticky;
+            top: 0; z-index: 900;
+            width: 100%;
+        }
+
+        .page-content { 
+            padding: 2.5rem; 
+            flex: 1;
+            width: 100%;
+            background: var(--bg-main);
+        }
+
+        .card { 
+            border: none;
+            border-radius: 24px; 
+            box-shadow: var(--card-shadow);
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: transform .4s, box-shadow .4s, background .3s;
+        }
+        
+        .table { 
+            color: var(--text-main); 
+            border-color: var(--border-color);
+            --bs-table-bg: transparent !important;
+            --bs-table-accent-bg: transparent !important;
+            --bs-table-striped-bg: transparent !important;
+            --bs-table-hover-bg: var(--subtle-bg) !important;
+        }
+        .table thead th { 
+            background: var(--subtle-bg) !important; 
+            color: var(--text-muted) !important; 
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .table td { 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-main) !important;
+            background: transparent !important;
+        }
+        
+        .btn-theme-aware {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all .3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-theme-aware:hover {
+            background: var(--subtle-bg);
+            color: var(--primary);
+        }
+        
+        .bg-subtle { background: var(--subtle-bg) !important; }
+        .text-main { color: var(--text-main) !important; }
+        .text-muted-custom { color: var(--text-muted) !important; }
+
+        .badge-subtle-primary { background: rgba(99, 102, 241, 0.1); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.2); }
+        .badge-subtle-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-subtle-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-subtle-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .card:hover { transform: translateY(-8px); }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 991.98px) {
+            #sidebar { 
+                position: fixed;
+                transform: translateX(-100%); 
+            }
+            #sidebar.show { transform: translateX(0); }
+            .app-container { display: block; }
+            #topbar { padding: 0 1rem; }
+            .page-content { padding: 1.25rem; }
+            
+            #sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            #sidebar-overlay.show { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. LOGIN SECTION -->
+    <div id="login-section">
+        <div class="login-card animate__animated animate__zoomIn">
+            <div class="text-center mb-4">
+                <img src="/images/logo.png" alt="Logo" style="width: 180px; margin-bottom: 1rem;">
+                <h5 class="text-white fw-bold">E-ASY POS Demo</h5>
+                <p class="text-white-50 small">Mode Presentasi — Tanpa Koneksi TiDB</p>
+            </div>
+            
+            <div class="mb-3">
+                <label class="text-white-50 small fw-bold text-uppercase">Email</label>
+                <input type="text" class="form-control bg-dark border-secondary text-white" value="admin@easy-pos.id" readonly>
+            </div>
+            <div class="mb-4">
+                <label class="text-white-50 small fw-bold text-uppercase">Password</label>
+                <input type="password" class="form-control bg-dark border-secondary text-white" value="password" readonly>
+            </div>
+            
+            <button class="btn-login" onclick="loginDemo()">Masuk Demo</button>
+        </div>
+    </div>
+
+    <!-- 2. APP SECTION -->
+    <div id="main-app">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="p-4 text-center">
+                    <img src="/images/logo.png" alt="Logo" style="width: 140px;">
+                    <small class="d-block text-muted mt-2">Demo Mode: Pusat Distribusi</small>
+                </div>
+
+                <div class="sidebar-nav">
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Dashboard</p>
+                    <a onclick="showView('dashboard')" data-view="dashboard" class="active" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-speedometer2"></i> Control Tower</a>
+
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">OMS & WMS</p>
+                    <a onclick="showView('products')" data-view="products" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-seam-fill"></i> Katalog SKU</a>
+                    <a onclick="showView('stock')" data-view="stock" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
+                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Pick & Pack</a>
+                    
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Retail</p>
+                    <a onclick="showView('pos')" data-view="pos" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-pc-display-horizontal"></i> Terminal Kasir</a>
+                    <a onclick="showView('analytics')" data-view="analytics" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-graph-up-arrow"></i> Advanced Analytics</a>
+                </div>
+
+                <div class="mt-auto p-4 border-top border-secondary">
+                    <button class="btn btn-sm btn-outline-danger w-100" onclick="location.reload()">Logout Demo</button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main>
+                <div id="topbar">
+                    <button class="btn btn-theme-aware d-lg-none me-3" onclick="toggleSidebar()" style="width:40px; height:40px;">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <div class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> <span id="breadcrumb-active">Control Tower</span></div>
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <div id="clock" class="text-end d-none d-md-block">
+                            <div class="fw-bold text-primary" id="time">00:00:00</div>
+                            <div class="text-muted-custom small" id="date" style="font-size: 10px;">...</div>
+                        </div>
+                        <button onclick="toggleTheme()" class="btn btn-theme-aware rounded-circle" style="width:40px; height:40px;"><i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i></button>
+                    </div>
+                </div>
+                
+                <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+                <div class="page-content" id="content-area">
+                    <!-- Content injected here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const views = {
+            dashboard: `
+                <div class="row g-4 animate__animated animate__fadeIn">
+                    <div class="col-12">
+                        <div class="card border-0 overflow-hidden shadow-lg" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                            <div class="card-body p-5 text-white">
+                                <h2 class="fw-bold mb-2 text-white">Selamat Datang di Demo E-ASY POS! 👋</h2>
+                                <p class="opacity-75 mb-4 text-white">Pusat kendali operasional gudang dan retail terintegrasi.</p>
+                                <button onclick="showView('pos')" class="btn btn-white fw-bold px-4 rounded-pill text-primary bg-white">Buka Kasir</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold d-block mb-1">OMZET HARI INI</small>
+                            <h4 class="fw-bold text-primary mb-0">Rp 12.4M</h4>
+                            <small class="text-success small fw-bold"><i class="bi bi-arrow-up"></i> 8.4%</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold d-block mb-1">ORDER MASUK</small>
+                            <h4 class="fw-bold text-success mb-0">842</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold d-block mb-1">PROSES PICKING</small>
+                            <h4 class="fw-bold text-warning mb-0">124</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card p-4 border-0 shadow-sm">
+                            <small class="text-muted-custom fw-bold d-block mb-1">STOK KRITIS</small>
+                            <h4 class="fw-bold text-danger mb-0">15</h4>
+                        </div>
+                    </div>
+                </div>
+            `,
+            products: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white">Master Katalog (SKU)</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-dark bg-white">+ SKU Baru</button>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">SKU</th>
+                                        <th>Nama Produk</th>
+                                        <th>Harga</th>
+                                        <th>Stok</th>
+                                        <th class="pe-4 text-end">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="ps-4"><strong>PRO-001</strong></td>
+                                        <td>Samsung Galaxy S23 Ultra</td>
+                                        <td class="text-main">Rp 18.5M</td>
+                                        <td><span class="badge badge-subtle-primary">85 Unit</span></td>
+                                        <td class="pe-4 text-end"><button class="btn btn-sm btn-theme-aware"><i class="bi bi-three-dots"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `,
+            pos: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white">Terminal Kasir #01</h4>
+                            <span class="badge bg-white text-primary py-2 px-3 rounded-pill fw-bold">SHIF-002</span>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="card p-4 border-0 shadow-sm h-100 bg-subtle">
+                                <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden border-0 bg-main">
+                                    <span class="input-group-text border-0 bg-transparent ps-4"><i class="bi bi-search text-muted-custom"></i></span>
+                                    <input type="text" class="form-control border-0 bg-transparent py-3 text-main" placeholder="Scan barcode...">
+                                </div>
+                                <div class="text-center py-5 opacity-25">
+                                    <i class="bi bi-grid-3x3-gap fs-1 text-muted-custom"></i>
+                                    <p class="mt-2 text-muted-custom">Siap Melayani</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card p-4 h-100 border-0 shadow-sm">
+                                <h6 class="fw-bold mb-4">Ringkasan Order</h6>
+                                <div class="border-top pt-4 mt-auto">
+                                    <div class="d-flex justify-content-between mb-4 fs-4 fw-bold text-primary"><span>Total</span><span>Rp 0</span></div>
+                                    <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-lg" disabled>BAYAR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            stock: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);">
+                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white">Stok Real-time</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-primary bg-white">Opname</button>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Produk</th>
+                                        <th>Lokasi</th>
+                                        <th>Stok Tersedia</th>
+                                        <th class="pe-4 text-end">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-main">Samsung Galaxy S23</td>
+                                        <td class="text-main">Gudang Pusat</td>
+                                        <td class="text-primary fw-bold">85 Unit</td>
+                                        <td class="pe-4 text-end"><span class="badge badge-subtle-success rounded-pill">Stable</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `,
+            analytics: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Advanced Analytics</h4>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card p-4 border-0 shadow-sm">
+                                <h6 class="fw-bold mb-3 text-muted-custom small">Target Penjualan Bulan Ini</h6>
+                                <div class="progress rounded-pill mb-2" style="height: 12px; background: var(--bg-main);">
+                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted-custom"><span>Rp 48.2M</span><span class="fw-bold">Target: Rp 60M</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            outbound: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+                        <div class="card-body p-4 text-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white">Outbound (Pick & Pack)</h4>
+                            <button class="btn btn-white fw-bold rounded-pill px-4 text-danger bg-white">Proses Order</button>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <div class="card border-0 shadow-sm p-4 h-100">
+                                <h6 class="fw-bold mb-4 d-flex justify-content-between">Antrean Packing <span class="badge badge-subtle-primary rounded-pill px-3">24</span></h6>
+                                <div class="bg-subtle p-3 rounded-4 mb-2 d-flex justify-content-between align-items-center">
+                                    <div><small class="fw-bold d-block text-main">#ORD-5520</small><small class="text-muted-custom">Siap dikemas</small></div>
+                                    <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold">Pack</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            users: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Akun & Role RBAC</h4>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">User</th>
+                                        <th>Role</th>
+                                        <th class="pe-4 text-end">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">AD</div>
+                                                <div><div class="fw-bold text-main">Admin Demo</div><small class="text-muted-custom">admin@easy-pos.id</small></div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-subtle-primary px-3">Super Admin</span></td>
+                                        <td class="pe-4 text-end text-success fw-bold">AKTIF</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function loginDemo() {
+            const loginSection = document.getElementById('login-section');
+            loginSection.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                loginSection.style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                showView('dashboard');
+            }, 500);
+        }
+
+        function showView(viewName) {
+            const content = views[viewName] || `<h4>${viewName}</h4><p class="text-muted">Coming soon.</p>`;
+            document.getElementById('content-area').innerHTML = content;
+            
+            const breadcrumbs = {
+                dashboard: 'Control Tower',
+                products: 'Master Katalog (SKU)',
+                stock: 'Stok Real-time',
+                pos: 'Terminal Kasir',
+                analytics: 'Advanced Analytics'
+            };
+            document.getElementById('breadcrumb-active').innerText = breadcrumbs[viewName] || viewName;
+            
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            const activeNav = document.querySelector(`.sidebar-nav a[data-view="${viewName}"]`);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (window.innerWidth < 992) {
+                document.getElementById('sidebar').classList.remove('show');
+                document.getElementById('sidebar-overlay').classList.remove('show');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if(theme === 'dark') {
+                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+            } else {
+                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeEl = document.getElementById('time');
+            const dateEl = document.getElementById('date');
+            if (timeEl) timeEl.innerText = now.toLocaleTimeString();
+            if (dateEl) dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
