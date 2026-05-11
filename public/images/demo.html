@@ -300,28 +300,28 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm">
+                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('channels')" style="cursor: pointer;">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="bg-primary-subtle p-3 rounded-4"><i class="bi bi-shop text-primary fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Manajemen Outlet</h6>
+                                <div class="bg-primary-subtle p-3 rounded-4"><i class="bi bi-intersect text-primary fs-4"></i></div>
+                                <h6 class="fw-bold mb-0">Marketplace Channels</h6>
                             </div>
-                            <p class="text-muted small">Kelola data cabang, profil bisnis, dan pengaturan operasional setiap outlet secara terpusat.</p>
+                            <p class="text-muted small">Hubungkan dan kelola stok produk Anda di berbagai marketplace secara otomatis.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm">
+                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('stock')" style="cursor: pointer;">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="bg-success-subtle p-3 rounded-4"><i class="bi bi-box-seam text-success fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Stok Produk</h6>
+                                <div class="bg-success-subtle p-3 rounded-4"><i class="bi bi-archive-fill text-success fs-4"></i></div>
+                                <h6 class="fw-bold mb-0">Stok Real-time</h6>
                             </div>
                             <p class="text-muted small">Pantau ketersediaan barang secara real-time antar gudang dan update stok secara instan.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-4 h-100 border-0 shadow-sm">
+                        <div class="card p-4 h-100 border-0 shadow-sm" onclick="showView('users')" style="cursor: pointer;">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="bg-info-subtle p-3 rounded-4"><i class="bi bi-people text-info fs-4"></i></div>
-                                <h6 class="fw-bold mb-0">Tim & Kasir</h6>
+                                <div class="bg-info-subtle p-3 rounded-4"><i class="bi bi-shield-lock-fill text-info fs-4"></i></div>
+                                <h6 class="fw-bold mb-0">Akun & Role RBAC</h6>
                             </div>
                             <p class="text-muted small">Atur hak akses staf menggunakan sistem RBAC (Role-Based Access Control) yang sangat fleksibel.</p>
                         </div>
@@ -525,37 +525,40 @@
                     </div>
                     <div class="row g-4 mb-4">
                         <div class="col-md-4">
-                            <div class="card p-3 border-0 shadow-sm bg-primary text-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><small class="fw-bold opacity-75">TOTAL SKU</small><h2 class="fw-bold mb-0">1,450</h2></div>
-                                    <i class="bi bi-box-seam fs-1 opacity-25"></i>
+                            <div class="card p-4 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary-subtle p-3 rounded-4"><i class="bi bi-box-seam text-primary fs-4"></i></div>
+                                    <div><small class="text-muted fw-bold">TOTAL SKU</small><h4 class="fw-bold mb-0 text-primary">1,450</h4></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card p-3 border-0 shadow-sm bg-warning text-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><small class="fw-bold opacity-75">LOW STOCK</small><h2 class="fw-bold mb-0">12</h2></div>
-                                    <i class="bi bi-exclamation-triangle fs-1 opacity-25"></i>
+                            <div class="card p-4 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-warning-subtle p-3 rounded-4"><i class="bi bi-exclamation-triangle text-warning fs-4"></i></div>
+                                    <div><small class="text-muted fw-bold">LOW STOCK</small><h4 class="fw-bold mb-0 text-warning">12</h4></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card p-3 border-0 shadow-sm bg-danger text-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><small class="fw-bold opacity-75">OUT OF STOCK</small><h2 class="fw-bold mb-0">3</h2></div>
-                                    <i class="bi bi-x-octagon fs-1 opacity-25"></i>
+                            <div class="card p-4 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-danger-subtle p-3 rounded-4"><i class="bi bi-x-octagon text-danger fs-4"></i></div>
+                                    <div><small class="text-muted fw-bold">OUT OF STOCK</small><h4 class="fw-bold mb-0 text-danger">3</h4></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card border-0 shadow-sm">
-                        <div class="p-3 border-bottom d-flex gap-2">
-                            <input type="text" class="form-control border-0 bg-light rounded-pill px-4" placeholder="Cari item atau SKU..." style="max-width: 300px;">
+                        <div class="p-4 border-bottom d-flex gap-2 align-items-center">
+                            <div class="input-group bg-light rounded-pill px-2 border-0" style="max-width: 300px;">
+                                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" class="form-control bg-transparent border-0" placeholder="Cari item atau SKU...">
+                            </div>
                             <select class="form-select border-0 bg-light rounded-pill px-4" style="max-width: 200px;"><option>Semua Gudang</option></select>
                         </div>
                         <div class="table-responsive">
-                            <table class="table align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-4">Produk</th>
@@ -567,21 +570,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr class="border-bottom">
                                         <td class="ps-4 fw-bold">Samsung S23 Ultra</td>
                                         <td>Gudang Pusat</td>
                                         <td>100</td>
                                         <td class="text-primary fw-bold">85</td>
                                         <td>15</td>
-                                        <td><span class="badge bg-success rounded-pill px-3">Stable</span></td>
+                                        <td><span class="badge bg-success-subtle text-success border border-success rounded-pill px-3">Stable</span></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="border-bottom">
                                         <td class="ps-4 fw-bold">Logitech MX Master</td>
                                         <td>Outlet JKT</td>
                                         <td>5</td>
                                         <td class="text-danger fw-bold">3</td>
                                         <td>2</td>
-                                        <td><span class="badge bg-warning text-dark rounded-pill px-3">Low</span></td>
+                                        <td><span class="badge bg-warning-subtle text-warning border border-warning rounded-pill px-3">Low Stock</span></td>
                                     </tr>
                                 </tbody>
                             </table>
