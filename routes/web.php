@@ -130,3 +130,20 @@ Route::middleware(['auth'])->group(function () {
 
 // ── CRON / API (Exempt from CSRF) ──────────────────────────────────
 Route::post('/api/cron/stock-check', [\App\Http\Controllers\InventoryController::class, 'checkStock']);
+
+Route::get('/debug-login', function() {
+    $dbPath = config('database.connections.sqlite.database');
+    $user = \App\Models\User::where('email', 'admin@easy-pos.id')->first();
+    if (!$user) {
+        return "User not found. DB path is: " . $dbPath . ". " . (file_exists($dbPath) ? "File exists" : "File missing");
+    }
+    
+    $hashMatch = \Illuminate\Support\Facades\Hash::check('password', $user->password);
+    
+    return [
+        'db_path' => $dbPath,
+        'user_found' => true,
+        'hash_match' => $hashMatch,
+        'user' => $user->toArray()
+    ];
+});
