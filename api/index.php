@@ -1,32 +1,36 @@
 <?php
 
-// ── Vercel Laravel 13 Ultra-Bootloader ──
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
 
 $root = __DIR__ . '/..';
-require $root . '/vendor/autoload.php';
 
-// Create storage structure in /tmp immediately
+// 1. Setup Vercel Writable Storage
 $tmp = '/tmp/storage';
 foreach (['/framework/views', '/framework/sessions', '/framework/cache', '/logs'] as $d) {
     if (!is_dir($tmp . $d)) @mkdir($tmp . $d, 0755, true);
 }
 
-// Boot the application
+// 2. Register Autoloader
+require $root . '/vendor/autoload.php';
+
+// 3. Bootstrap Laravel
 $app = require_once $root . '/bootstrap/app.php';
 
-// Force overrides
+// 4. Path Overrides
 $app->useStoragePath($tmp);
 
-try {
-    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-    $response = $kernel->handle($request = Illuminate\Http\Request::capture());
-    $response->send();
-    $kernel->terminate($request, $response);
-} catch (\Throwable $e) {
-    echo "<h1>Critical failure during request handling</h1>";
-    echo "<p><strong>Error:</strong> " . $e->getMessage() . "</p>";
-    echo "<p><strong>File:</strong> " . $e->getFile() . ":" . $e->getLine() . "</p>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+// 5. Database Handling (SQLite)
+$srcDb = $root . '/database/database.sqlite';
+$tmpDb = '/tmp/database.sqlite';
+if (!file_exists($tmpDb) && file_exists($srcDb)) {
+    @copy($srcDb, $tmpDb);
 }
+if (file_exists($tmpDb)) {
+    putenv("DB_DATABASE=$tmpDb");
+    $_ENV['DB_DATABASE'] = $tmpDb;
+}
+
+// 6. Handle Request (Modern Laravel 11/13 Way)
+$app->handleRequest(Request::capture());
