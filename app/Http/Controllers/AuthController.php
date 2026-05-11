@@ -9,6 +9,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        // Langsung buang ke dashboard kalau sudah login
         if (Auth::check()) return redirect()->route('dashboard');
         return view('auth.login');
     }
@@ -20,7 +21,8 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // "Remember me" dimatikan dulu buat demo biar session nggak ribet di Vercel
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
 
@@ -29,15 +31,16 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Akun tidak aktif. Hubungi Admin.']);
             }
 
-            // Use role column directly — avoids extra DB query to model_has_roles
+            // Langsung arahkan berdasarkan role tanpa tambahan query berat
             $role = $user->role;
-            if ($role === 'manager' || $role === 'supervisor') {
+            if (in_array($role, ['manager', 'supervisor'])) {
                 return redirect()->route('reports.index');
             }
-            if ($role === 'cashier' || $role === 'operator') {
+            
+            if (in_array($role, ['cashier', 'operator'])) {
                 return redirect()->route('pos.index');
             }
-            // super_admin, admin, or anything else → dashboard
+            
             return redirect()->route('dashboard');
         }
 

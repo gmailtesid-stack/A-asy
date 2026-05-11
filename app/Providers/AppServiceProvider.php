@@ -56,23 +56,30 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Outlet::class,      OutletPolicy::class);
         Gate::policy(User::class,        UserPolicy::class);
 
-        // ── VERCEL STORAGE BOOTSTRAP ─────────────────────────────────────
+        // ── VERCEL STORAGE BOOTSTRAP (SHELBY EMERGENCY FIX) ────────────────
         if (env('VERCEL')) {
+            $storagePath = '/tmp/storage/framework';
             $storagePaths = [
-                '/tmp/storage/framework/views',
-                '/tmp/storage/framework/sessions',
-                '/tmp/storage/framework/cache',
+                $storagePath . '/views',
+                $storagePath . '/sessions',
+                $storagePath . '/cache',
             ];
+
             foreach ($storagePaths as $path) {
                 if (!is_dir($path)) {
                     @mkdir($path, 0755, true);
                 }
             }
+
+            // Paksa Laravel menggunakan jalur /tmp untuk compiled views, sessions, dan cache
+            config([
+                'view.compiled' => $storagePath . '/views',
+                'session.files' => $storagePath . '/sessions',
+                'cache.stores.file.path' => $storagePath . '/cache',
+            ]);
         }
 
-        // ── RELATIONS & OBSERVERS ────────────────────────────────────────
-
-        // ── ERP Event Listeners ─────────────────────────────────────
+        // ── ERP Event Listeners ───────────────────────────────────────────
         Event::listen(
             TransactionCreated::class,
             ProcessInventoryReduction::class,
@@ -93,15 +100,5 @@ class AppServiceProvider extends ServiceProvider
             InventoryMoved::class,
             ProcessAccountingForInventory::class,
         );
-
-        // Share low stock count to app layout only (Performance Optimization)
-        /*
-        \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
-            if (auth()->check()) {
-                // HARDCODE FOR DEMO PERFORMANCE
-                $view->with('globalLowStockCount', 5);
-            }
-        });
-        */
     }
 }
