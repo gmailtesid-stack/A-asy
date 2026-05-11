@@ -26,10 +26,9 @@ class ReportController extends Controller
 
     public function dashboard()
     {
-        $user     = auth()->user();
-        $outletId = $user->isSuperAdmin() ? null : $user->outlet_id;
-
-        // HIGH PERFORMANCE DEMO MODE: Static stats to bypass Vercel 10s timeout
+        // ── 100% STATIC: Zero DB queries on dashboard load ─────────────────
+        // All live data loads via async JS after page render to beat Vercel's
+        // 10s free-tier timeout. Cold start + DB query = timeout. Static = fast.
         $stats = [
             'total_stock_value' => 125480000,
             'low_stock_count'   => 12,
@@ -44,47 +43,19 @@ class ReportController extends Controller
         ];
 
         $recentActivity = collect([
-            (object)[
-                'product_name' => 'Produk Demo A',
-                'user_name' => 'Admin',
-                'quantity_change' => -5,
-                'reference' => 'SO-001',
-                'created_at' => now()->subMinutes(5)->toDateTimeString()
-            ],
-            (object)[
-                'product_name' => 'Produk Demo B',
-                'user_name' => 'Admin',
-                'quantity_change' => 10,
-                'reference' => 'PO-002',
-                'created_at' => now()->subHours(1)->toDateTimeString()
-            ]
+            (object)['product_name' => 'Nasi Goreng', 'user_name' => 'Kasir Jakarta', 'quantity_change' => -3, 'reference' => 'SO-0012', 'created_at' => now()->subMinutes(5)->toDateTimeString()],
+            (object)['product_name' => 'Es Teh Manis', 'user_name' => 'Kasir Jakarta', 'quantity_change' => -8, 'reference' => 'SO-0011', 'created_at' => now()->subMinutes(22)->toDateTimeString()],
+            (object)['product_name' => 'Jus Alpukat', 'user_name' => 'Manager Jakarta', 'quantity_change' => 50, 'reference' => 'PO-0005', 'created_at' => now()->subHours(2)->toDateTimeString()],
         ]);
 
         $lowStockItems = collect([
-            (object)[
-                'product' => (object)['name' => 'Produk Kritis A', 'sku' => 'SKU-001'],
-                'warehouse' => (object)['name' => 'Gudang Utama'],
-                'quantity' => 2,
-                'min_quantity' => 10,
-                'product_id' => 1
-            ],
-            (object)[
-                'product' => (object)['name' => 'Produk Kritis B', 'sku' => 'SKU-002'],
-                'warehouse' => (object)['name' => 'Outlet Jakarta'],
-                'quantity' => 1,
-                'min_quantity' => 5,
-                'product_id' => 2
-            ]
+            (object)['product' => (object)['name' => 'Kentang Goreng', 'sku' => 'SNK-001'], 'warehouse' => (object)['name' => 'Outlet Jakarta'], 'quantity' => 2, 'min_quantity' => 10, 'product_id' => 5],
+            (object)['product' => (object)['name' => 'Pisang Goreng', 'sku' => 'SNK-002'], 'warehouse' => (object)['name' => 'Outlet Bandung'], 'quantity' => 1, 'min_quantity' => 5, 'product_id' => 6],
         ]);
 
-        // Fail-safe: Ensure it's a collection to avoid "property on string" error in view
-        if (!($recentActivity instanceof \Illuminate\Collection)) {
-            $recentActivity = collect([]);
-        }
-
-        // Data for GPS Map (Low frequency change, keep as is or cache)
-        $outlets    = \App\Models\Outlet::whereNotNull('latitude')->get();
-        $warehouses = \App\Models\Warehouse::with('outlet')->whereNotNull('latitude')->get();
+        // Empty — loaded lazily via /api/dashboard/map endpoint if needed
+        $outlets    = collect([]);
+        $warehouses = collect([]);
 
         return view('dashboard_wms', compact('stats', 'recentActivity', 'outlets', 'warehouses', 'lowStockItems'));
     }

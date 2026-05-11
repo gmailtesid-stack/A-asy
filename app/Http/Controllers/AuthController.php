@@ -23,19 +23,21 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             $user = Auth::user();
+
             if (! $user->is_active) {
                 Auth::logout();
                 return back()->withErrors(['email' => 'Akun tidak aktif. Hubungi Admin.']);
             }
-            if ($user->isSuperAdmin()) {
-                return redirect()->route('dashboard');
-            }
-            if ($user->isSupervisor()) {
+
+            // Use role column directly — avoids extra DB query to model_has_roles
+            $role = $user->role;
+            if ($role === 'manager' || $role === 'supervisor') {
                 return redirect()->route('reports.index');
             }
-            if ($user->isOperator()) {
+            if ($role === 'cashier' || $role === 'operator') {
                 return redirect()->route('pos.index');
             }
+            // super_admin, admin, or anything else → dashboard
             return redirect()->route('dashboard');
         }
 

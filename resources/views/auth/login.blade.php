@@ -254,6 +254,32 @@
             this.classList.toggle('bi-eye');
             this.classList.toggle('bi-eye-slash');
         });
+
+        // Auto-fill demo credentials on click
+        document.querySelectorAll('.demo-item').forEach(function(item) {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function() {
+                const text = item.querySelector('span').textContent;
+                const parts = text.split(' / ');
+                if (parts.length === 2) {
+                    document.querySelector('input[name="email"]').value = parts[0].trim();
+                    document.querySelector('#passwordInput').value = parts[1].trim();
+                }
+            });
+        });
+
+        // CSRF auto-refresh every 25 minutes to prevent 419 on idle pages
+        setInterval(function() {
+            fetch('/login', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => {
+                    const m = html.match(/name="_token" value="([^"]+)"/);
+                    if (m) {
+                        document.querySelector('input[name="_token"]').value = m[1];
+                    }
+                })
+                .catch(() => {}); // silent fail
+        }, 25 * 60 * 1000);
     </script>
 </body>
 </html>

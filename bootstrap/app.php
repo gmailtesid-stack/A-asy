@@ -34,6 +34,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Handle 419 CSRF Token Mismatch gracefully
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Sesi Anda telah berakhir. Silakan login kembali.']);
+        });
     })
     ->create();
