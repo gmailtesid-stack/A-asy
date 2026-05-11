@@ -89,65 +89,40 @@
 
         .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(37,99,235,.5); }
 
-        /* ── Sidebar Styles ──────────────────────────────── */
+        /* ── Main Layout ───────────────────────────── */
+        #main-app {
+            display: none; /* Shown after login */
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
         #sidebar {
             width: var(--sidebar-w);
+            min-width: var(--sidebar-w);
             height: 100vh;
             background: #0f172a;
-            position: fixed;
-            top: 0; left: 0;
+            position: sticky;
+            top: 0;
             display: flex;
             flex-direction: column;
             z-index: 1000;
             border-right: 1px solid rgba(255,255,255,0.05);
             overflow-y: auto;
+            transition: transform .3s ease-in-out;
         }
 
-        .nav-section-label {
-            color: #475569;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            padding: 1.5rem 2rem 0.75rem;
-        }
-
-        .sidebar-nav a {
+        main {
+            flex: 1;
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.85rem 1.75rem;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: .9rem;
-            font-weight: 600;
-            border-radius: 12px;
-            margin: 4px 16px;
-            transition: all .3s;
-            border-left: 3px solid transparent;
-            cursor: pointer;
-        }
-
-        .sidebar-nav a:hover {
-            background: rgba(255,255,255,.03);
-            color: #f8fafc;
-            transform: translateX(5px);
-        }
-
-        .sidebar-nav a.active {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 100%);
-            color: #fff;
-            border-left: 3px solid var(--primary);
-        }
-
-        .sidebar-nav a i { font-size: 1.25rem; color: #475569; }
-        .sidebar-nav a.active i { color: var(--primary); }
-
-        /* ── Main Content Area ───────────────────────────── */
-        #main-app {
-            margin-left: var(--sidebar-w);
-            min-height: 100vh;
-            display: none; /* Hidden by default */
+            flex-direction: column;
+            min-width: 0; /* Prevent flex blowout */
+            background: var(--bg-main);
         }
 
         #topbar {
@@ -160,9 +135,14 @@
             padding: 0 2.5rem;
             position: sticky;
             top: 0; z-index: 900;
+            width: 100%;
         }
 
-        .page-content { padding: 2.5rem; }
+        .page-content { 
+            padding: 2.5rem; 
+            flex: 1;
+            width: 100%;
+        }
 
         .card { 
             border: none;
@@ -182,13 +162,11 @@
         /* ── Responsive ──────────────────────────────────── */
         @media (max-width: 991.98px) {
             #sidebar { 
+                position: fixed;
                 transform: translateX(-100%); 
-                transition: transform .3s ease-in-out;
             }
-            #sidebar.show {
-                transform: translateX(0);
-            }
-            #main-app { margin-left: 0 !important; }
+            #sidebar.show { transform: translateX(0); }
+            .app-container { display: block; }
             #topbar { padding: 0 1rem; }
             .page-content { padding: 1.25rem; }
             
@@ -233,48 +211,49 @@
 
     <!-- 2. APP SECTION -->
     <div id="main-app">
-        <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="p-4 text-center">
-                <img src="/images/logo.png" alt="Logo" style="width: 140px;">
-                <small class="d-block text-muted mt-2">Demo Mode: Pusat Distribusi</small>
-            </div>
-
-            <div class="sidebar-nav">
-                <p class="nav-section-label">Dashboard</p>
-                <a onclick="showView('dashboard')" data-view="dashboard" class="active"><i class="bi bi-speedometer2"></i> Control Tower</a>
-
-                <p class="nav-section-label">OMS (Order Management)</p>
-                <a onclick="showView('products')" data-view="products"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
-                <a onclick="showView('channels')" data-view="channels"><i class="bi bi-intersect"></i> Marketplace Channels</a>
-
-                <p class="nav-section-label">WMS (Warehouse Management)</p>
-                <a onclick="showView('inbound')" data-view="inbound"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
-                <a onclick="showView('outbound')" data-view="outbound"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
-                <a onclick="showView('stock')" data-view="stock"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
-                <a onclick="showView('transfer')" data-view="transfer"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
-
-                <p class="nav-section-label">Retail & Offline</p>
-                <a onclick="showView('pos')" data-view="pos"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
-
-                <p class="nav-section-label">Analytics</p>
-                <a onclick="showView('analytics')" data-view="analytics"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
-                
-                <p class="nav-section-label">System</p>
-                <a onclick="showView('users')" data-view="users"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
-            </div>
-
-            <div class="mt-auto p-4 border-top border-secondary">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">A</div>
-                    <span class="text-white small fw-bold">Admin Demo</span>
+        <div class="app-container">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="p-4 text-center">
+                    <img src="/images/logo.png" alt="Logo" style="width: 140px;">
+                    <small class="d-block text-muted mt-2">Demo Mode: Pusat Distribusi</small>
                 </div>
-                <button class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="location.reload()">Logout Demo</button>
-            </div>
-        </nav>
 
-        <!-- Main Content -->
-        <main style="min-height: 100vh; display: flex; flex-direction: column;">
+                <div class="sidebar-nav">
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Dashboard</p>
+                    <a onclick="showView('dashboard')" data-view="dashboard" class="active" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-speedometer2"></i> Control Tower</a>
+
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">OMS (Order Management)</p>
+                    <a onclick="showView('products')" data-view="products" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
+                    <a onclick="showView('channels')" data-view="channels" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-intersect"></i> Marketplace Channels</a>
+
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">WMS (Warehouse Management)</p>
+                    <a onclick="showView('inbound')" data-view="inbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
+                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
+                    <a onclick="showView('stock')" data-view="stock" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
+                    <a onclick="showView('transfer')" data-view="transfer" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
+
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Retail & Offline</p>
+                    <a onclick="showView('pos')" data-view="pos" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
+
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">Analytics</p>
+                    <a onclick="showView('analytics')" data-view="analytics" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
+                    
+                    <p class="nav-section-label" style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem;">System</p>
+                    <a onclick="showView('users')" data-view="users" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
+                </div>
+
+                <div class="mt-auto p-4 border-top border-secondary">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">A</div>
+                        <span class="text-white small fw-bold">Admin Demo</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="location.reload()">Logout Demo</button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main>
             <div id="topbar">
                 <button class="btn btn-white border d-lg-none me-3" onclick="toggleSidebar()" style="width:40px; height:40px;">
                     <i class="bi bi-list text-primary fs-4"></i>
@@ -295,7 +274,8 @@
             <div class="page-content" id="content-area">
                 <!-- Content will be injected here -->
             </div>
-        </main>
+            </main>
+        </div>
     </div>
 
     <script>
