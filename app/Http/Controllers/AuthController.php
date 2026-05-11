@@ -39,16 +39,8 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        // --- DEBUG START ---
-        $user = \App\Models\User::where('email', $credentials['email'])->first();
-        $debugInfo = "Login Failed. Email: {$credentials['email']}. User exists: " . ($user ? 'Yes' : 'No');
-        if ($user) {
-            $debugInfo .= ". Hash match: " . (\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password) ? 'Yes' : 'No');
-        }
-        // --- DEBUG END ---
-
         return back()->withErrors([
-            'email' => $debugInfo, // Show debug info instead of default error
+            'email' => 'Email atau password salah.',
         ])->onlyInput('email');
     }
 
