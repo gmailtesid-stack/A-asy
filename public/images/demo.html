@@ -181,8 +181,25 @@
 
         /* ── Responsive ──────────────────────────────────── */
         @media (max-width: 991.98px) {
-            #sidebar { transform: translateX(-100%); }
-            #main-app { margin-left: 0; }
+            #sidebar { 
+                transform: translateX(-100%); 
+                transition: transform .3s ease-in-out;
+            }
+            #sidebar.show {
+                transform: translateX(0);
+            }
+            #main-app { margin-left: 0 !important; }
+            #topbar { padding: 0 1rem; }
+            .page-content { padding: 1.25rem; }
+            
+            #sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            #sidebar-overlay.show { display: block; }
         }
     </style>
 </head>
@@ -259,7 +276,10 @@
         <!-- Main Content -->
         <main style="min-height: 100vh; display: flex; flex-direction: column;">
             <div id="topbar">
-                <div class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> Home / <span id="breadcrumb-active">Control Tower</span></div>
+                <button class="btn btn-white border d-lg-none me-3" onclick="toggleSidebar()" style="width:40px; height:40px;">
+                    <i class="bi bi-list text-primary fs-4"></i>
+                </button>
+                <div class="fw-bold text-primary small-mobile-text"><i class="bi bi-house-door me-2"></i> <span id="breadcrumb-active">Control Tower</span></div>
                 <div class="ms-auto d-flex align-items-center gap-3">
                     <div id="clock" class="text-end d-none d-md-block">
                         <div class="fw-bold text-primary" id="time">00:00:00</div>
@@ -269,6 +289,8 @@
                     <button onclick="toggleTheme()" class="btn btn-white border rounded-circle" style="width:40px; height:40px;"><i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i></button>
                 </div>
             </div>
+            
+            <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
             <div class="page-content" id="content-area">
                 <!-- Content will be injected here -->
@@ -820,6 +842,25 @@
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
             const activeNav = document.querySelector(`.sidebar-nav a[data-view="${viewName}"]`);
             if (activeNav) activeNav.classList.add('active');
+
+            // Close sidebar on mobile after clicking
+            if (window.innerWidth < 992) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                }
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
         }
 
         function toggleTheme() {
