@@ -139,11 +139,13 @@ Route::get('/debug-login', function() {
     }
     
     $hashMatch = \Illuminate\Support\Facades\Hash::check('password', $user->password);
+    $attempt = \Illuminate\Support\Facades\Auth::attempt(['email' => 'admin@easy-pos.id', 'password' => 'password']);
     
     return [
         'db_path' => $dbPath,
         'user_found' => true,
         'hash_match' => $hashMatch,
+        'auth_attempt' => $attempt,
         'user' => $user->toArray()
     ];
 });
