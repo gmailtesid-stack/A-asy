@@ -4,14 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// Tambahkan ini agar folder view compilation otomatis pindah ke /tmp
-if (isset($_SERVER['VERCEL'])) {
-    $viewPath = '/tmp/storage/framework/views';
-    if (!is_dir($viewPath)) {
-        @mkdir($viewPath, 0755, true);
-    }
-    config(['view.compiled' => $viewPath]);
-}
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
