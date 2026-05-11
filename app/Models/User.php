@@ -50,6 +50,11 @@ class User extends Authenticatable
 
     public function hasPermission($permissionSlug): bool
     {
+        // VIP Path for Super Admin: Zero DB queries for permissions
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
         return $this->getLoadedRoles()->flatMap(function ($role) {
             return $role->permissions;
         })->contains('slug', $permissionSlug);
@@ -57,7 +62,8 @@ class User extends Authenticatable
 
     public function isSuperAdmin(): bool
     {
-        return $this->hasRole('admin');
+        // Fast check using column first, then fallback to relationship
+        return ($this->role === 'super_admin' || $this->role === 'admin') || $this->hasRole('admin');
     }
 
     public function isSupervisor(): bool

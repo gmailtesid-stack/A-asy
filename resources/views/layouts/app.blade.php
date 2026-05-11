@@ -468,11 +468,9 @@
             <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
             <div class="flex-grow-1 overflow-hidden">
                 <div class="text-white fw-bold text-truncate" style="font-size:.85rem;">{{ auth()->user()->name }}</div>
-                @foreach(auth()->user()->roles as $role)
-                <span class="role-badge role-{{ $role->slug }}">
-                    {{ $role->name }}
+                <span class="role-badge role-{{ auth()->user()->role }}">
+                    {{ ucwords(str_replace('_', ' ', auth()->user()->role)) }}
                 </span>
-                @endforeach
             </div>
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mt-3">
