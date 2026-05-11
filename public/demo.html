@@ -283,12 +283,16 @@
 
                     <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">OMS & WMS</p>
                     <a onclick="showView('products')" data-view="products" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-seam-fill"></i> Katalog SKU</a>
+                    <a onclick="showView('channels')" data-view="channels" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-shop"></i> Marketplace Channels</a>
+                    <a onclick="showView('inbound')" data-view="inbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-in-down"></i> Inbound (Receiving)</a>
+                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
                     <a onclick="showView('stock')" data-view="stock" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
-                    <a onclick="showView('outbound')" data-view="outbound" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-box-arrow-up-right"></i> Pick & Pack</a>
+                    <a onclick="showView('transfer')" data-view="transfer" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
                     
-                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Retail</p>
+                    <p style="color: #475569; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; padding: 1.5rem 2rem 0.75rem; margin-bottom:0;">Retail & Admin</p>
                     <a onclick="showView('pos')" data-view="pos" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-pc-display-horizontal"></i> Terminal Kasir</a>
                     <a onclick="showView('analytics')" data-view="analytics" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-graph-up-arrow"></i> Advanced Analytics</a>
+                    <a onclick="showView('users')" data-view="users" style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.75rem; color: #94a3b8; text-decoration: none; font-size: .9rem; font-weight: 600; border-radius: 12px; margin: 4px 16px; transition: all .3s; cursor: pointer;"><i class="bi bi-people-fill"></i> Akun & Role RBAC</a>
                 </div>
 
                 <div class="mt-auto p-4 border-top border-secondary">
@@ -534,6 +538,57 @@
                         </div>
                     </div>
                 </div>
+            `,
+            channels: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Marketplace Channels</h4>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card p-4 text-center border-0 shadow-sm bg-subtle">
+                                <i class="bi bi-bag-check-fill fs-1 text-danger mb-3"></i>
+                                <h6 class="fw-bold mb-1">Shopee</h6>
+                                <span class="badge badge-subtle-success">TERHUBUNG</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-4 text-center border-0 shadow-sm bg-subtle">
+                                <i class="bi bi-cart-fill fs-1 text-success mb-3"></i>
+                                <h6 class="fw-bold mb-1">Tokopedia</h6>
+                                <span class="badge badge-subtle-success">TERHUBUNG</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            inbound: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Inbound (Receiving)</h4>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm p-5 text-center bg-subtle rounded-5 opacity-25">
+                        <i class="bi bi-box-arrow-in-down fs-1 text-muted-custom mb-3"></i>
+                        <h6 class="fw-bold text-muted-custom">Belum ada penerimaan stok baru hari ini.</h6>
+                    </div>
+                </div>
+            `,
+            transfer: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="card border-0 mb-4 overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);">
+                        <div class="card-body p-4 text-white">
+                            <h4 class="fw-bold mb-0 text-white">Stock Transfer</h4>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm p-5 text-center bg-subtle rounded-5 opacity-25">
+                        <i class="bi bi-arrow-left-right fs-1 text-muted-custom mb-3"></i>
+                        <h6 class="fw-bold text-muted-custom">Tidak ada permintaan transfer antar cabang.</h6>
+                    </div>
+                </div>
             `
         };
 
@@ -554,9 +609,14 @@
             const breadcrumbs = {
                 dashboard: 'Control Tower',
                 products: 'Master Katalog (SKU)',
+                channels: 'Marketplace Channels',
+                inbound: 'Inbound (Receiving)',
+                outbound: 'Outbound (Pick & Pack)',
                 stock: 'Stok Real-time',
+                transfer: 'Stock Transfer',
                 pos: 'Terminal Kasir',
-                analytics: 'Advanced Analytics'
+                analytics: 'Advanced Analytics',
+                users: 'Akun & Role RBAC'
             };
             document.getElementById('breadcrumb-active').innerText = breadcrumbs[viewName] || viewName;
             
