@@ -7,6 +7,7 @@ $tmpDirs = [
     '/tmp/storage/framework/sessions',
     '/tmp/storage/logs',
     '/tmp/bootstrap/cache',
+    '/tmp/database',
 ];
 foreach ($tmpDirs as $dir) {
     if (!is_dir($dir)) {
@@ -14,13 +15,21 @@ foreach ($tmpDirs as $dir) {
     }
 }
 
-// ─── Fix SQLite path dynamically (avoid hardcoded /var/task) ─────────────────
-$projectRoot = dirname(__DIR__);
-$sqlitePath  = $projectRoot . '/database/database.sqlite';
-if (file_exists($sqlitePath)) {
-    putenv('DB_DATABASE=' . $sqlitePath);
-    $_ENV['DB_DATABASE']    = $sqlitePath;
-    $_SERVER['DB_DATABASE'] = $sqlitePath;
+// ─── SQLite: Copy DB to /tmp (writable) on cold start ────────────────────────
+// Vercel project filesystem is read-only; SQLite needs write access for WAL/journal.
+$projectRoot   = dirname(__DIR__);
+$srcDb         = $projectRoot . '/database/database.sqlite';
+$tmpDb         = '/tmp/database/database.sqlite';
+
+if (!file_exists($tmpDb) && file_exists($srcDb)) {
+    copy($srcDb, $tmpDb);
+}
+
+// Override DB path to the writable /tmp copy
+if (file_exists($tmpDb)) {
+    putenv('DB_DATABASE=' . $tmpDb);
+    $_ENV['DB_DATABASE']    = $tmpDb;
+    $_SERVER['DB_DATABASE'] = $tmpDb;
 }
 
 require __DIR__ . '/../vendor/autoload.php';
