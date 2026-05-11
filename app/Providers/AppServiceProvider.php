@@ -56,30 +56,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Outlet::class,      OutletPolicy::class);
         Gate::policy(User::class,        UserPolicy::class);
 
-        // ── VERCEL STORAGE BOOTSTRAP (SHELBY EMERGENCY FIX) ────────────────
-        if (env('VERCEL')) {
-            $storagePath = '/tmp/storage/framework';
-            $storagePaths = [
-                $storagePath . '/views',
-                $storagePath . '/sessions',
-                $storagePath . '/cache',
-            ];
 
-            foreach ($storagePaths as $path) {
-                if (!is_dir($path)) {
-                    @mkdir($path, 0755, true);
-                }
-            }
-
-            // Paksa Laravel menggunakan jalur /tmp untuk compiled views, sessions, dan cache
-            config([
-                'view.compiled' => $storagePath . '/views',
-                'session.files' => $storagePath . '/sessions',
-                'cache.stores.file.path' => $storagePath . '/cache',
-            ]);
-        }
-
-        // ── ERP Event Listeners ───────────────────────────────────────────
+        // Listeners for ERP events
         Event::listen(
             TransactionCreated::class,
             ProcessInventoryReduction::class,
