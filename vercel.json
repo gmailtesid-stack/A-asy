@@ -55,11 +55,11 @@
         },
         {
             "src": "/demo.html",
-            "dest": "/public/demo.html"
+            "dest": "/public/images/demo.html"
         },
         {
             "src": "/demo",
-            "dest": "/public/demo.html"
+            "dest": "/public/images/demo.html"
         },
         {
             "src": "/(.*)",
