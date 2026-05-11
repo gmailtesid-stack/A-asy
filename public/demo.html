@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Mode — E-ASY POS</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    
+    <!-- Fonts & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary:    #6366f1;
+            --primary-dk: #4f46e5;
+            --secondary:  #64748b;
+            --sidebar-w:  280px;
+            --sidebar-bg: #0f172a;
+            --topbar-h:   72px;
+            --accent:     #818cf8;
+            --glass:      rgba(255, 255, 255, 0.75);
+            --bg-main:    #f8fafc;
+            --card-bg:    #ffffff;
+            --text-main:  #1e293b;
+            --text-muted: #64748b;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 8px 15px -6px rgba(0, 0, 0, 0.04);
+            --border-color: rgba(226, 232, 240, 0.5);
+        }
+
+        [data-theme='dark'] {
+            --bg-main:    #0a0a0a;
+            --card-bg:    #0f172a;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --glass:      rgba(15, 23, 42, 0.8);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --card-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            --input-bg:   #1e293b;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0;
+            transition: background .3s, color .3s;
+            overflow-x: hidden;
+        }
+
+        /* ── Login Styles ────────────────────────────────── */
+        #login-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: .85rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(37,99,235,.4);
+            transition: all .2s;
+        }
+
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(37,99,235,.5); }
+
+        /* ── Sidebar Styles ──────────────────────────────── */
+        #sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: #0f172a;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            overflow-y: auto;
+        }
+
+        .nav-section-label {
+            color: #475569;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 1.5rem 2rem 0.75rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 600;
+            border-radius: 12px;
+            margin: 4px 16px;
+            transition: all .3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255,255,255,.03);
+            color: #f8fafc;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a.active {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 100%);
+            color: #fff;
+            border-left: 3px solid var(--primary);
+        }
+
+        .sidebar-nav a i { font-size: 1.25rem; color: #475569; }
+        .sidebar-nav a.active i { color: var(--primary); }
+
+        /* ── Main Content Area ───────────────────────────── */
+        #main-app {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: none; /* Hidden by default */
+        }
+
+        #topbar {
+            height: var(--topbar-h);
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 2.5rem;
+            position: sticky;
+            top: 0; z-index: 900;
+        }
+
+        .page-content { padding: 2.5rem; }
+
+        .card { 
+            border: none;
+            border-radius: 24px; 
+            box-shadow: var(--card-shadow);
+            background: var(--card-bg);
+            transition: transform .4s, box-shadow .4s;
+        }
+        .card:hover { transform: translateY(-8px); }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%);
+            color: #fff; border: none; padding: 0.8rem 1.5rem; border-radius: 14px; font-weight: 700;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 991.98px) {
+            #sidebar { transform: translateX(-100%); }
+            #main-app { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. LOGIN SECTION -->
+    <div id="login-section">
+        <div class="login-card animate__animated animate__zoomIn">
+            <div class="text-center mb-4">
+                <img src="/images/logo.png" alt="Logo" style="width: 180px; margin-bottom: 1rem;">
+                <h5 class="text-white fw-bold">E-ASY POS Demo</h5>
+                <p class="text-white-50 small">Mode Presentasi — Tanpa Koneksi TiDB</p>
+            </div>
+            
+            <div class="mb-3">
+                <label class="text-white-50 small fw-bold text-uppercase">Email</label>
+                <input type="text" class="form-control bg-dark border-secondary text-white" value="admin@easy-pos.id" readonly>
+            </div>
+            <div class="mb-4">
+                <label class="text-white-50 small fw-bold text-uppercase">Password</label>
+                <input type="password" class="form-control bg-dark border-secondary text-white" value="password" readonly>
+            </div>
+            
+            <button class="btn-login" onclick="loginDemo()">Masuk Demo</button>
+            
+            <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                <p class="text-info small mb-0"><i class="bi bi-info-circle me-1"></i> Ini adalah halaman demo statis untuk keperluan presentasi cepat tanpa delay cold-start.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. APP SECTION -->
+    <div id="main-app">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="p-4 text-center">
+                <img src="/images/logo.png" alt="Logo" style="width: 140px;">
+                <small class="d-block text-muted mt-2">Demo Mode: Pusat Distribusi</small>
+            </div>
+
+            <div class="sidebar-nav">
+                <p class="nav-section-label">Dashboard</p>
+                <a onclick="showView('dashboard')" id="nav-dashboard" class="active"><i class="bi bi-speedometer2"></i> Control Tower</a>
+
+                <p class="nav-section-label">OMS (Order Management)</p>
+                <a onclick="showView('products')"><i class="bi bi-box-seam-fill"></i> Master Katalog (SKU)</a>
+                <a onclick="showView('channels')"><i class="bi bi-intersect"></i> Marketplace Channels</a>
+
+                <p class="nav-section-label">WMS (Warehouse Management)</p>
+                <a onclick="showView('inbound')"><i class="bi bi-box-arrow-in-down-right"></i> Inbound (Receiving)</a>
+                <a onclick="showView('outbound')"><i class="bi bi-box-arrow-up-right"></i> Outbound (Pick & Pack)</a>
+                <a onclick="showView('stock')"><i class="bi bi-archive-fill"></i> Stok Real-time</a>
+                <a onclick="showView('transfer')"><i class="bi bi-arrow-left-right"></i> Stock Transfer</a>
+
+                <p class="nav-section-label">Retail & Offline</p>
+                <a onclick="showView('pos')"><i class="bi bi-pc-display-horizontal"></i> Kasir / POS Offline</a>
+
+                <p class="nav-section-label">Analytics</p>
+                <a onclick="showView('analytics')"><i class="bi bi-graph-up-arrow"></i> Live Advanced Analytics</a>
+                
+                <p class="nav-section-label">System</p>
+                <a onclick="showView('users')"><i class="bi bi-shield-lock-fill"></i> Akun & Role RBAC</a>
+            </div>
+
+            <div class="mt-auto p-4 border-top border-secondary">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px;">A</div>
+                    <span class="text-white small fw-bold">Admin Demo</span>
+                </div>
+                <button class="btn btn-sm btn-outline-danger w-100 mt-3" onclick="location.reload()">Logout Demo</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main style="min-height: 100vh; display: flex; flex-direction: column;">
+            <div id="topbar">
+                <div class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> Home / <span id="breadcrumb-active">Control Tower</span></div>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <div id="clock" class="text-end d-none d-md-block">
+                        <div class="fw-bold text-primary" id="time">00:00:00</div>
+                        <div class="text-muted small" id="date" style="font-size: 10px;">Monday, 11 May 2026</div>
+                    </div>
+                    <button class="btn btn-white border rounded-circle" style="width:40px; height:40px;"><i class="bi bi-bell-fill text-primary"></i></button>
+                    <button onclick="toggleTheme()" class="btn btn-white border rounded-circle" style="width:40px; height:40px;"><i class="bi bi-moon-stars-fill text-primary" id="theme-icon"></i></button>
+                </div>
+            </div>
+
+            <div class="page-content" id="content-area">
+                <!-- Content will be injected here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const views = {
+            dashboard: `
+                <div class="row g-4 animate__animated animate__fadeIn">
+                    <div class="col-12">
+                        <div class="card border-0 overflow-hidden" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                            <div class="card-body p-5 text-white position-relative">
+                                <h2 class="fw-bold mb-2">Selamat Datang di Demo E-ASY POS! 👋</h2>
+                                <p class="opacity-75 mb-4">Ini adalah tampilan simulasi aplikasi E-ASY untuk presentasi instan.</p>
+                                <div class="d-flex gap-2">
+                                    <button onclick="showView('pos')" class="btn btn-light fw-bold px-4 rounded-pill">Buka Kasir</button>
+                                    <button onclick="showView('analytics')" class="btn btn-outline-light fw-bold px-4 rounded-pill">Lihat Laporan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 text-center">
+                            <div class="mb-3 text-primary"><i class="bi bi-shop fs-1"></i></div>
+                            <h5 class="fw-bold">Manajemen Outlet</h5>
+                            <p class="text-muted small">Kelola data cabang dan pengaturan outlet dengan mudah.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 text-center">
+                            <div class="mb-3 text-success"><i class="bi bi-box-seam fs-1"></i></div>
+                            <h5 class="fw-bold">Stok Produk</h5>
+                            <p class="text-muted small">Pantau ketersediaan barang dan update stok secara instan.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 text-center">
+                            <div class="mb-3 text-info"><i class="bi bi-people fs-1"></i></div>
+                            <h5 class="fw-bold">Tim & Kasir</h5>
+                            <p class="text-muted small">Atur hak akses staf dan performa masing-masing kasir.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            products: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold">Master Katalog Produk</h4>
+                        <button class="btn btn-premium">+ Tambah Produk</button>
+                    </div>
+                    <div class="card border-0">
+                        <div class="table-responsive p-3">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Nama Produk</th>
+                                        <th>Kategori</th>
+                                        <th>Harga</th>
+                                        <th>Stok Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>P001</strong></td>
+                                        <td>Product Demo A</td>
+                                        <td>Electronics</td>
+                                        <td>Rp 1.500.000</td>
+                                        <td>150</td>
+                                        <td><span class="badge bg-success">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>P002</strong></td>
+                                        <td>Product Demo B</td>
+                                        <td>Fashion</td>
+                                        <td>Rp 250.000</td>
+                                        <td>42</td>
+                                        <td><span class="badge bg-success">Aktif</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `,
+            pos: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <div class="card p-4 h-100">
+                                <div class="input-group mb-4">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="Cari nama produk atau scan barcode...">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-4">
+                                        <div class="card p-2 text-center border-primary shadow-sm">
+                                            <div class="fw-bold small">Product A</div>
+                                            <div class="text-primary small fw-bold">Rp 150k</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="card p-2 text-center border-primary shadow-sm">
+                                            <div class="fw-bold small">Product B</div>
+                                            <div class="text-primary small fw-bold">Rp 75k</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-4 h-100 bg-light">
+                                <h5 class="fw-bold mb-4">Ringkasan Pesanan</h5>
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-cart-x fs-1"></i>
+                                    <p class="mt-2">Keranjang kosong</p>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>Rp 0</span></div>
+                                <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span>Rp 0</span></div>
+                                <button class="btn btn-primary w-100 mt-4 py-3 fw-bold" disabled>BAYAR SEKARANG</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            analytics: `
+                <div class="animate__animated animate__fadeIn">
+                    <h4 class="fw-bold mb-4">Live Advanced Analytics</h4>
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="card p-4 border-start border-primary border-4">
+                                <small class="text-muted fw-bold">SALES HARI INI</small>
+                                <h3 class="fw-bold text-primary mt-1">Rp 12.5M</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-4 border-start border-success border-4">
+                                <small class="text-muted fw-bold">ORDER SELESAI</small>
+                                <h3 class="fw-bold text-success mt-1">1.240</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card p-4">
+                                <h6 class="fw-bold">Performa Outlet (Simulasi)</h6>
+                                <div class="progress mt-3" style="height: 10px;">
+                                    <div class="progress-bar bg-primary" style="width: 70%"></div>
+                                </div>
+                                <small class="text-muted mt-2">Jakarta Hub - 70% Target</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            channels: `
+                <div class="animate__animated animate__fadeIn">
+                    <h4 class="fw-bold mb-4">Marketplace Channels</h4>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card p-4 text-center">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Shopee_logo.svg" style="height: 40px;" class="mb-3">
+                                <h6 class="fw-bold">Shopee Indonesia</h6>
+                                <span class="badge bg-success-subtle text-success border border-success">CONNECTED</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-4 text-center">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Tokopedia_logo.svg" style="height: 40px;" class="mb-3">
+                                <h6 class="fw-bold">Tokopedia Official</h6>
+                                <span class="badge bg-success-subtle text-success border border-success">CONNECTED</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-4 text-center border-dashed" style="border: 2px dashed #ccc; background: transparent;">
+                                <div class="py-3"><i class="bi bi-plus-circle fs-3 text-muted"></i><br><small class="text-muted">Tambah Channel</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            users: `
+                <div class="animate__animated animate__fadeIn">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold">Manajemen Akun & Role</h4>
+                        <button class="btn btn-primary btn-sm">+ Tambah User</button>
+                    </div>
+                    <div class="card border-0">
+                        <div class="table-responsive p-3">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Admin Demo</strong></td>
+                                        <td>admin@easy-pos.id</td>
+                                        <td><span class="badge bg-primary">Super Admin</span></td>
+                                        <td><span class="text-success"><i class="bi bi-patch-check-fill"></i> Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Kasir Jakarta</strong></td>
+                                        <td>kasir.jkt@easy-pos.id</td>
+                                        <td><span class="badge bg-info">Kasir</span></td>
+                                        <td><span class="text-success"><i class="bi bi-patch-check-fill"></i> Aktif</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function loginDemo() {
+            const loginSection = document.getElementById('login-section');
+            loginSection.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                loginSection.style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                showView('dashboard');
+            }, 500);
+        }
+
+        function showView(viewName) {
+            const content = views[viewName] || `<h4>${viewName.charAt(0).toUpperCase() + viewName.slice(1)}</h4><p class="text-muted">Halaman ini belum tersedia di versi demo.</p>`;
+            document.getElementById('content-area').innerHTML = content;
+            document.getElementById('breadcrumb-active').innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+            
+            // Update active nav
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            const activeNav = Array.from(document.querySelectorAll('.sidebar-nav a')).find(a => a.innerText.toLowerCase().includes(viewName.toLowerCase()));
+            if (activeNav) activeNav.classList.add('active');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if(theme === 'dark') {
+                icon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+            } else {
+                icon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('time').innerText = now.toLocaleTimeString();
+            document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
