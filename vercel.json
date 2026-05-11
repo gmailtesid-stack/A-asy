@@ -10,55 +10,32 @@
         "VERCEL": "1",
         "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
         "CACHE_STORE": "array",
-        "CACHE_PREFIX": "easypos_",
         "SESSION_DRIVER": "cookie",
-        "SESSION_DOMAIN": "a-asy.vercel.app",
-        "SESSION_SECURE_COOKIE": "true",
-        "SESSION_ENCRYPT": "false",
-        "SESSION_LIFETIME": "120",
         "LOG_CHANNEL": "stderr",
-        "LOG_LEVEL": "error",
         "DB_CONNECTION": "sqlite",
-        "FILESYSTEM_DISK": "local",
-        "QUEUE_CONNECTION": "sync",
-        "BROADCAST_CONNECTION": "log",
-        "MAIL_MAILER": "log"
+        "DB_DATABASE": "/tmp/database.sqlite"
     },
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.3",
             "maxDuration": 60
-        },
-        "api/ping.php": {
-            "runtime": "vercel-php@0.7.3",
-            "maxDuration": 5
         }
     },
-    "routes": [
+    "rewrites": [
         {
             "src": "/(css|js|images|fonts|vendor|build|assets)/(.*)",
-            "dest": "/public/$1/$2",
-            "headers": {
-                "Cache-Control": "public, max-age=31536000, immutable"
-            }
+            "dest": "/public/$1/$2"
         },
         {
             "src": "/favicon.ico",
-            "dest": "/public/favicon.ico",
-            "headers": {
-                "Cache-Control": "public, max-age=86400"
-            }
+            "dest": "/public/favicon.ico"
         },
         {
             "src": "/ping",
             "dest": "/api/ping.php"
         },
         {
-            "src": "/demo.html",
-            "dest": "/public/images/demo.html"
-        },
-        {
-            "src": "/demo",
+            "src": "/demo(.*)",
             "dest": "/public/images/demo.html"
         },
         {
