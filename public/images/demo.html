@@ -204,7 +204,7 @@
         .badge-subtle-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
         .card:hover { transform: translateY(-8px); }
 
-        /* ── Responsive ──────────────────────────────────── */
+        /* ── Responsive & Fixes ───────────────────────────── */
         @media (max-width: 991.98px) {
             #sidebar { 
                 position: fixed;
@@ -213,8 +213,17 @@
             #sidebar.show { transform: translateX(0); }
             .app-container { display: block; }
             #topbar { padding: 0 1rem; }
-            .page-content { padding: 1.25rem; }
+            .page-content { padding: 1rem; } /* Narrower padding for mobile */
             
+            #breadcrumb-active {
+                max-width: 120px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
             #sidebar-overlay {
                 display: none;
                 position: fixed;
@@ -223,6 +232,14 @@
                 z-index: 999;
             }
             #sidebar-overlay.show { display: block; }
+        }
+
+        @media (max-width: 576px) {
+            .card.p-4 { padding: 1rem !important; }
+            h4 { font-size: 1.1rem !important; }
+            .badge { font-size: 0.65rem !important; }
+            #time { font-size: 0.8rem !important; }
+            #date { display: none !important; }
         }
     </style>
 </head>
