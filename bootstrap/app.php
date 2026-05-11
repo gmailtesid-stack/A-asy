@@ -49,7 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // 6. Handle 504/Timeout secara halus (Biar user gak liat halaman putih Vercel)
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
             if ($e->getStatusCode() === 504) {
-                return response()->view('errors.504', [], 504);
+                // return response()->view('errors.504', [], 504);
             }
         });
     })
