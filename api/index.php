@@ -1,36 +1,51 @@
 <?php
 
-// ── Vercel Entry Point — Force Debug Mode ──
+// ── Vercel Resilient Bootloader ──
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Force Laravel to show everything
-putenv('APP_DEBUG=true');
-putenv('APP_ENV=local');
-$_ENV['APP_DEBUG'] = true;
-$_ENV['APP_ENV'] = 'local';
+$projectRoot = __DIR__ . '/..';
 
-$projectRoot = dirname(__DIR__);
+// 1. Storage & Cache Setup (Crucial for Vercel)
+$tmpStorage = '/tmp/storage';
+$subDirs = [
+    '',
+    '/framework',
+    '/framework/views',
+    '/framework/sessions',
+    '/framework/cache',
+    '/app',
+    '/logs'
+];
 
-// 1. Storage prep
-$storagePath = '/tmp/storage/framework';
-foreach (['/views', '/sessions', '/cache'] as $p) {
-    if (!is_dir($storagePath . $p)) @mkdir($storagePath . $p, 0755, true);
+foreach ($subDirs as $dir) {
+    $fullPath = $tmpStorage . $dir;
+    if (!is_dir($fullPath)) {
+        @mkdir($fullPath, 0755, true);
+    }
 }
 
-// 2. Load Laravel
+// 2. Load Dependencies
 require $projectRoot . '/vendor/autoload.php';
+
+// 3. Initialize Laravel
 $app = require_once $projectRoot . '/bootstrap/app.php';
 
-// 3. Path Overrides
-$app->useStoragePath('/tmp/storage');
+// Path Overrides
+$app->useStoragePath($tmpStorage);
 
-// 4. DB Override
+// 4. Database Setup (SQLite)
+$srcDb = $projectRoot . '/database/database.sqlite';
 $tmpDb = '/tmp/database.sqlite';
-if (!file_exists($tmpDb)) @copy($projectRoot . '/database/database.sqlite', $tmpDb);
-putenv("DB_DATABASE=$tmpDb");
+if (!file_exists($tmpDb) && file_exists($srcDb)) {
+    @copy($srcDb, $tmpDb);
+}
+if (file_exists($tmpDb)) {
+    putenv("DB_DATABASE=$tmpDb");
+    $_ENV['DB_DATABASE'] = $tmpDb;
+}
 
-// 5. Execute
+// 5. Execute Kernel
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle($request = Illuminate\Http\Request::capture());
 $response->send();
