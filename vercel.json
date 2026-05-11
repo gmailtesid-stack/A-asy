@@ -28,6 +28,10 @@
         "api/index.php": {
             "runtime": "vercel-php@0.7.3",
             "maxDuration": 60
+        },
+        "api/ping.php": {
+            "runtime": "vercel-php@0.7.3",
+            "maxDuration": 5
         }
     },
     "routes": [
@@ -47,7 +51,7 @@
         },
         {
             "src": "/ping",
-            "dest": "/public/ping.php"
+            "dest": "/api/ping.php"
         },
         {
             "src": "/(.*)",
